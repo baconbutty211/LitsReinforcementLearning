@@ -1,0 +1,16 @@
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\bin\Debug\net5.0\LitsConsole.exe
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\bin\Debug\net5.0\LitsConsole.deps.json
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\bin\Debug\net5.0\LitsConsole.runtimeconfig.json
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\bin\Debug\net5.0\LitsConsole.runtimeconfig.dev.json
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\bin\Debug\net5.0\LitsConsole.dll
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\bin\Debug\net5.0\ref\LitsConsole.dll
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\bin\Debug\net5.0\LitsConsole.pdb
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\obj\Debug\net5.0\LitsConsole.csproj.AssemblyReference.cache
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\obj\Debug\net5.0\LitsConsole.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\obj\Debug\net5.0\LitsConsole.AssemblyInfoInputs.cache
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\obj\Debug\net5.0\LitsConsole.AssemblyInfo.cs
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\obj\Debug\net5.0\LitsConsole.csproj.CoreCompileInputs.cache
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\obj\Debug\net5.0\LitsConsole.dll
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\obj\Debug\net5.0\ref\LitsConsole.dll
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\obj\Debug\net5.0\LitsConsole.pdb
+C:\Users\jleis\Documents\Visual Studio 2019\Projects\LitsGitRL\LitsConsole\obj\Debug\net5.0\LitsConsole.genruntimeconfig.cache
