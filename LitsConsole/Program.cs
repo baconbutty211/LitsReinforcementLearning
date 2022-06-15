@@ -1,12 +1,20 @@
 ﻿using System;
+using System.Threading;
 
-namespace LitsConsole
+namespace SimpleLitsMadeSimpler
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Agent bond = new Agent();
+            bond.Explore();
+            foreach (string stateStr in bond.DisplayOptimumPath())
+            {
+                Console.Clear();
+                Console.WriteLine(stateStr);
+                Thread.Sleep(1000);
+            }
         }
     }
 }
