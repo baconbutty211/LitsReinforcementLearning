@@ -72,7 +72,7 @@ namespace SimpleLitsMadeSimpler
             //stepCount = 0;
             for (int i = 0; i < size; i++)
                 state[i] = false;
-            return new Observation(state.Clone() as bool[], 0, false);
+            return new Observation(state, 0, false);
         }
         public void Reset(Observation observation) 
         {
@@ -114,7 +114,7 @@ namespace SimpleLitsMadeSimpler
                 } // Set reward
             }
             stepCount++;
-            return new Observation(state.Clone() as bool[], reward, isDone);
+            return new Observation(state, reward, isDone);
         }
 
         public Action GetRandomAction() 
@@ -179,7 +179,7 @@ namespace SimpleLitsMadeSimpler
 
         public Observation(bool[] state, float reward, bool isDone)
         {
-            this.state = state;
+            this.state = state.Clone() as bool[];
             this.reward = reward;
             this.isDone = isDone;
         }

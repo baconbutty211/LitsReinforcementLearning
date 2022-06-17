@@ -10,10 +10,23 @@ namespace SimpleLitsMadeSimpler
             Agent bond = new Agent();
             bond.Explore();
             bond.Exploit();
+
+            string prevStr = Environment.ToString(new Environment().Reset().state);
             foreach (string stateStr in bond.DisplayOptimumPath())
             {
                 Console.Clear();
-                Console.WriteLine(stateStr);
+                for (int i = 0; i < prevStr.Length; i++)
+                {
+                    if (stateStr[i] != prevStr[i])
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write(stateStr[i]);
+                        Console.ResetColor();
+                    }
+                    else
+                        Console.Write(stateStr[i]);
+                }
+                prevStr = stateStr;
                 Thread.Sleep(2000);
             }
         }
