@@ -10,12 +10,26 @@ namespace SimpleLitsMadeSimpler
     {
         private enum Tile { _, O, X }
         public const int size = 100;
+        private Random rnd = new Random();
 
-        //public int stepCount { get; private set; }
+        private Action[] validActions 
+        {
+            get 
+            {
+                List<Action> actions = new List<Action>();
+                foreach (Action action in Action.actionSpace)
+                    if (IsValid(action))
+                        actions.Add(action);
+                return actions.ToArray();
+            }
+        }
+        public int stepCount { get; private set; }
         public bool isDone
         {
             get
             {
+                if (validActions.Length == 0)
+                    return true;
                 for (int i = 0; i < size; i++)
                     if (board[i] == Tile.X)
                         if (!state[i])
@@ -23,15 +37,7 @@ namespace SimpleLitsMadeSimpler
                 return true;
             }
         }
-        //public static bool[] initialState { 
-        //    get 
-        //    {
-        //        bool[] state = new bool[size];
-        //        for (int i = 0; i < size; i++)
-        //            state[i] = false;
-        //        return state;
-        //    } 
-        //}
+        
         bool[] state;
 
         static Tile[] board = SetBoard();
@@ -59,7 +65,6 @@ namespace SimpleLitsMadeSimpler
         public Environment()
         {
             state = new bool[size];
-            
         }
 
         public Observation Reset()
@@ -67,7 +72,7 @@ namespace SimpleLitsMadeSimpler
             //stepCount = 0;
             for (int i = 0; i < size; i++)
                 state[i] = false;
-            return new Observation(state, 0, false);
+            return new Observation(state.Clone() as bool[], 0, false);
         }
         public void Reset(Observation observation) 
         {
@@ -80,35 +85,70 @@ namespace SimpleLitsMadeSimpler
         {
             this.state = state.Clone() as bool[];
         }
-        public Observation Step(int action)
+        public Observation Step(Action action)
         {
             if (isDone)
                 throw new IndexOutOfRangeException($"Already reached the end state ({state}). Don't ask for a new action.");
 
-            if (!state[action])
-                state[action] = true;
-            else
-                throw new IndexOutOfRangeException($"Action has already been taken.");
-            //stepCount++;
-
             float reward = 0;
-            switch (board[action])
+            foreach (int pos in action.action)
             {
-                case Tile._:
-                    reward -= 1;
-                    break;
-                case Tile.O:
-                    reward -= 2;
-                    break;
-                case Tile.X:
-                    reward += 2;
-                    break;
-                default:
-                    throw new NotImplementedException();
-                    break;
-            } // Set reward
+                if (!state[pos])
+                    state[pos] = true;
+                else
+                    throw new IndexOutOfRangeException($"Action has already been taken.");
 
-            return new Observation(state, reward, isDone);
+                switch (board[pos])
+                {
+                    case Tile._:
+                        reward -= 1;
+                        break;
+                    case Tile.O:
+                        reward -= 2;
+                        break;
+                    case Tile.X:
+                        reward += 2;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                } // Set reward
+            }
+            stepCount++;
+            return new Observation(state.Clone() as bool[], reward, isDone);
+        }
+
+        public Action GetRandomAction() 
+        {
+            return validActions[rnd.Next(validActions.Length)];
+        }
+        public IEnumerable<Action> GetValidActions() 
+        {
+            foreach (Action action in Action.actionSpace)
+                if (IsValid(action))
+                    yield return action;
+        }
+        private bool IsValid(Action action)
+        {
+            return IsValid(action.actionPreShift, action.topLeft);
+        }
+        private bool IsValid(int[] action, int topLeft)
+        {
+            for (int i = 0; i < action.Length; i++)
+            {
+                int actPos = action[i] + topLeft; //Position of new tile about to be placed / checked if valid
+
+                //Check tile doesn't fall off board
+                if (actPos >= size)
+                    return false;
+                //Check tile doesn't wrap around the board ???
+                if (((action[i] + topLeft) % 10) - (action[i] % 10) < 0)
+                    return false;
+
+                //Check if a tile has already been placed in that position
+                if (state[actPos])
+                    return false;
+            }
+            return true;
         }
 
         public static string ToString(bool[] state)
@@ -186,123 +226,127 @@ namespace SimpleLitsMadeSimpler
         Half,
         ThreeQuarters
     } // Rotations are applied anti-clockwise
-    public static class Action
+    public class Action
     {
         static int size = Environment.size;
-        static Random rnd = new Random();
+        public static Action[] actionSpace = GetActionSpace();
 
-        public static IEnumerable<int> GetActions()
+        private static int id = 0;
+        public int Id;
+        public ActionType type;
+        private RotationType rotation;
+        public int topLeft;
+        public int[] actionPreShift 
         {
-            for (int i = 0; i < size; i++)
-                yield return i;
+            get
+            {
+                int[] action;
+                switch (type)
+                {
+                    case ActionType.L:
+                        switch (rotation)
+                        {
+                            case RotationType.None:
+                                action = new int[] { 0, 10, 20, 21, 22 };
+                                break;
+                            case RotationType.Quarter:
+                                action = new int[] { 20, 21, 22, 12, 2 };
+                                break;
+                            case RotationType.Half:
+                                action = new int[] { 22, 12, 2, 1, 0 };
+                                break;
+                            case RotationType.ThreeQuarters:
+                                action = new int[] { 2, 1, 0, 10, 20 };
+                                break;
+                            default:
+                                throw new NotImplementedException($"No case block of type {rotation}");
+                        } // Rotate L tile
+                        break;
+                    case ActionType.I:
+                        switch (rotation)
+                        {
+                            case RotationType.None:
+                                action = new int[] { 0, 10, 20, 30, 40 };
+                                break;
+                            case RotationType.Quarter:
+                                action = new int[] { 0, 1, 2, 3, 4 };
+                                break;
+                            default:
+                                throw new NotImplementedException($"No case block of type {rotation}");
+                        } // Rotate I tile
+                        break;
+                    case ActionType.T:
+                        switch (rotation)
+                        {
+                            case RotationType.None:
+                                action = new int[] { 0, 1, 2, 11, 21 };
+                                break;
+                            case RotationType.Quarter:
+                                action = new int[] { 0, 10, 20, 11, 12 };
+                                break;
+                            case RotationType.Half:
+                                action = new int[] { 20, 21, 22, 11, 1 };
+                                break;
+                            case RotationType.ThreeQuarters:
+                                action = new int[] { 22, 12, 2, 11, 10 };
+                                break;
+                            default:
+                                throw new NotImplementedException($"No case block of type {rotation}");
+                        } // Rotate T tile
+                        break;
+                    case ActionType.S:
+                        switch (rotation)
+                        {
+                            case RotationType.None:
+                                action = new int[] { 1, 2, 11, 20, 21 };
+                                break;
+                            case RotationType.Quarter:
+                                action = new int[] { 10, 0, 11, 22, 12 };
+                                break;
+                            default:
+                                throw new NotImplementedException($"No case block of type {rotation}");
+                        } // Rotate S tile
+                        break;
+                    default:
+                        throw new NotImplementedException($"No case block of type {type}");
+                } //Create tile/action
+                return action;
+            }
         }
-        public static IEnumerable<int[]> GetActions(bool[] state)
+        public int[] action
         {
+            get 
+            {
+                return ShiftActionToTopLeft(actionPreShift, topLeft);
+            } 
+        }
+
+        private Action(int topLeft, ActionType action, RotationType rotation) 
+        {
+            this.Id = id++;
+            this.topLeft = topLeft;
+            this.type = action;
+            this.rotation = rotation;
+        }
+        private static Action[] GetActionSpace()
+        {
+            List<Action> actions = new List<Action>();
             for (int topLeft = 0; topLeft < size; topLeft++)
                 foreach (ActionType act in Enum.GetValues(typeof(ActionType)))
                     foreach (RotationType rot in Enum.GetValues(typeof(RotationType)))
-                    {
-                        int[] action = GetAction(act, rot);
-                        if (IsValid(ref action , state, topLeft))
-                            yield return action;
-                    }
-        }
-        public static int[] GetAction(ActionType type, RotationType rotation)
-        {
-            int[] action;
-            switch (type)
-            {
-                case ActionType.L:
-                    switch (rotation)
-                    {
-                        case RotationType.None:
-                            action = new int[] { 0, 10, 20, 21, 22 };
-                            break;
-                        case RotationType.Quarter:
-                            action = new int[] { 20, 21, 22, 12, 2 };
-                            break;
-                        case RotationType.Half:
-                            action = new int[] { 22, 12, 2, 1, 0 };
-                            break;
-                        case RotationType.ThreeQuarters:
-                            action = new int[] { 2, 1, 0, 10, 20 };
-                            break;
-                        default:
-                            throw new NotImplementedException($"No case block of type {rotation}");
-                    } // Rotate L tile
-                    break;
-                case ActionType.I:
-                    switch (rotation)
-                    {
-                        case RotationType.None:
-                            action = new int[] { 0, 10, 20, 30, 40 };
-                            break;
-                        case RotationType.Quarter:
-                            action = new int[] { 0, 1, 2, 3, 4 };
-                            break;
-                        default:
-                            throw new NotImplementedException($"No case block of type {rotation}");
-                    } // Rotate I tile
-                    break;
-                case ActionType.T:
-                    switch (rotation)
-                    {
-                        case RotationType.None:
-                            action = new int[] { 0, 1, 2, 11, 21 };
-                            break;
-                        case RotationType.Quarter:
-                            action = new int[] { 0, 10, 20, 11, 12 };
-                            break;
-                        case RotationType.Half:
-                            action = new int[] { 20, 21, 22, 11, 1 };
-                            break;
-                        case RotationType.ThreeQuarters:
-                            action = new int[] { 22, 12, 2, 11, 10 };
-                            break;
-                        default:
-                            throw new NotImplementedException($"No case block of type {rotation}");
-                    } // Rotate T tile
-                    break;
-                case ActionType.S:
-                    switch (rotation)
-                    {
-                        case RotationType.None:
-                            action = new int[] { 1, 2, 11, 20, 21 };
-                            break;
-                        case RotationType.Quarter:
-                            action = new int[] { 10, 0, 11, 22, 12 };
-                            break;
-                        default:
-                            throw new NotImplementedException($"No case block of type {rotation}");
-                    } // Rotate S tile
-                    break;
-                default:
-                    throw new NotImplementedException($"No case block of type {type}");
-            } //Create tile/action
-            return action;
-        }
-        private static bool IsValid(ref int[] action, bool[] state, int topLeft)
+                        if (act == ActionType.I || act == ActionType.S)
+                            if (rot == RotationType.Half || rot == RotationType.ThreeQuarters)
+                                continue; // These are just duplicates, as actions I & S have rotational symetry order 2.
+                        else
+                            actions.Add(new Action(topLeft, act, rot));
+            return actions.ToArray();
+        } // Sets the whole action space
+
+        private static int[] ShiftActionToTopLeft(int[] action, int topLeft)
         {
             for (int i = 0; i < action.Length; i++)
-            {
-                int actPos = action[i] + topLeft; //Position of new tile about to be placed / checked if valid
-
-                //Check tile doesn't fall off board
-                if (actPos >= size)
-                    return false;
-                //Check if a tile has already been placed in that position
-                if (state[actPos])
-                    return false;
-                //Check tile doesn't wrap around the board ???
-                if (((action[i] + topLeft) % 10) - (action[i] % 10) < 0)
-                    return false;
-                
-
-
-                //Add top left to tile
                 action[i] += topLeft;
-            }
-            return true;
+            return action;
         }
     }
 }

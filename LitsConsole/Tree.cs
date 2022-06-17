@@ -8,7 +8,7 @@ namespace SimpleLitsMadeSimpler
 {
     public class Tree
     {
-        static int size = Environment.size;
+        static int size = Action.actionSpace.Length;
         static float Discount = 0.95f;
 
         int depth;
@@ -26,6 +26,9 @@ namespace SimpleLitsMadeSimpler
                 float maxVal = float.MinValue;
                 foreach (Tree child in children)
                 {
+                    if (child == null)
+                        continue;
+
                     float childVal = child.Value;
                     if (childVal > maxVal)
                         maxVal = childVal;
@@ -64,12 +67,12 @@ namespace SimpleLitsMadeSimpler
                 children = new Tree[size];
         }
 
-        public Tree Branch(Observation observation, int action) 
+        public Tree Branch(Observation observation, Action action) 
         {
             if (Leaf)
                 throw new Exception("Tree is a leaf (state is done). Should not be adding any children here.");
             Tree child = new Tree(observation, depth+1);
-            children[action] = child;
+            children[action.Id] = child;
             return child;
         }
 

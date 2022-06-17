@@ -22,46 +22,26 @@ namespace SimpleLitsMadeSimpler
             environment = new Environment();
             Observation initial = environment.Reset();
             litsTree = new Tree(initial);
-            cwt = litsTree;
             optimumPath = new List<Tree>();
         }
 
 
-        public void Explore(int explorationDepth=1) 
+        public void Explore() 
         {
+            cwt = litsTree;
             while (!environment.isDone) 
             {
-                if(!cwt.Leaf)
-                    Explore(cwt, explorationDepth);
-                Exploit();
+                Action action = environment.GetRandomAction();
+                Observation obs = environment.Step(action);
+                cwt = cwt.Branch(obs, action);
             }
         }
-        private void Explore(Tree cwt, int explorationDepth)
-        {
-            if (explorationDepth == 0)
-                return;
-            if (cwt.Leaf)
-                return;
-
-            foreach (int action in Action.GetActions())
-            {
-                environment.Reset(cwt.State);
-                try 
-                { 
-                    Observation obs = environment.Step(action); 
-                    cwt.Branch(obs, action);
-                }
-                catch (IndexOutOfRangeException) { continue; }
-            }
-            foreach (Tree child in cwt)
-                Explore(child, explorationDepth - 1);
-
-        } //Recursively explores the state spaceup to a maximum depth
         /// <summary>
         /// Finds the optimum child/path. Sets the current working tree to the optimum child.
         /// </summary>
-        private void Exploit()
+        public void Exploit()
         {
+            cwt = litsTree;
             while (!(cwt.Leaf || cwt.Empty))
             {
                 float maxVal = float.MinValue;
@@ -70,6 +50,7 @@ namespace SimpleLitsMadeSimpler
                 {
                     if (child == null)
                         continue;
+
                     float childVal = child.Value;
                     if (childVal > maxVal)
                     {
@@ -85,13 +66,11 @@ namespace SimpleLitsMadeSimpler
                 else
                     throw new NullReferenceException();
             }
-        }
-
+        } // Needs to search recursively
         public IEnumerable<string> DisplayOptimumPath()
         {
             foreach (Tree favChild in optimumPath)
                 yield return Environment.ToString(favChild.State);
-            
         }
     }
 }

@@ -9,11 +9,12 @@ namespace SimpleLitsMadeSimpler
         {
             Agent bond = new Agent();
             bond.Explore();
+            bond.Exploit();
             foreach (string stateStr in bond.DisplayOptimumPath())
             {
                 Console.Clear();
                 Console.WriteLine(stateStr);
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
             }
         }
     }
