@@ -8,7 +8,7 @@ namespace SimpleLitsMadeSimpler
 {
     public class Tree
     {
-        static int size = Action.actionSpace.Length;
+        static int size = Action.actionSpaceSize;
         static float Discount = 0.95f;
 
         int depth;
