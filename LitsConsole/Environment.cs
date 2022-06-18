@@ -98,23 +98,7 @@ namespace SimpleLitsMadeSimpler
                 if (!state[pos])
                 {
                     state[pos] = true;
-                    switch (action.type)
-                    {
-                        case ActionType.L:
-                            board[pos] = Tile.L;
-                            break;
-                        case ActionType.I:
-                            board[pos] = Tile.I;
-                            break;
-                        case ActionType.T:
-                            board[pos] = Tile.T;
-                            break;
-                        case ActionType.S:
-                            board[pos] = Tile.S;
-                            break;
-                        default:
-                            throw new NotImplementedException();
-                    } // Set board position to the new action type
+                    board[pos] = ActionTypeToTile(action.type); // Set board position to the new action type
                 }
                 else
                     throw new IndexOutOfRangeException($"Action has already been taken.");
@@ -138,21 +122,109 @@ namespace SimpleLitsMadeSimpler
 
         private bool IsValid(Action action)
         {
+            if (stepCount == 0) //All actions are valid on the first move
+                return true;
+
+            if (IsOverlapingOtherAction(action)) //Check if a tile has already been placed in that position
+                return false;
+            if (IsAdjacentToSameActionType(action)) // Check if the new piece is adjacent to another piece
+                return false;
+            if (!IsAdjacentToOtherAction(action)) // Check if the new piece is adjacent to another piece of the same type;
+                return false;
+            if (Is2By2Filled(action)) // Checks if a 2*2 area on the board is filled
+                return false;
+            else
+                return true;
+        } // Checks whether the given action can be placed on the board. (Called before the action is applied).
+        private bool IsOverlapingOtherAction(Action action) 
+        {
+            foreach (int act in action)
+                if (state[act]) //Check if a tile has already been placed in that position
+                    return true;
+            return false;
+        } //Check if a tile has already been placed in that position
+        private bool IsAdjacentToOtherAction(Action action) 
+        {
             foreach (int act in action)
             {
-                if (state[act]) //Check if a tile has already been placed in that position
-                    return false;
+                List<int> adjTiles = new List<int>(); // Set the position of adjTiles that fit on the board
+                if (act >= 10)
+                    adjTiles.Add(act - 10);
+                if (act < size - 10) // Size is 100, but indexing at 0 means largest index is 99.
+                    adjTiles.Add(act + 10);
+                if (act % 10 != 0) // So adjacent tile doesn't wrap around side of board
+                    adjTiles.Add(act - 1);
+                if (act % 10 != 9) // So adjacent tile doesn't wrap around side of board
+                    adjTiles.Add(act + 1);
 
+                foreach (int adjPos in adjTiles)
+                    if (!TileIsEmpty(adjPos)) // Check if the new piece is adjacent to another piece
+                        return true;
             }
+            return false;
+        } // Check if the new piece is adjacent to another piece
+        private bool IsAdjacentToSameActionType(Action action) 
+        {
+            Tile actionType = ActionTypeToTile(action.type);
+            foreach (int act in action)
+            {
+                List<int> adjTiles = new List<int>(); // Set the position of adjTiles that fit on the board
+                if (act >= 10)
+                    adjTiles.Add(act - 10);
+                if (act < size - 10) // Size is 100, but indexing at 0 means largest index is 99.
+                    adjTiles.Add(act + 10);
+                if (act % 10 != 0) // So adjacent tile doesn't wrap around side of board
+                    adjTiles.Add(act - 1);
+                if (act % 10 != 9) // So adjacent tile doesn't wrap around side of board
+                    adjTiles.Add(act + 1);
 
-            return true;
-        } // Checks whether the given action can be placed on the board. (Called before the action is applied).
+                foreach (int adjPos in adjTiles)
+                    if (actionType == board[adjPos]) // Check if the new piece is adjacent to another piece of the same type;
+                        return true;
+            }
+            return false;
+        } // Check if the new piece is adjacent to another piece of the same type;
+        private bool Is2By2Filled(Action action) 
+        {
+            bool[] stateClone = state.Clone() as bool[];
+            foreach (int act in action)
+                stateClone[act] = true;
+
+            for(int i = 0; i < stateClone.Length; i++) 
+                if (i > 89 || i == 9) // 2*2 Area will be out of range of the board
+                    continue;
+                else if (stateClone[i] && stateClone[i + 1] && stateClone[i + 10] && stateClone[i + 11]) // Checks if a 2*2 area on the board is filled
+                    return true;
+            
+            return false;
+        } // Checks if a 2*2 area on the board is filled
+
         public Action GetRandomAction()
         {
             Action[] actions = validActions;
             return actions[rnd.Next(actions.Length)];
         }
 
+        private Tile ActionTypeToTile(ActionType type) 
+        {
+            switch (type)
+            {
+                case ActionType.L:
+                    return Tile.L;
+                case ActionType.I:
+                    return Tile.I;
+                case ActionType.T:
+                    return Tile.T;
+                case ActionType.S:
+                    return Tile.S;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        private bool TileIsEmpty(int pos) 
+        {
+            return (int)board[pos] < 3; 
+        }
         public static string ToString(bool[] state)
         {
             string boardStr = "  ";
