@@ -9,6 +9,7 @@ namespace SimpleLitsMadeSimpler
     public class Environment
     {
         private enum Tile { _, O, X, L, I, T, S }
+        private Dictionary<Tile, int> availableActions;
         public const int size = 100;
         private Random rnd = new Random();
 
@@ -67,6 +68,7 @@ namespace SimpleLitsMadeSimpler
         public Environment()
         {
             state = new bool[size];
+            availableActions = new Dictionary<Tile, int>() { { Tile.L, 5 }, { Tile.I, 5 }, { Tile.T, 5 }, { Tile.S, 5 } };
         }
 
         public Observation Reset()
@@ -116,10 +118,12 @@ namespace SimpleLitsMadeSimpler
                         break;
                 } // Set reward
             }
+            availableActions[ActionTypeToTile(action.type)]--;
             stepCount++;
             return new Observation(state, reward, isDone);
         }
 
+        #region Validation
         private bool IsValid(Action action)
         {
             if (stepCount == 0) //All actions are valid on the first move
@@ -132,6 +136,8 @@ namespace SimpleLitsMadeSimpler
             if (!IsAdjacentToOtherAction(action)) // Check if the new piece is adjacent to another piece of the same type;
                 return false;
             if (Is2By2Filled(action)) // Checks if a 2*2 area on the board is filled
+                return false;
+            if (!IsActionTypeAvailable(action))
                 return false;
             else
                 return true;
@@ -198,6 +204,17 @@ namespace SimpleLitsMadeSimpler
             
             return false;
         } // Checks if a 2*2 area on the board is filled
+        private bool IsActionTypeAvailable(Action action) 
+        {
+            int actionsRemaining = availableActions[ActionTypeToTile(action.type)];
+            if (actionsRemaining == 0)
+                return false;
+            else if (actionsRemaining > 0)
+                return true;
+            else
+                throw new ArgumentOutOfRangeException($"{actionsRemaining} should never get to less than 0");
+        }
+        #endregion
 
         public Action GetRandomAction()
         {
