@@ -497,6 +497,10 @@ namespace SimpleLitsMadeSimpler
             foreach (Action a in actionSpace)
                 yield return a;
         }
+        public static Action GetAction(int index) 
+        {
+            return actionSpace[index];
+        }
 
         private void ShiftActionToTopLeft()
         {

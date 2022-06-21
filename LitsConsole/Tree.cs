@@ -67,6 +67,12 @@ namespace SimpleLitsMadeSimpler
             if(!Leaf)
                 children = new Tree[size];
         }
+        private Tree(string[] contents) 
+        {
+            SetContents(contents);
+            if (!Leaf)
+                children = new Tree[size];
+        }
 
         public Tree Branch(Observation observation, Action action) 
         {
@@ -74,6 +80,13 @@ namespace SimpleLitsMadeSimpler
                 throw new Exception("Tree is a leaf (state is done). Should not be adding any children here.");
             Tree child = new Tree(observation, depth+1);
             children[action.Id] = child;
+            return child;
+        }
+        public Tree Branch(Tree child, int actionId) 
+        {
+            if (Leaf)
+                throw new Exception("Tree is a leaf (state is done). Should not be adding any children here.");
+            children[actionId] = child;
             return child;
         }
 
@@ -85,7 +98,7 @@ namespace SimpleLitsMadeSimpler
         }
 
         #region Save/Load
-        public string[] GetContents()
+        private string[] GetContents()
         {
             string state = "";
             foreach (bool bit in root.state)
@@ -98,9 +111,18 @@ namespace SimpleLitsMadeSimpler
                 $"state:{state}",
             };
         }
-        public void SetContents(string[] contents) 
+        private void SetContents(string[] contents) 
         {
-            
+            depth = int.Parse(contents[0].Split(':')[1]);
+            bool done = (contents[1].Split(':')[1] == "1");
+            float reward = float.Parse(contents[2].Split(':')[1]);
+
+            string[] stateStr = contents[3].Split(':')[1].Split(',');
+            bool[] state = new bool[stateStr.Length - 1];
+            for (int i = 0; i < state.Length; i++)
+                state[i] = (stateStr[i] == "1");
+
+            root = new Observation(state, reward, done);
         }
         //Don't add '\\' on the end of the path.
         public static void Save(Tree tree, string path) 
@@ -114,13 +136,28 @@ namespace SimpleLitsMadeSimpler
             //Save all child variables
             if (tree.Leaf || tree.Empty)
                 return;
-            int count = 0;
-            foreach (Tree child in tree)
-                Save(child, $"{path}\\child{count++}");
+            for(int i = 0; i < tree.children.Length; i++)
+                if(tree.children[i] != null)
+                    Save(tree.children[i], $"{path}\\child{i}");
         }
         public static Tree Load(string path) 
         {
-            return null;
+            if (!File.Exists($"{path}\\root.txt"))
+                throw new FileNotFoundException();
+            
+            //Load tree
+            string[] contents = File.ReadAllLines($"{path}\\root.txt");
+            Tree tree = new Tree(contents);
+
+            //Load children
+            string[] dirs = Directory.GetDirectories(path);
+            foreach (string dir in dirs)
+            {
+                int actionId = int.Parse(dir.Split('\\')[dir.Split('\\').Length - 1].Substring(5));
+                tree.Branch(Load(dir), actionId);
+            }
+
+            return tree;
         }
 
         #endregion

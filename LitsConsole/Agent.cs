@@ -8,6 +8,7 @@ namespace SimpleLitsMadeSimpler
     public class Agent
     {
         const float Exploration = 0.2f;
+        static string savesPath = "C:\\Users\\jleis\\Documents\\Visual Studio 2019\\Projects\\LitsGitRL\\LitsConsole\\Agents";
         Random rnd = new System.Random();
 
 
@@ -24,10 +25,10 @@ namespace SimpleLitsMadeSimpler
             litsTree = new Tree(initial);
             optimumPath = new List<Tree>();
         }
-        public Agent(string treePath) 
+        public Agent(int agent) 
         {
             environment = new Environment();
-            litsTree = Tree.Load(treePath);
+            Load();
             optimumPath = new List<Tree>();
         }
 
@@ -79,7 +80,11 @@ namespace SimpleLitsMadeSimpler
 
         public void Save() 
         {
-            Tree.Save(litsTree, "C:\\Users\\jleis\\Documents\\Visual Studio 2019\\Projects\\LitsGitRL\\LitsConsole\\Agents\\Save1");
+            Tree.Save(litsTree, $"{savesPath}\\Save1");
+        }
+        public void Load() 
+        {
+            litsTree = Tree.Load($"{savesPath}\\Save1");
         }
     }
 }

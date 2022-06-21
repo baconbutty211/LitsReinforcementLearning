@@ -8,7 +8,7 @@ namespace SimpleLitsMadeSimpler
     {
         static void Main(string[] args)
         {
-            Agent bond = new Agent();
+            Agent bond = new Agent(1);
             bond.Explore();
             bond.Save();
             bond.Exploit();
