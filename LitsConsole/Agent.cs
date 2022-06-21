@@ -16,7 +16,7 @@ namespace SimpleLitsMadeSimpler
         Environment environment;
 
         List<Tree> optimumPath;
-        
+
         public Agent()
         {
             environment = new Environment();
@@ -24,6 +24,13 @@ namespace SimpleLitsMadeSimpler
             litsTree = new Tree(initial);
             optimumPath = new List<Tree>();
         }
+        public Agent(string treePath) 
+        {
+            environment = new Environment();
+            litsTree = Tree.Load(treePath);
+            optimumPath = new List<Tree>();
+        }
+
 
 
         public void Explore() 
@@ -48,9 +55,6 @@ namespace SimpleLitsMadeSimpler
                 Tree favChild = null;
                 foreach (Tree child in cwt)
                 {
-                    if (child == null)
-                        continue;
-
                     float childVal = child.Value;
                     if (childVal > maxVal)
                     {
@@ -71,6 +75,11 @@ namespace SimpleLitsMadeSimpler
         {
             foreach (Tree favChild in optimumPath)
                 yield return Environment.ToString(favChild.State);
+        }
+
+        public void Save() 
+        {
+            Tree.Save(litsTree, "C:\\Users\\jleis\\Documents\\Visual Studio 2019\\Projects\\LitsGitRL\\LitsConsole\\Agents\\Save1");
         }
     }
 }

@@ -67,13 +67,14 @@ namespace SimpleLitsMadeSimpler
 
         public Environment()
         {
-            state = new bool[size];
-            availableActions = new Dictionary<Tile, int>() { { Tile.L, 5 }, { Tile.I, 5 }, { Tile.T, 5 }, { Tile.S, 5 } };
+            Reset();
         }
 
         public Observation Reset()
         {
-            //stepCount = 0;
+            stepCount = 0;
+            availableActions = new Dictionary<Tile, int>() { { Tile.L, 5 }, { Tile.I, 5 }, { Tile.T, 5 }, { Tile.S, 5 } };
+            state = new bool[size];
             for (int i = 0; i < size; i++)
                 state[i] = false;
             return new Observation(state, 0, false);
@@ -197,7 +198,7 @@ namespace SimpleLitsMadeSimpler
                 stateClone[act] = true;
 
             for(int i = 0; i < stateClone.Length; i++) 
-                if (i > 89 || i == 9) // 2*2 Area will be out of range of the board
+                if (i >= 89 || i == 9) // 2*2 Area will be out of range of the board
                     continue;
                 else if (stateClone[i] && stateClone[i + 1] && stateClone[i + 10] && stateClone[i + 11]) // Checks if a 2*2 area on the board is filled
                     return true;

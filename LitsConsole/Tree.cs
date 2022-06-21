@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace SimpleLitsMadeSimpler
 {
@@ -79,30 +80,50 @@ namespace SimpleLitsMadeSimpler
         public IEnumerator<Tree> GetEnumerator() 
         {
             foreach (Tree child in children)
-                yield return child;
+                if(child != null)
+                    yield return child;
         }
+
+        #region Save/Load
+        public string[] GetContents()
+        {
+            string state = "";
+            foreach (bool bit in root.state)
+                state += $"{(bit ? 1 : 0)},";
+
+            return new string[] {
+                $"depth:{depth}",
+                $"done:{ (root.isDone ? 1 : 0) }",
+                $"reward:{root.reward}",
+                $"state:{state}",
+            };
+        }
+        public void SetContents(string[] contents) 
+        {
+            
+        }
+        //Don't add '\\' on the end of the path.
+        public static void Save(Tree tree, string path) 
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            //Save current branch variables
+            File.WriteAllLines(path+"\\root.txt", tree.GetContents());
+
+            //Save all child variables
+            if (tree.Leaf || tree.Empty)
+                return;
+            int count = 0;
+            foreach (Tree child in tree)
+                Save(child, $"{path}\\child{count++}");
+        }
+        public static Tree Load(string path) 
+        {
+            return null;
+        }
+
+        #endregion
     }
 
-    //public struct Node 
-    //{
-    //    public bool[] state { get; private set; }
-    //    public int action { get; private set; }
-    //    public float reward { get; private set; }
-    //    public bool isDone { get; private set; }
-
-    //    public Node(bool[] state, int action, float reward, bool isDone) 
-    //    {
-    //        this.state = state;
-    //        this.action = action;
-    //        this.reward = reward;
-    //        this.isDone = isDone;
-    //    }
-    //    public Node(Observation observation, int action) 
-    //    {
-    //        this.state = observation.state;
-    //        this.action = action;
-    //        this.reward = observation.reward;
-    //        this.isDone = observation.isDone;
-    //    }
-    //}
 }

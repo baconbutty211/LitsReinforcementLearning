@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 
 namespace SimpleLitsMadeSimpler
@@ -9,6 +10,7 @@ namespace SimpleLitsMadeSimpler
         {
             Agent bond = new Agent();
             bond.Explore();
+            bond.Save();
             bond.Exploit();
 
             string prevStr = Environment.ToString(new Environment().Reset().state);
