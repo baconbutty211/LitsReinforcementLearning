@@ -102,11 +102,10 @@ namespace SimpleLitsMadeSimpler
         }
         private Tree Branch(Tree child, int actionId) 
         {
-            //if (Leaf)
-            //    throw new Exception("Tree is a leaf (state is done). Should not be adding any children here.");
             child.prevActionId = actionId;
-            children[actionId] = child;
-            return child;
+            if(children[actionId] == null)
+                children[actionId] = child;
+            return children[actionId];
         }
 
         public IEnumerator<Tree> GetEnumerator() 

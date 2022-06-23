@@ -29,7 +29,17 @@ namespace SimpleLitsMadeSimpler
             cwt = litsTree;
             while (!environment.isDone)
             {
-                Action action = environment.GetRandomAction();
+                Action action;
+                if (rnd.NextDouble() < Exploration) // Chance of exploring a random branch
+                    action = environment.GetRandomAction();
+                else                                // Otherwise, take the best possible route
+                {
+                    Tree favChild = cwt.FavouriteChild;
+                    if(favChild == null)
+                        action = environment.GetRandomAction();
+                    else
+                        action = Action.GetAction(cwt.FavouriteChild.prevActionId);
+                }
                 Observation obs = environment.Step(action);
                 cwt = cwt.Branch(obs, action);
             }
