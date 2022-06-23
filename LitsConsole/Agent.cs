@@ -28,9 +28,10 @@ namespace SimpleLitsMadeSimpler
         public void Explore() 
         {
             cwt = litsTree;
+            List<Tree> route = new List<Tree>() { cwt };
+            List<float> rewards = new List<float>() { 0 };
             while (!environment.isDone)
             {
-                //Feed Forward
                 Action action;
                 if (rnd.NextDouble() < Exploration) // Chance of exploring a random branch
                     action = environment.GetRandomAction();
@@ -44,9 +45,14 @@ namespace SimpleLitsMadeSimpler
                 }
                 Observation obs = environment.Step(action);
                 cwt = cwt.Branch(obs, action);
-
-                //Back Propagate
-            }
+                route.Add(cwt);
+                rewards.Add(obs.reward);
+            } // Feed Forward
+            for (float i = route.Count - 1, totalReward = 0; i >= 0; i--)
+            {
+                totalReward += rewards[(int)i];
+                route[(int)i].ErrorCorrect(totalReward);
+            } // Back Propagate
         }
         /// <summary>
         /// Finds the optimum child/path. Sets the current working tree to the optimum child.

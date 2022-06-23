@@ -13,7 +13,9 @@ namespace SimpleLitsMadeSimpler
         static float Discount = 0.95f;
 
         int depth;
-        int visitCount = 1;
+        int visitCount = 0; // Number of times this state/tree has been visited
+        float success = 0;
+        float value = 0; // The average reward to be gained from this state / The average value of the current state.
         public int prevActionId;
         Observation root;
         Tree[] children;
@@ -25,18 +27,8 @@ namespace SimpleLitsMadeSimpler
             {
                 if(Empty)
                     return root.reward;
-
-                float maxVal = float.MinValue;
-                foreach (Tree child in children)
-                {
-                    if (child == null)
-                        continue;
-
-                    float childVal = child.Value;
-                    if (childVal > maxVal)
-                        maxVal = childVal;
-                }
-                return root.reward + (maxVal * Discount);
+                else
+                    return root.reward + (FavouriteChild.Value * Discount);
             }
         }
         public bool Leaf { get { return root.isDone; } }
@@ -63,7 +55,7 @@ namespace SimpleLitsMadeSimpler
                 Tree favChild = null;
                 foreach (Tree child in this)
                 {
-                    float childVal = child.Value;
+                    float childVal = child.value;
                     if (childVal > maxVal)
                     {
                         maxVal = childVal;
@@ -107,10 +99,13 @@ namespace SimpleLitsMadeSimpler
             child.prevActionId = actionId;
             if (children[actionId] == null)
                 children[actionId] = child;
-            else
-                children[actionId].visitCount++;
             return children[actionId];
         } // Tree Loading & Agent calls this branch method
+
+        public void ErrorCorrect(float newValue) 
+        {
+            value = ((visitCount * value) + newValue) / ++visitCount;
+        }
 
         public IEnumerator<Tree> GetEnumerator() 
         {
@@ -132,6 +127,7 @@ namespace SimpleLitsMadeSimpler
                 $"reward:{root.reward}",
                 $"state:{state}",
                 $"visits:{visitCount}",
+                $"value:{value}",
             };
         }
         private void SetContents(string[] contents) 
@@ -148,6 +144,7 @@ namespace SimpleLitsMadeSimpler
             root = new Observation(state, reward, done);
 
             visitCount = int.Parse(contents[4].Split(':')[1]);
+            value = float.Parse(contents[5].Split(':')[1]);
         }
         //Don't add '\\' on the end of the path.
         public static void Save(Tree tree, string path) 
