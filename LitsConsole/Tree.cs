@@ -162,6 +162,8 @@ namespace SimpleLitsMadeSimpler
         }
         public static Tree Load(string path) 
         {
+            if (!Directory.Exists(path))
+                throw new DirectoryNotFoundException();
             if (!File.Exists($"{path}\\root.txt"))
                 throw new FileNotFoundException();
             

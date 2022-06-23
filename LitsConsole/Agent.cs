@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace SimpleLitsMadeSimpler
 {
@@ -80,10 +81,15 @@ namespace SimpleLitsMadeSimpler
         /// <summary>
         /// Loads a the agents state tree from file
         /// </summary>
-        public void Load(string agentName) 
+        public void Load(string agentName)
         {
-            name = agentName;
-            litsTree = Tree.Load($"{savesPath}\\{name}");
+            try 
+            {
+                litsTree = Tree.Load($"{savesPath}\\{agentName}");  
+                name = agentName;
+            }
+            catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
         }
     }
 }
