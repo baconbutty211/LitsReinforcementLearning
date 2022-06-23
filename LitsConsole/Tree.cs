@@ -51,6 +51,8 @@ namespace SimpleLitsMadeSimpler
         {
             get 
             {
+                if (Leaf || Empty)
+                    return null;
                 float maxVal = float.MinValue;
                 Tree favChild = null;
                 foreach (Tree child in this)
@@ -90,7 +92,7 @@ namespace SimpleLitsMadeSimpler
         public Tree Branch(Observation observation, Action action) 
         {
             if (Leaf)
-                throw new Exception("Tree is a leaf (state is done). Should not be adding any children here."); // Tree thinks the state isDone, when the environment disagrees. I suspect this is because on a previous episode the environment thought this state was done, but this time round the environment disagrees.
+                throw new Exception("Tree is a leaf (state is done). Should not be adding any children here."); // Tree thinks the state isDone, when the environment disagrees. I suspect this is because on a previous episode the environment thought this state was done, but this time round the environment disagrees. Seems to be unpredictable.
             Tree child = new Tree(observation, depth+1);
             return Branch(child, action.Id);
         } // Agent calls this branch method
