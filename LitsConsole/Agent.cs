@@ -11,33 +11,23 @@ namespace SimpleLitsMadeSimpler
         static string savesPath = "C:\\Users\\jleis\\Documents\\Visual Studio 2019\\Projects\\LitsGitRL\\LitsConsole\\Agents";
         Random rnd = new System.Random();
 
-
+        string name;
         Tree litsTree; //Tree trunk
         Tree cwt; //Current working tree
-        Environment environment;
+        Environment environment = new Environment();
 
-        List<Tree> optimumPath;
+        List<Tree> optimumPath = new List<Tree>();
 
         public Agent()
         {
-            environment = new Environment();
             Observation initial = environment.Reset();
             litsTree = new Tree(initial);
-            optimumPath = new List<Tree>();
         }
-        public Agent(int agent) 
-        {
-            environment = new Environment();
-            Load();
-            optimumPath = new List<Tree>();
-        }
-
-
 
         public void Explore() 
         {
             cwt = litsTree;
-            while (!environment.isDone) 
+            while (!environment.isDone)
             {
                 Action action = environment.GetRandomAction();
                 Observation obs = environment.Step(action);
@@ -52,17 +42,7 @@ namespace SimpleLitsMadeSimpler
             cwt = litsTree;
             while (!(cwt.Leaf || cwt.Empty))
             {
-                float maxVal = float.MinValue;
-                Tree favChild = null;
-                foreach (Tree child in cwt)
-                {
-                    float childVal = child.Value;
-                    if (childVal > maxVal)
-                    {
-                        maxVal = childVal;
-                        favChild = child;
-                    }
-                }
+                Tree favChild = cwt.FavouriteChild;
                 if (favChild != null)
                 {
                     cwt = favChild;
@@ -71,20 +51,29 @@ namespace SimpleLitsMadeSimpler
                 else
                     throw new NullReferenceException();
             }
-        } // Needs to search recursively
+        }
         public IEnumerable<string> DisplayOptimumPath()
         {
             foreach (Tree favChild in optimumPath)
                 yield return Environment.ToString(favChild.State);
         }
 
-        public void Save() 
+        /// <summary>
+        /// Saves the agents state tree to file.
+        /// If the directory already exists it will be overwritten.
+        /// Otherwise, it will be created.
+        /// </summary>
+        public void Save(string agentName) 
         {
-            Tree.Save(litsTree, $"{savesPath}\\Save1");
+            Tree.Save(litsTree, $"{savesPath}\\{agentName}");
         }
-        public void Load() 
+        /// <summary>
+        /// Loads a the agents state tree from file
+        /// </summary>
+        public void Load(string agentName) 
         {
-            litsTree = Tree.Load($"{savesPath}\\Save1");
+            name = agentName;
+            litsTree = Tree.Load($"{savesPath}\\{name}");
         }
     }
 }

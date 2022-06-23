@@ -53,6 +53,24 @@ namespace SimpleLitsMadeSimpler
                 return count;
             }
         }
+        public Tree FavouriteChild 
+        {
+            get 
+            {
+                float maxVal = float.MinValue;
+                Tree favChild = null;
+                foreach (Tree child in children)
+                {
+                    float childVal = child.Value;
+                    if (childVal > maxVal)
+                    {
+                        maxVal = childVal;
+                        favChild = child;
+                    }
+                }
+                return favChild;
+            }
+        }
 
         public Tree(Observation initialObservation)
         {

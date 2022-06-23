@@ -8,13 +8,19 @@ namespace SimpleLitsMadeSimpler
     {
         static void Main(string[] args)
         {
-            Agent bond = new Agent(1);
+            Agent bond = new Agent();
+            bond.Load("Bond");
             bond.Explore();
-            bond.Save();
+            bond.Save("Bond");
             bond.Exploit();
 
+            //DisplayOptimumPath(bond);
+        }
+
+        static void DisplayOptimumPath(Agent agent) 
+        {
             string prevStr = Environment.ToString(new Environment().Reset().state);
-            foreach (string stateStr in bond.DisplayOptimumPath())
+            foreach (string stateStr in agent.DisplayOptimumPath())
             {
                 Console.Clear();
                 for (int i = 0; i < prevStr.Length; i++)
