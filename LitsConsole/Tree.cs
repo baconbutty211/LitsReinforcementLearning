@@ -13,6 +13,7 @@ namespace SimpleLitsMadeSimpler
         static float Discount = 0.95f;
 
         int depth;
+        int visitCount = 1;
         public int prevActionId;
         Observation root;
         Tree[] children;
@@ -76,22 +77,23 @@ namespace SimpleLitsMadeSimpler
         public Tree(Observation initialObservation)
         {
             depth = 0;
+            visitCount = -1; // because I don't care how often the trunk is visited
             root = initialObservation;
             children = new Tree[size];
-        }
+        } // Constructs the tree trunk
         private Tree(Observation root, int depth)
         {
             this.depth = depth;
             this.root = root;
             if(!Leaf)
                 children = new Tree[size];
-        }
+        } // Constructs new branches
         private Tree(string[] contents) 
         {
             SetContents(contents);
             if (!Leaf)
                 children = new Tree[size];
-        }
+        } // Constructs new & file branches
 
         public Tree Branch(Observation observation, Action action) 
         {
@@ -99,14 +101,16 @@ namespace SimpleLitsMadeSimpler
                 throw new Exception("Tree is a leaf (state is done). Should not be adding any children here.");
             Tree child = new Tree(observation, depth+1);
             return Branch(child, action.Id);
-        }
+        } // Agent calls this branch method
         private Tree Branch(Tree child, int actionId) 
         {
             child.prevActionId = actionId;
-            if(children[actionId] == null)
+            if (children[actionId] == null)
                 children[actionId] = child;
+            else
+                children[actionId].visitCount++;
             return children[actionId];
-        }
+        } // Tree Loading & Agent calls this branch method
 
         public IEnumerator<Tree> GetEnumerator() 
         {
@@ -127,13 +131,13 @@ namespace SimpleLitsMadeSimpler
                 $"done:{ (root.isDone ? 1 : 0) }",
                 $"reward:{root.reward}",
                 $"state:{state}",
-                //$"previousActionId:{prevActionId}",
+                $"visits:{visitCount}",
             };
         }
         private void SetContents(string[] contents) 
         {
             depth = int.Parse(contents[0].Split(':')[1]);
-            //prevActionId = int.Parse(contents[4].Split(':')[1]);
+         
             bool done = (contents[1].Split(':')[1] == "1");
             float reward = float.Parse(contents[2].Split(':')[1]);
 
@@ -141,8 +145,9 @@ namespace SimpleLitsMadeSimpler
             bool[] state = new bool[stateStr.Length - 1];
             for (int i = 0; i < state.Length; i++)
                 state[i] = (stateStr[i] == "1");
-
             root = new Observation(state, reward, done);
+
+            visitCount = int.Parse(contents[4].Split(':')[1]);
         }
         //Don't add '\\' on the end of the path.
         public static void Save(Tree tree, string path) 

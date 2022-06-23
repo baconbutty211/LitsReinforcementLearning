@@ -30,6 +30,7 @@ namespace SimpleLitsMadeSimpler
             cwt = litsTree;
             while (!environment.isDone)
             {
+                //Feed Forward
                 Action action;
                 if (rnd.NextDouble() < Exploration) // Chance of exploring a random branch
                     action = environment.GetRandomAction();
@@ -43,6 +44,8 @@ namespace SimpleLitsMadeSimpler
                 }
                 Observation obs = environment.Step(action);
                 cwt = cwt.Branch(obs, action);
+
+                //Back Propagate
             }
         }
         /// <summary>
