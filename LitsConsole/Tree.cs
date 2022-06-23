@@ -13,6 +13,7 @@ namespace SimpleLitsMadeSimpler
         static float Discount = 0.95f;
 
         int depth;
+        public int prevActionId;
         Observation root;
         Tree[] children;
 
@@ -97,13 +98,13 @@ namespace SimpleLitsMadeSimpler
             if (Leaf)
                 throw new Exception("Tree is a leaf (state is done). Should not be adding any children here.");
             Tree child = new Tree(observation, depth+1);
-            children[action.Id] = child;
-            return child;
+            return Branch(child, action.Id);
         }
-        public Tree Branch(Tree child, int actionId) 
+        private Tree Branch(Tree child, int actionId) 
         {
-            if (Leaf)
-                throw new Exception("Tree is a leaf (state is done). Should not be adding any children here.");
+            //if (Leaf)
+            //    throw new Exception("Tree is a leaf (state is done). Should not be adding any children here.");
+            child.prevActionId = actionId;
             children[actionId] = child;
             return child;
         }
@@ -127,11 +128,13 @@ namespace SimpleLitsMadeSimpler
                 $"done:{ (root.isDone ? 1 : 0) }",
                 $"reward:{root.reward}",
                 $"state:{state}",
+                //$"previousActionId:{prevActionId}",
             };
         }
         private void SetContents(string[] contents) 
         {
             depth = int.Parse(contents[0].Split(':')[1]);
+            //prevActionId = int.Parse(contents[4].Split(':')[1]);
             bool done = (contents[1].Split(':')[1] == "1");
             float reward = float.Parse(contents[2].Split(':')[1]);
 
@@ -180,5 +183,4 @@ namespace SimpleLitsMadeSimpler
 
         #endregion
     }
-
 }
