@@ -25,34 +25,38 @@ namespace SimpleLitsMadeSimpler
             litsTree = new Tree(initial);
         }
 
-        public void Explore() 
+        public void Explore(int episodes = 1)
         {
-            cwt = litsTree;
-            List<Tree> route = new List<Tree>() { cwt };
-            List<float> rewards = new List<float>() { 0 };
-            while (!environment.isDone)
+            for (int iters = 0; iters < episodes; iters++)
             {
-                Action action;
-                if (rnd.NextDouble() < Exploration) // Chance of exploring a random branch
-                    action = environment.GetRandomAction();
-                else                                // Otherwise, take the best possible route
+                cwt = litsTree;
+                environment.Reset();
+                List<Tree> route = new List<Tree>() { litsTree };
+                List<float> rewards = new List<float>() { 0 };
+                while (!environment.isDone)
                 {
-                    Tree favChild = cwt.FavouriteChild;
-                    if(favChild == null)
+                    Action action;
+                    if (rnd.NextDouble() < Exploration) // Chance of exploring a random branch
                         action = environment.GetRandomAction();
-                    else
-                        action = Action.GetAction(cwt.FavouriteChild.prevActionId);
-                }
-                Observation obs = environment.Step(action);
-                cwt = cwt.Branch(obs, action);
-                route.Add(cwt);
-                rewards.Add(obs.reward);
-            } // Feed Forward
-            for (float i = route.Count - 1, totalReward = 0; i >= 0; i--)
-            {
-                totalReward += rewards[(int)i];
-                route[(int)i].ErrorCorrect(totalReward);
-            } // Back Propagate
+                    else                                // Otherwise, take the best possible route
+                    {
+                        Tree favChild = cwt.FavouriteChild;
+                        if (favChild == null)
+                            action = environment.GetRandomAction();
+                        else
+                            action = Action.GetAction(cwt.FavouriteChild.prevActionId);
+                    }
+                    Observation obs = environment.Step(action);
+                    cwt = cwt.Branch(obs, action);
+                    route.Add(cwt);
+                    rewards.Add(obs.reward);
+                } // Feed Forward
+                for (float i = route.Count - 1, totalReward = 0; i >= 0; i--)
+                {
+                    totalReward += rewards[(int)i];
+                    route[(int)i].ErrorCorrect(totalReward);
+                } // Back Propagate
+            }
         }
         /// <summary>
         /// Finds the optimum child/path. Sets the current working tree to the optimum child.

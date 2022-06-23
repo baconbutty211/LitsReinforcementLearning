@@ -10,7 +10,7 @@ namespace SimpleLitsMadeSimpler
         {
             Agent bond = new Agent();
             bond.Load("Bond");
-            bond.Explore();
+            bond.Explore(100);
             bond.Save("Bond");
             bond.Exploit();
 
