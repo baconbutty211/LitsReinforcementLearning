@@ -60,7 +60,7 @@ namespace SimpleLitsMadeSimpler
             {
                 float maxVal = float.MinValue;
                 Tree favChild = null;
-                foreach (Tree child in children)
+                foreach (Tree child in this)
                 {
                     float childVal = child.Value;
                     if (childVal > maxVal)
