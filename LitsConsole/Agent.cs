@@ -48,6 +48,8 @@ namespace LitsReinforcementLearning
                     }
                     Observation obs = environment.Step(action);
                     cwt = cwt.Branch(obs, action);
+                    if (cwt == null) //Only happens when environment and tree disagree on isDone. Remove, if that bug has been fixed.
+                        break;
                     route.Add(cwt);
                     rewards.Add(obs.reward);
                 } // Feed Forward

@@ -97,6 +97,7 @@ namespace LitsReinforcementLearning
                 Log.Write(exception);
                 Log.RotateError();
                 //throw new Exception(exception); // Tree thinks the state isDone, when the environment disagrees. I suspect this is because on a previous episode the environment thought this state was done, but this time round the environment disagrees. Seems to be unpredictable.
+                return null;
             }
             Tree child = new Tree(observation, depth+1);
             return Branch(child, action.Id);
