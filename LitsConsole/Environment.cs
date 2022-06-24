@@ -94,7 +94,9 @@ namespace LitsReinforcementLearning
         {
             if (isDone)
                 throw new IndexOutOfRangeException($"Already reached the end state ({state}). Don't ask for a new action.");
-            Log.Write($"Applying action {action.Id}");
+            
+            if(!Debug.IsDebug)
+                Log.Write($"Applying action {action.Id}");
 
             float reward = 0;
             foreach (int pos in action.action)

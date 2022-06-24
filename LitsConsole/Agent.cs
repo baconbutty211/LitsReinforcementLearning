@@ -9,7 +9,7 @@ namespace LitsReinforcementLearning
     public class Agent
     {
         const float Exploration = 0.2f;
-        static string savesPath = $"{Path.directory}\\Agents";
+        static string savesPath = $"{Path.directory}{Path.Slash}Agents";
         Random rnd = new System.Random();
 
         string name;
@@ -91,7 +91,7 @@ namespace LitsReinforcementLearning
         /// </summary>
         public void Save(string agentName) 
         {
-            Tree.Save(litsTree, $"{savesPath}\\{agentName}");
+            Tree.Save(litsTree, $"{savesPath}{Path.Slash}{agentName}");
         }
         /// <summary>
         /// Loads a the agents state tree from file
@@ -100,7 +100,7 @@ namespace LitsReinforcementLearning
         {
             try 
             {
-                litsTree = Tree.Load($"{savesPath}\\{agentName}");  
+                litsTree = Tree.Load($"{savesPath}{Path.Slash}{agentName}");  
                 name = agentName;
             }
             catch (FileNotFoundException) { }

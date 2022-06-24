@@ -153,38 +153,37 @@ namespace LitsReinforcementLearning
             visitCount = int.Parse(contents[4].Split(':')[1]);
             value = float.Parse(contents[5].Split(':')[1]);
         }
-        //Don't add '\\' on the end of the path.
         public static void Save(Tree tree, string path) 
         {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
             //Save current branch variables
-            File.WriteAllLines(path+"\\root.txt", tree.GetContents());
+            File.WriteAllLines(path+$"{Path.Slash}root.txt", tree.GetContents());
 
             //Save all child variables
             if (tree.Leaf || tree.Empty)
                 return;
             for(int i = 0; i < tree.children.Length; i++)
                 if(tree.children[i] != null)
-                    Save(tree.children[i], $"{path}\\child{i}");
+                    Save(tree.children[i], $"{path}{Path.Slash}child{i}");
         }
         public static Tree Load(string path) 
         {
             if (!Directory.Exists(path))
                 throw new DirectoryNotFoundException();
-            if (!File.Exists($"{path}\\root.txt"))
+            if (!File.Exists($"{path}{Path.Slash}root.txt"))
                 throw new FileNotFoundException();
             
             //Load tree
-            string[] contents = File.ReadAllLines($"{path}\\root.txt");
+            string[] contents = File.ReadAllLines($"{path}{Path.Slash}root.txt");
             Tree tree = new Tree(contents);
 
             //Load children
             string[] dirs = Directory.GetDirectories(path);
             foreach (string dir in dirs)
             {
-                int actionId = int.Parse(dir.Split('\\')[dir.Split('\\').Length - 1].Substring(5));
+                int actionId = int.Parse(dir.Split(Path.Slash)[dir.Split(Path.Slash).Length - 1].Substring(5));
                 tree.Branch(Load(dir), actionId);
             }
 

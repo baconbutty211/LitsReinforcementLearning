@@ -4,24 +4,59 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace LitsReinforcementLearning
 {
+    public static class Debug
+    {
+        public static bool IsDebug { get { return System.Reflection.Assembly.GetEntryAssembly().GetName().Name == "LitsConsoleDebug"; } }
+    }
     public static class Path 
     {
-        public static string directory = "C:\\Users\\jleis\\Documents\\Visual Studio 2019\\Projects\\LitsGitRL\\LitsConsole";
+        public static string directory
+        {
+            get
+            {
+                string dir = Directory.GetCurrentDirectory();
+                dir = GetParent(dir);
+                dir = GetParent(dir);
+                dir = GetParent(dir);
+                return dir;
+            }
+        }
+        private static string GetParent(string path) 
+        {
+            return Directory.GetParent(path).ToString();
+        }
+        public static char Slash 
+        {
+            get
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    return '\\';
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    return '/';
+                else
+                {
+                    Log.Write($"Unfamiliar platform {RuntimeInformation.OSDescription}");
+                    Log.RotateError();
+                    return '/';
+                }
+            }
+        }
     }
 
     public static class Log
     {
-        static string logPath = $"{Path.directory}\\Logs";
-        static string logFile = $"{logPath}\\Logs.txt";
+        static string logPath = $"{Path.directory}{Path.Slash}Logs";
+        static string logFile = $"{logPath}{Path.Slash}Logs.txt";
         static string archiveFile 
         { 
             get 
             {
                 DateTime now = DateTime.Now;
-                return $"{logPath}\\Archives\\Log {now.Day}-{now.Month}-{now.Year}T{now.Hour}-{now.Minute}-{now.Second}.txt"; 
+                return $"{logPath}{Path.Slash}Archives{Path.Slash}Log {now.Day}-{now.Month}-{now.Year}T{now.Hour}-{now.Minute}-{now.Second}.txt"; 
             }
         }
         static string errorFile 
@@ -29,7 +64,7 @@ namespace LitsReinforcementLearning
             get 
             {
                 DateTime now = DateTime.Now;
-                return $"{logPath}\\Errors\\Log {now.Day}-{now.Month}-{now.Year}T{now.Hour}-{now.Minute}-{now.Second}.txt";
+                return $"{logPath}{Path.Slash}Errors{Path.Slash}Log {now.Day}-{now.Month}-{now.Year}T{now.Hour}-{now.Minute}-{now.Second}.txt";
             }
         }
 
