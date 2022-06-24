@@ -1,12 +1,36 @@
 ﻿using System;
+using System.IO;
+using System.Threading;
 
-namespace LitsConsole
+namespace SimpleLitsMadeSimpler
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Agent bond = new Agent(1);
+            bond.Explore();
+            bond.Save();
+            bond.Exploit();
+
+            string prevStr = Environment.ToString(new Environment().Reset().state);
+            foreach (string stateStr in bond.DisplayOptimumPath())
+            {
+                Console.Clear();
+                for (int i = 0; i < prevStr.Length; i++)
+                {
+                    if (stateStr[i] != prevStr[i])
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write(stateStr[i]);
+                        Console.ResetColor();
+                    }
+                    else
+                        Console.Write(stateStr[i]);
+                }
+                prevStr = stateStr;
+                Thread.Sleep(2000);
+            }
         }
     }
 }
