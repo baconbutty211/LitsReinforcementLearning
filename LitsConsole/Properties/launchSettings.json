@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LitsConsole": {
+      "commandName": "Project",
+      "commandLineArgs": "1"
+    }
+  }
+}

@@ -8,6 +8,9 @@ namespace LitsReinforcementLearning
     {
         static void Main(string[] args)
         {
+            if (!int.TryParse(args[0], out int episodes))
+                return;
+
             Log.Rotate();
             
             Agent bond = new Agent();
@@ -17,7 +20,7 @@ namespace LitsReinforcementLearning
             //Log.Write("...Loaded Agent Bond");
             
             //Log.Write("Exploring for 1 episode...");
-            bond.Explore(30);
+            bond.Explore(episodes);
             //Log.Write("...Explored 1 episode");
             
             //Log.Write("Saving Agent Bond...");
