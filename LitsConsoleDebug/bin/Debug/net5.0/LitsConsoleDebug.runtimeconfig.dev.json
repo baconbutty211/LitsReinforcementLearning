@@ -1,8 +1,0 @@
-{
-  "runtimeOptions": {
-    "additionalProbingPaths": [
-      "C:\\Users\\jleis\\.dotnet\\store\\|arch|\\|tfm|",
-      "C:\\Users\\jleis\\.nuget\\packages"
-    ]
-  }
-}
