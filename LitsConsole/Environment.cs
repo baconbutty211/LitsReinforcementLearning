@@ -114,7 +114,7 @@ namespace SimpleLitsMadeSimpler
                     case Tile.X:
                         reward += 2;
                         break;
-                    default: // Tile is Empty (_) of filled (L, I, T, S)
+                    default: // Tile is Empty (_) or filled with (L, I, T, S)
                         reward -= 1;
                         break;
                 } // Set reward

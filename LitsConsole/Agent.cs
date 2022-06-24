@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace SimpleLitsMadeSimpler
 {
@@ -11,37 +12,50 @@ namespace SimpleLitsMadeSimpler
         static string savesPath = "C:\\Users\\jleis\\Documents\\Visual Studio 2019\\Projects\\LitsGitRL\\LitsConsole\\Agents";
         Random rnd = new System.Random();
 
-
+        string name;
         Tree litsTree; //Tree trunk
         Tree cwt; //Current working tree
-        Environment environment;
+        Environment environment = new Environment();
 
-        List<Tree> optimumPath;
+        List<Tree> optimumPath = new List<Tree>();
 
         public Agent()
         {
-            environment = new Environment();
             Observation initial = environment.Reset();
             litsTree = new Tree(initial);
-            optimumPath = new List<Tree>();
-        }
-        public Agent(int agent) 
-        {
-            environment = new Environment();
-            Load();
-            optimumPath = new List<Tree>();
         }
 
-
-
-        public void Explore() 
+        public void Explore(int episodes = 1)
         {
-            cwt = litsTree;
-            while (!environment.isDone) 
+            for (int iters = 0; iters < episodes; iters++)
             {
-                Action action = environment.GetRandomAction();
-                Observation obs = environment.Step(action);
-                cwt = cwt.Branch(obs, action);
+                cwt = litsTree;
+                environment.Reset();
+                List<Tree> route = new List<Tree>() { litsTree };
+                List<float> rewards = new List<float>() { 0 };
+                while (!environment.isDone)
+                {
+                    Action action;
+                    if (rnd.NextDouble() < Exploration) // Chance of exploring a random branch
+                        action = environment.GetRandomAction();
+                    else                                // Otherwise, take the best possible route
+                    {
+                        Tree favChild = cwt.FavouriteChild;
+                        if (favChild == null)
+                            action = environment.GetRandomAction();
+                        else
+                            action = Action.GetAction(cwt.FavouriteChild.prevActionId);
+                    }
+                    Observation obs = environment.Step(action);
+                    cwt = cwt.Branch(obs, action);
+                    route.Add(cwt);
+                    rewards.Add(obs.reward);
+                } // Feed Forward
+                for (float i = route.Count - 1, totalReward = 0; i >= 0; i--)
+                {
+                    totalReward += rewards[(int)i];
+                    route[(int)i].ErrorCorrect(totalReward);
+                } // Back Propagate
             }
         }
         /// <summary>
@@ -52,17 +66,7 @@ namespace SimpleLitsMadeSimpler
             cwt = litsTree;
             while (!(cwt.Leaf || cwt.Empty))
             {
-                float maxVal = float.MinValue;
-                Tree favChild = null;
-                foreach (Tree child in cwt)
-                {
-                    float childVal = child.Value;
-                    if (childVal > maxVal)
-                    {
-                        maxVal = childVal;
-                        favChild = child;
-                    }
-                }
+                Tree favChild = cwt.FavouriteChild;
                 if (favChild != null)
                 {
                     cwt = favChild;
@@ -71,20 +75,34 @@ namespace SimpleLitsMadeSimpler
                 else
                     throw new NullReferenceException();
             }
-        } // Needs to search recursively
+        }
         public IEnumerable<string> DisplayOptimumPath()
         {
             foreach (Tree favChild in optimumPath)
                 yield return Environment.ToString(favChild.State);
         }
 
-        public void Save() 
+        /// <summary>
+        /// Saves the agents state tree to file.
+        /// If the directory already exists it will be overwritten.
+        /// Otherwise, it will be created.
+        /// </summary>
+        public void Save(string agentName) 
         {
-            Tree.Save(litsTree, $"{savesPath}\\Save1");
+            Tree.Save(litsTree, $"{savesPath}\\{agentName}");
         }
-        public void Load() 
+        /// <summary>
+        /// Loads a the agents state tree from file
+        /// </summary>
+        public void Load(string agentName)
         {
-            litsTree = Tree.Load($"{savesPath}\\Save1");
+            try 
+            {
+                litsTree = Tree.Load($"{savesPath}\\{agentName}");  
+                name = agentName;
+            }
+            catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
         }
     }
 }

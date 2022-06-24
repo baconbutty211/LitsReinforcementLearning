@@ -13,6 +13,10 @@ namespace SimpleLitsMadeSimpler
         static float Discount = 0.95f;
 
         int depth;
+        int visitCount = 0; // Number of times this state/tree has been visited
+        float success = 0;
+        float value = 0; // The average reward to be gained from this state / The average value of the current state.
+        public int prevActionId;
         Observation root;
         Tree[] children;
 
@@ -23,18 +27,8 @@ namespace SimpleLitsMadeSimpler
             {
                 if(Empty)
                     return root.reward;
-
-                float maxVal = float.MinValue;
-                foreach (Tree child in children)
-                {
-                    if (child == null)
-                        continue;
-
-                    float childVal = child.Value;
-                    if (childVal > maxVal)
-                        maxVal = childVal;
-                }
-                return root.reward + (maxVal * Discount);
+                else
+                    return root.reward + (FavouriteChild.Value * Discount);
             }
         }
         public bool Leaf { get { return root.isDone; } }
@@ -53,41 +47,66 @@ namespace SimpleLitsMadeSimpler
                 return count;
             }
         }
+        public Tree FavouriteChild 
+        {
+            get 
+            {
+                if (Leaf || Empty)
+                    return null;
+                float maxVal = float.MinValue;
+                Tree favChild = null;
+                foreach (Tree child in this)
+                {
+                    float childVal = child.value;
+                    if (childVal > maxVal)
+                    {
+                        maxVal = childVal;
+                        favChild = child;
+                    }
+                }
+                return favChild;
+            }
+        }
 
         public Tree(Observation initialObservation)
         {
             depth = 0;
+            visitCount = -1; // because I don't care how often the trunk is visited
             root = initialObservation;
             children = new Tree[size];
-        }
+        } // Constructs the tree trunk
         private Tree(Observation root, int depth)
         {
             this.depth = depth;
             this.root = root;
             if(!Leaf)
                 children = new Tree[size];
-        }
+        } // Constructs new branches
         private Tree(string[] contents) 
         {
             SetContents(contents);
             if (!Leaf)
                 children = new Tree[size];
-        }
+        } // Constructs new & file branches
 
         public Tree Branch(Observation observation, Action action) 
         {
             if (Leaf)
-                throw new Exception("Tree is a leaf (state is done). Should not be adding any children here.");
+                throw new Exception("Tree is a leaf (state is done). Should not be adding any children here."); // Tree thinks the state isDone, when the environment disagrees. I suspect this is because on a previous episode the environment thought this state was done, but this time round the environment disagrees. Seems to be unpredictable.
             Tree child = new Tree(observation, depth+1);
-            children[action.Id] = child;
-            return child;
-        }
-        public Tree Branch(Tree child, int actionId) 
+            return Branch(child, action.Id);
+        } // Agent calls this branch method
+        private Tree Branch(Tree child, int actionId) 
         {
-            if (Leaf)
-                throw new Exception("Tree is a leaf (state is done). Should not be adding any children here.");
-            children[actionId] = child;
-            return child;
+            child.prevActionId = actionId;
+            if (children[actionId] == null)
+                children[actionId] = child;
+            return children[actionId];
+        } // Tree Loading & Agent calls this branch method
+
+        public void ErrorCorrect(float newValue) 
+        {
+            value = ((visitCount * value) + newValue) / ++visitCount;
         }
 
         public IEnumerator<Tree> GetEnumerator() 
@@ -109,11 +128,14 @@ namespace SimpleLitsMadeSimpler
                 $"done:{ (root.isDone ? 1 : 0) }",
                 $"reward:{root.reward}",
                 $"state:{state}",
+                $"visits:{visitCount}",
+                $"value:{value}",
             };
         }
         private void SetContents(string[] contents) 
         {
             depth = int.Parse(contents[0].Split(':')[1]);
+         
             bool done = (contents[1].Split(':')[1] == "1");
             float reward = float.Parse(contents[2].Split(':')[1]);
 
@@ -121,8 +143,10 @@ namespace SimpleLitsMadeSimpler
             bool[] state = new bool[stateStr.Length - 1];
             for (int i = 0; i < state.Length; i++)
                 state[i] = (stateStr[i] == "1");
-
             root = new Observation(state, reward, done);
+
+            visitCount = int.Parse(contents[4].Split(':')[1]);
+            value = float.Parse(contents[5].Split(':')[1]);
         }
         //Don't add '\\' on the end of the path.
         public static void Save(Tree tree, string path) 
@@ -142,6 +166,8 @@ namespace SimpleLitsMadeSimpler
         }
         public static Tree Load(string path) 
         {
+            if (!Directory.Exists(path))
+                throw new DirectoryNotFoundException();
             if (!File.Exists($"{path}\\root.txt"))
                 throw new FileNotFoundException();
             
@@ -162,5 +188,4 @@ namespace SimpleLitsMadeSimpler
 
         #endregion
     }
-
 }
