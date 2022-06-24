@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace SimpleLitsMadeSimpler
+namespace LitsReinforcementLearning
 {
     public class Tree
     {
@@ -92,7 +92,12 @@ namespace SimpleLitsMadeSimpler
         public Tree Branch(Observation observation, Action action) 
         {
             if (Leaf)
-                throw new Exception("Tree is a leaf (state is done). Should not be adding any children here."); // Tree thinks the state isDone, when the environment disagrees. I suspect this is because on a previous episode the environment thought this state was done, but this time round the environment disagrees. Seems to be unpredictable.
+            {
+                string exception = "Tree is a leaf (state is done). Should not be adding any children here.";
+                Log.Write(exception);
+                Log.RotateError();
+                //throw new Exception(exception); // Tree thinks the state isDone, when the environment disagrees. I suspect this is because on a previous episode the environment thought this state was done, but this time round the environment disagrees. Seems to be unpredictable.
+            }
             Tree child = new Tree(observation, depth+1);
             return Branch(child, action.Id);
         } // Agent calls this branch method
