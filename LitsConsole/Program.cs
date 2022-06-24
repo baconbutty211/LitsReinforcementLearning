@@ -10,6 +10,8 @@ namespace LitsReinforcementLearning
         {
             if (!int.TryParse(args[0], out int episodes))
                 return;
+            if (episodes == -1)
+                episodes = int.MaxValue;
 
             Log.Clear();
             

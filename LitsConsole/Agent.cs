@@ -29,6 +29,9 @@ namespace LitsReinforcementLearning
         {
             for (int iters = 0; iters < episodes; iters++)
             {
+                if (iters % 1000000 == 0)
+                    Console.WriteLine($"Currently explored {iters} episodes.");
+
                 cwt = litsTree;
                 environment.Reset();
                 List<Tree> route = new List<Tree>() { litsTree };
