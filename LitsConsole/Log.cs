@@ -47,8 +47,15 @@ namespace LitsReinforcementLearning
         {
             string logContents = Read();
             Write(logContents, destPath);
-            File.Delete(logFile); // Consider just clearing the text
-            File.Create(logFile).Close(); // Consider just clearing the text
+            Clear();
+        }
+        public static void Clear() 
+        {
+            File.WriteAllText(logFile, "");
+        }
+        public static void Clear(string filePath) 
+        {
+            File.WriteAllText(filePath, "");
         }
 
         private static string Read() 
