@@ -11,7 +11,7 @@ namespace LitsReinforcementLearning
             if (!int.TryParse(args[0], out int episodes))
                 return;
 
-            Log.Rotate();
+            Log.Clear();
             
             Agent bond = new Agent();
             
