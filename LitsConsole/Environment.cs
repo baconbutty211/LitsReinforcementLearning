@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleLitsMadeSimpler
+namespace LitsReinforcementLearning
 {
     public class Environment
     {
@@ -94,6 +94,7 @@ namespace SimpleLitsMadeSimpler
         {
             if (isDone)
                 throw new IndexOutOfRangeException($"Already reached the end state ({state}). Don't ask for a new action.");
+            Log.Write($"Applying action {action.Id}");
 
             float reward = 0;
             foreach (int pos in action.action)
@@ -242,6 +243,10 @@ namespace SimpleLitsMadeSimpler
         private bool TileIsEmpty(int pos) 
         {
             return (int)board[pos] < 3; 
+        }
+        public override string ToString()
+        {
+            return ToString(state);
         }
         public static string ToString(bool[] state)
         {

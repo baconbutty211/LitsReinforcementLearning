@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v5.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v5.0": {
+      "LitsConsoleDebug/1.0.0": {
+        "dependencies": {
+          "LitsConsole": "1.0.0"
+        },
+        "runtime": {
+          "LitsConsoleDebug.dll": {}
+        }
+      },
+      "LitsConsole/1.0.0": {
+        "runtime": {
+          "LitsConsole.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "LitsConsoleDebug/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "LitsConsole/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

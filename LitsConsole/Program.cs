@@ -2,16 +2,28 @@
 using System.IO;
 using System.Threading;
 
-namespace SimpleLitsMadeSimpler
+namespace LitsReinforcementLearning
 {
     class Program
     {
         static void Main(string[] args)
         {
+            Log.Rotate();
+            
             Agent bond = new Agent();
+            
+            //Log.Write("Loading Agent Bond...");
             bond.Load("Bond");
-            bond.Explore(100);
+            //Log.Write("...Loaded Agent Bond");
+            
+            //Log.Write("Exploring for 1 episode...");
+            bond.Explore(30);
+            //Log.Write("...Explored 1 episode");
+            
+            //Log.Write("Saving Agent Bond...");
             bond.Save("Bond");
+            //Log.Write("...Saved Agent Bond");
+
             bond.Exploit();
 
             //DisplayOptimumPath(bond);

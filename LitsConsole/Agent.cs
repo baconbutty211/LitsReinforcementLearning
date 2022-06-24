@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace SimpleLitsMadeSimpler
+namespace LitsReinforcementLearning
 {
     public class Agent
     {
         const float Exploration = 0.2f;
-        static string savesPath = "C:\\Users\\jleis\\Documents\\Visual Studio 2019\\Projects\\LitsGitRL\\LitsConsole\\Agents";
+        static string savesPath = $"{Path.directory}\\Agents";
         Random rnd = new System.Random();
 
         string name;
@@ -56,6 +56,8 @@ namespace SimpleLitsMadeSimpler
                     totalReward += rewards[(int)i];
                     route[(int)i].ErrorCorrect(totalReward);
                 } // Back Propagate
+
+                Log.Rotate();
             }
         }
         /// <summary>
