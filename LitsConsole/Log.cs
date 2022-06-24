@@ -19,9 +19,8 @@ namespace LitsReinforcementLearning
             get
             {
                 string dir = Directory.GetCurrentDirectory();
-                dir = GetParent(dir);
-                dir = GetParent(dir);
-                dir = GetParent(dir);
+                while (new DirectoryInfo(dir).Name != "LitsConsole") 
+                    dir = GetParent(dir);
                 return dir;
             }
         }
