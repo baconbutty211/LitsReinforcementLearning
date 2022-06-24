@@ -33,6 +33,12 @@ namespace LitsReinforcementLearning
             }
         }
 
+        public static void Clear() 
+        {
+            File.Delete(logFile); // Consider just clearing the text
+            File.Create(logFile).Close(); // Consider just clearing the text
+        }
+
         private static bool rotated = false;
         public static void Rotate() 
         {
@@ -47,8 +53,7 @@ namespace LitsReinforcementLearning
         {
             string logContents = Read();
             Write(logContents, destPath);
-            File.Delete(logFile); // Consider just clearing the text
-            File.Create(logFile).Close(); // Consider just clearing the text
+            Clear();
         }
 
         private static string Read() 
