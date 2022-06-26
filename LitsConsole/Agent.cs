@@ -29,7 +29,7 @@ namespace LitsReinforcementLearning
         {
             for (int iters = 0; iters < episodes; iters++)
             {
-                if (iters % 1000000 == 0)
+                if (iters % 100 == 0)
                     Console.WriteLine($"Currently explored {iters} episodes.");
 
                 cwt = litsTree;
@@ -68,7 +68,7 @@ namespace LitsReinforcementLearning
         /// <summary>
         /// Finds the optimum child/path. Sets the current working tree to the optimum child.
         /// </summary>
-        public void Exploit()
+        public int[] Exploit()
         {
             cwt = litsTree;
             while (!(cwt.Leaf || cwt.Empty))
@@ -82,11 +82,11 @@ namespace LitsReinforcementLearning
                 else
                     throw new NullReferenceException();
             }
-        }
-        public IEnumerable<string> DisplayOptimumPath()
-        {
-            foreach (Tree favChild in optimumPath)
-                yield return Environment.ToString(favChild.State);
+
+            int[] optPath = new int[optimumPath.Count];
+            for (int i = 0; i < optimumPath.Count; i++)
+                optPath[i] = optimumPath[i].prevActionId;
+            return optPath;
         }
 
         /// <summary>

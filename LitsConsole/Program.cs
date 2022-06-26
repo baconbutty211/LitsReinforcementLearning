@@ -29,16 +29,21 @@ namespace LitsReinforcementLearning
             bond.Save("Bond");
             //Log.Write("...Saved Agent Bond");
 
-            bond.Exploit();
-
+            int[] optimumPath = bond.Exploit();
+            foreach (int action in optimumPath)
+                Console.Write($"{action} ");
             //DisplayOptimumPath(bond);
         }
 
-        static void DisplayOptimumPath(Agent agent) 
+        static void DisplayOptimumPath(int[] optimumPath) 
         {
-            string prevStr = Environment.ToString(new Environment().Reset().state);
-            foreach (string stateStr in agent.DisplayOptimumPath())
+            Environment environment = new Environment();
+            string prevStr = environment.ToString();
+            foreach (int action in optimumPath)
             {
+                environment.Step(Action.GetAction(action));
+                string stateStr = environment.ToString();
+                
                 Console.Clear();
                 for (int i = 0; i < prevStr.Length; i++)
                 {

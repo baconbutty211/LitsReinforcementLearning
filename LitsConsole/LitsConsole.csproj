@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Agents\Bond\" />
+    <Folder Include="Agents\" />
     <Folder Include="Logs\Archives\" />
     <Folder Include="Logs\Errors\" />
   </ItemGroup>

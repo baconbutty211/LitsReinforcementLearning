@@ -31,20 +31,18 @@ namespace LitsReinforcementLearning
         {
             get
             {
-                if (validActions.Length == 0)
-                    return true;
-                for (int i = 0; i < size; i++)
-                    if (board[i] == Tile.X)
-                        if (!state[i])
-                            return false;
-                return true;
+                return validActions.Length == 0;
+                //for (int i = 0; i < size; i++)
+                //    if (board[i] == Tile.X)
+                //        if (!state[i])
+                //            return false;
+                //return true;
             }
         }
         
         bool[] state;
 
-        static Tile[] board = SetBoard();
-        private static Tile[] SetBoard() 
+        private static Tile[] SetBoard()
         {
             Tile[] board = new Tile[size];
             for (int i = 0; i < size; i++)
@@ -64,6 +62,8 @@ namespace LitsReinforcementLearning
             } //Define initial board
             return board;
         }
+        static Tile[] initialBoard = SetBoard();
+        Tile[] board;
 
         public Environment()
         {
@@ -74,6 +74,7 @@ namespace LitsReinforcementLearning
         {
             stepCount = 0;
             availableActions = new Dictionary<Tile, int>() { { Tile.L, 5 }, { Tile.I, 5 }, { Tile.T, 5 }, { Tile.S, 5 } };
+            board = initialBoard.Clone() as Tile[];
             state = new bool[size];
             for (int i = 0; i < size; i++)
                 state[i] = false;
@@ -248,7 +249,19 @@ namespace LitsReinforcementLearning
         }
         public override string ToString()
         {
-            return ToString(state);
+            string boardStr = "  ";
+            for (int i = 0; i < 10; i++)
+                boardStr += $"{i},";
+            for (int i = 0; i < size; i++)
+            {
+                if (i % 10 == 0)
+                    boardStr += $"\n{i / 10} ";
+                if (state[i])
+                    boardStr += $"#,";
+                else
+                    boardStr += $"{board[i]},";
+            }
+            return boardStr + '\n';
         }
         public static string ToString(bool[] state)
         {
@@ -262,7 +275,7 @@ namespace LitsReinforcementLearning
                 if (state[i])
                     boardStr += $"#,";
                 else
-                    boardStr += $"{board[i]},";
+                    boardStr += $"{initialBoard[i]},";
             }
             return boardStr + '\n';
         }
