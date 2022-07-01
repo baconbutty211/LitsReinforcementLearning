@@ -9,7 +9,6 @@ namespace LitsReinforcementLearning
     public class Environment
     {
         private enum Tile { _, O, X, L, I, T, S }
-        private Dictionary<Tile, int> availableActions;
         public const int size = 100;
         private Random rnd = new Random();
 
@@ -41,6 +40,7 @@ namespace LitsReinforcementLearning
         }
         
         bool[] state;
+        private Dictionary<Tile, int> availableActions;
 
         private static Tile[] SetBoard()
         {
@@ -65,9 +65,22 @@ namespace LitsReinforcementLearning
         static Tile[] initialBoard = SetBoard();
         Tile[] board;
 
+        /// <summary>
+        /// Initializes the environment
+        /// </summary>
         public Environment()
         {
             Reset();
+        }
+        /// <summary>
+        /// Only to be used for cloning
+        /// </summary>
+        private Environment(Environment original)
+        {
+            stepCount = original.stepCount;
+            state = original.state.Clone() as bool[];
+            board = original.board.Clone() as Tile[];
+            availableActions = original.availableActions.ToDictionary(entry => entry.Key, entry => entry.Value);
         }
 
         public Observation Reset()
@@ -278,6 +291,11 @@ namespace LitsReinforcementLearning
                     boardStr += $"{initialBoard[i]},";
             }
             return boardStr + '\n';
+        }
+    
+        public Environment Clone() 
+        {
+            return new Environment(this);
         }
     }
 

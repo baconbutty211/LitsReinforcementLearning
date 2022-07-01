@@ -6,33 +6,47 @@ namespace LitsReinforcementLearning
 {
     class Program
     {
+        /// <summary>
+        /// Args: [0 = Agent type], [1 = MC -> Episodes]
+        /// </summary>
         static void Main(string[] args)
         {
-            if (!int.TryParse(args[0], out int episodes))
-                return;
-            if (episodes == -1)
-                episodes = int.MaxValue;
+            if (args[0] == "MC")
+            {
+                if (!int.TryParse(args[1], out int episodes))
+                    return;
+                if (episodes == -1)
+                    episodes = int.MaxValue;
 
-            Log.Clear();
-            
-            Agent bond = new Agent();
-            
-            //Log.Write("Loading Agent Bond...");
-            bond.Load("Bond");
-            //Log.Write("...Loaded Agent Bond");
-            
-            //Log.Write("Exploring for 1 episode...");
-            bond.Explore(episodes);
-            //Log.Write("...Explored 1 episode");
-            
-            //Log.Write("Saving Agent Bond...");
-            bond.Save("Bond");
-            //Log.Write("...Saved Agent Bond");
+                Log.Clear();
 
-            int[] optimumPath = bond.Exploit();
-            foreach (int action in optimumPath)
-                Console.Write($"{action} ");
-            //DisplayOptimumPath(bond);
+                MonteCarloAgent bond = new MonteCarloAgent();
+
+                //Log.Write("Loading Agent Bond...");
+                bond.Load("Bond");
+                //Log.Write("...Loaded Agent Bond");
+
+                //Log.Write("Exploring for 1 episode...");
+                bond.Explore(episodes);
+                //Log.Write("...Explored 1 episode");
+
+                //Log.Write("Saving Agent Bond...");
+                bond.Save("Bond");
+                //Log.Write("...Saved Agent Bond");
+
+                int[] optimumPath = bond.Exploit();
+                foreach (int action in optimumPath)
+                    Console.Write($"{action} ");
+                //DisplayOptimumPath(bond);
+            }
+            else if(args[0] == "TD") 
+            {
+                Log.Clear();
+                TemporalDifferenceAgent powers = new TemporalDifferenceAgent();
+
+                int[] optimumPath = powers.Exploit();
+                DisplayOptimumPath(optimumPath);
+            }
         }
 
         static void DisplayOptimumPath(int[] optimumPath) 

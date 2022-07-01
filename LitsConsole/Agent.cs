@@ -6,20 +6,32 @@ using System.IO;
 
 namespace LitsReinforcementLearning
 {
-    public class Agent
+    public abstract class Agent
     {
-        const float Exploration = 0.2f;
-        static string savesPath = $"{Path.directory}{Path.Slash}Agents";
-        Random rnd = new System.Random();
-
-        string name;
-        Tree litsTree; //Tree trunk
-        Tree cwt; //Current working tree
-        Environment environment = new Environment();
-
-        List<Tree> optimumPath = new List<Tree>();
+        protected Environment environment = new Environment();
 
         public Agent()
+        {
+
+        }
+
+        public abstract int[] Exploit();
+    }
+
+    public class MonteCarloAgent : Agent
+    {
+        private static string savesPath = $"{Path.directory}{Path.Slash}Agents";
+        private Random rnd = new Random();
+        
+        private const float Exploration = 0.2f;
+        
+        private string name;
+
+        Tree litsTree; //Tree trunk
+        Tree cwt; //Current working tree
+        List<Tree> optimumPath = new List<Tree>();
+
+        public MonteCarloAgent() : base()
         {
             Observation initial = environment.Reset();
             litsTree = new Tree(initial);
@@ -69,7 +81,7 @@ namespace LitsReinforcementLearning
         /// <summary>
         /// Finds the optimum child/path. Sets the current working tree to the optimum child.
         /// </summary>
-        public int[] Exploit()
+        public override int[] Exploit()
         {
             cwt = litsTree;
             while (!(cwt.Leaf || cwt.Empty))
@@ -95,7 +107,7 @@ namespace LitsReinforcementLearning
         /// If the directory already exists it will be overwritten.
         /// Otherwise, it will be created.
         /// </summary>
-        public void Save(string agentName) 
+        public void Save(string agentName)
         {
             Tree.Save(litsTree, $"{savesPath}{Path.Slash}{agentName}");
         }
@@ -104,13 +116,46 @@ namespace LitsReinforcementLearning
         /// </summary>
         public void Load(string agentName)
         {
-            try 
+            try
             {
-                litsTree = Tree.Load($"{savesPath}{Path.Slash}{agentName}");  
+                litsTree = Tree.Load($"{savesPath}{Path.Slash}{agentName}");
                 name = agentName;
             }
             catch (FileNotFoundException) { }
             catch (DirectoryNotFoundException) { }
+        }
+    }
+
+    public class TemporalDifferenceAgent : Agent
+    {
+        public TemporalDifferenceAgent() : base()
+        {
+            environment.Reset();
+        }
+
+        public override int[] Exploit()
+        {
+            List<int> optimumPath = new List<int>();
+
+            while (!environment.isDone)
+            {
+                Action[] actions = environment.validActions;
+                float bestReward = float.MinValue;
+                Action bestAction = null;
+                foreach (Action action in actions)
+                {
+                    Environment future = environment.Clone();
+                    Observation observation = future.Step(action);
+                    if (observation.reward > bestReward)
+                    {
+                        bestReward = observation.reward;
+                        bestAction = action;
+                    }
+                }
+                optimumPath.Add(bestAction.Id);
+                environment.Step(bestAction);
+            }
+            return optimumPath.ToArray();
         }
     }
 }
