@@ -115,14 +115,6 @@ namespace LitsReinforcementLearning
             float reward = 0;
             foreach (int pos in action.action)
             {
-                if (!state[pos])
-                {
-                    state[pos] = true;
-                    board[pos] = ActionTypeToTile(action.type); // Set board position to the new action type
-                }
-                else
-                    throw new IndexOutOfRangeException($"Action has already been taken.");
-
                 switch (board[pos])
                 {
                     case Tile.O:
@@ -135,6 +127,14 @@ namespace LitsReinforcementLearning
                         reward -= 1;
                         break;
                 } // Set reward
+
+                if (!state[pos])
+                {
+                    state[pos] = true;
+                    board[pos] = ActionTypeToTile(action.type); // Set board position to the new action type
+                }
+                else
+                    throw new IndexOutOfRangeException($"Action has already been taken.");
             }
             availableActions[ActionTypeToTile(action.type)]--;
             stepCount++;
