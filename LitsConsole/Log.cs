@@ -108,14 +108,10 @@ namespace LitsReinforcementLearning
         }
         public static void Write(string contents)
         {
-            if (!rotated)
-                Rotate();
             File.AppendAllText(logFile, contents + '\n');
         }
         public static void Write(string[] contents)
         {
-            if (!rotated)
-                Rotate();
             File.AppendAllLines(logFile, contents);
         }
         private static void Write(string contents, string path)

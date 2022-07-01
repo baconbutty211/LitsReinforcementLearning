@@ -62,6 +62,7 @@ namespace LitsReinforcementLearning
                     route[(int)i].ErrorCorrect(totalReward);
                 } // Back Propagate
 
+                Log.Rotate();
                 Log.Clear();
             }
         }
