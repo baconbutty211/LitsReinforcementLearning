@@ -44,6 +44,12 @@ namespace LitsReinforcementLearning
                 Log.Clear();
                 TemporalDifferenceAgent powers = new TemporalDifferenceAgent();
 
+                powers.Load("Powers");
+
+                powers.Explore();
+                
+                powers.Save("Powers");
+
                 int[] optimumPath = powers.Exploit();
                 DisplayOptimumPath(optimumPath);
             }
