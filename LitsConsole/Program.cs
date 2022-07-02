@@ -35,11 +35,9 @@ namespace LitsReinforcementLearning
                 //Log.Write("...Saved Agent Bond");
 
                 int[] optimumPath = bond.Exploit();
-                foreach (int action in optimumPath)
-                    Console.Write($"{action} ");
-                //DisplayOptimumPath(bond);
+                DisplayOptimumPath(optimumPath);
             }
-            else if(args[0] == "TD") 
+            else if(args[0] == "DP") 
             {
                 Log.Clear();
                 DynamicProgrammingAgent powers = new DynamicProgrammingAgent();
@@ -59,6 +57,7 @@ namespace LitsReinforcementLearning
         {
             Environment environment = new Environment();
             string prevStr = environment.ToString();
+            string route = "Route: ";
             foreach (int action in optimumPath)
             {
                 environment.Step(Action.GetAction(action));
@@ -76,6 +75,8 @@ namespace LitsReinforcementLearning
                     else
                         Console.Write(stateStr[i]);
                 }
+                route += $"{action}, ";
+                Console.WriteLine(route);
                 prevStr = stateStr;
                 Thread.Sleep(2000);
             }

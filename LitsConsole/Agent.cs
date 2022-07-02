@@ -13,7 +13,6 @@ namespace LitsReinforcementLearning
         protected Environment environment = new Environment();
         protected Tree litsTree; //Tree trunk
         protected Tree cwt; //Current working tree
-        protected List<Tree> optimumPath = new List<Tree>();
 
         private string name;
 
@@ -30,6 +29,8 @@ namespace LitsReinforcementLearning
         /// </summary>
         public int[] Exploit() 
         {
+            List<Tree> optimumPath = new List<Tree>();
+
             cwt = litsTree;
             while (!(cwt.Leaf || cwt.Empty))
             {
@@ -42,7 +43,7 @@ namespace LitsReinforcementLearning
                 else
                     throw new NullReferenceException();
             }
-            return GetOptimumPath();
+            return GetOptimumPath(optimumPath);
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace LitsReinforcementLearning
             catch (DirectoryNotFoundException) { }
         }
 
-        protected int[] GetOptimumPath() 
+        protected virtual int[] GetOptimumPath(List<Tree> optimumPath) 
         {
             int[] optPath = new int[optimumPath.Count];
             for (int i = 0; i < optimumPath.Count; i++)
@@ -80,14 +81,19 @@ namespace LitsReinforcementLearning
     public class MonteCarloAgent : Agent
     {
         private Random rnd = new Random();
-        
         private const float Exploration = 0.2f;
 
-        public MonteCarloAgent() : base()
+        private new MonteCarloTree litsTree;
+        private new MonteCarloTree cwt;
+
+        public MonteCarloAgent() : base() 
         {
+            Observation initial = environment.Reset();
+            litsTree = new MonteCarloTree(initial);
+            cwt = litsTree;
         }
 
-        public void Explore(int episodes = 1)
+        public void Explore(int episodes)
         {
             for (int iters = 0; iters < episodes; iters++)
             {
@@ -100,7 +106,7 @@ namespace LitsReinforcementLearning
         {
             cwt = litsTree;
             environment.Reset();
-            List<Tree> route = new List<Tree>() { litsTree };
+            List<MonteCarloTree> route = new List<MonteCarloTree>() { litsTree };
             List<float> rewards = new List<float>() { 0 };
             while (!environment.isDone)
             {
@@ -117,8 +123,6 @@ namespace LitsReinforcementLearning
                 }
                 Observation obs = environment.Step(action);
                 cwt = cwt.Branch(obs, action);
-                //if (cwt == null) //Only happens when environment and tree disagree on isDone. Remove, if that bug has been fixed.
-                //    break;
                 route.Add(cwt);
                 rewards.Add(obs.reward);
             } // Feed Forward
@@ -135,13 +139,34 @@ namespace LitsReinforcementLearning
 
     public class DynamicProgrammingAgent : Agent
     {
-        public DynamicProgrammingAgent() : base()
-        {
-        }
+        public DynamicProgrammingAgent() : base() { }
 
         public override void Explore()
         {
             while (!environment.isDone) 
+            {
+                Action[] validActions = environment.validActions;
+                foreach (Action action in validActions)
+                {
+                    Environment future = environment.Clone();
+                    Observation obs = future.Step(action);
+                    cwt.Branch(obs, action);
+                }
+
+                Tree favChild = cwt.FavouriteChild;
+                Action bestAction = favChild.PreviousAction;
+                environment.Step(bestAction);
+            }
+        }
+    }
+
+    public class ExhaustiveSearchAgent : Agent
+    {
+        public ExhaustiveSearchAgent() : base() { }
+
+        public override void Explore()
+        {
+            while (!environment.isDone)
             {
                 Explore(environment, cwt, 1);
                 Tree favChild = cwt.FavouriteChild;
@@ -156,15 +181,13 @@ namespace LitsReinforcementLearning
                 return;
 
             Action[] validActions = env.validActions;
-            //if (validActions.Length == 0) // Environment is done.
-            //    return;
 
             foreach (Action action in validActions)
             {
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
                 Tree child = cwt.Branch(obs, action);
-                Explore(future, child, depth-1);
+                Explore(future, child, depth - 1);
             }
         }
     }
