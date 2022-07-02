@@ -8,33 +8,55 @@ namespace LitsReinforcementLearning
 {
     public abstract class Agent
     {
+        private static string savesPath = $"{Path.directory}{Path.Slash}Agents";
+
         protected Environment environment = new Environment();
+        protected Tree litsTree; //Tree trunk
+        protected Tree cwt; //Current working tree
+        protected List<Tree> optimumPath = new List<Tree>();
+
+        private string name;
 
         public Agent()
         {
-
+            Observation initial = environment.Reset();
+            litsTree = new Tree(initial);
         }
 
         public abstract int[] Exploit();
+
+        /// <summary>
+        /// Saves the agents state tree to file.
+        /// If the directory already exists it will be overwritten.
+        /// Otherwise, it will be created.
+        /// </summary>
+        public void Save(string agentName)
+        {
+            Tree.Save(litsTree, $"{savesPath}{Path.Slash}{agentName}");
+        }
+        /// <summary>
+        /// Loads a the agents state tree from file
+        /// </summary>
+        public void Load(string agentName)
+        {
+            try
+            {
+                litsTree = Tree.Load($"{savesPath}{Path.Slash}{agentName}");
+                name = agentName;
+            }
+            catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
+        }
     }
 
     public class MonteCarloAgent : Agent
     {
-        private static string savesPath = $"{Path.directory}{Path.Slash}Agents";
         private Random rnd = new Random();
         
         private const float Exploration = 0.2f;
-        
-        private string name;
-
-        Tree litsTree; //Tree trunk
-        Tree cwt; //Current working tree
-        List<Tree> optimumPath = new List<Tree>();
 
         public MonteCarloAgent() : base()
         {
-            Observation initial = environment.Reset();
-            litsTree = new Tree(initial);
         }
 
         public void Explore(int episodes = 1)
@@ -101,61 +123,14 @@ namespace LitsReinforcementLearning
                 optPath[i] = optimumPath[i].prevActionId;
             return optPath;
         }
-
-        /// <summary>
-        /// Saves the agents state tree to file.
-        /// If the directory already exists it will be overwritten.
-        /// Otherwise, it will be created.
-        /// </summary>
-        public void Save(string agentName)
-        {
-            Tree.Save(litsTree, $"{savesPath}{Path.Slash}{agentName}");
-        }
-        /// <summary>
-        /// Loads a the agents state tree from file
-        /// </summary>
-        public void Load(string agentName)
-        {
-            try
-            {
-                litsTree = Tree.Load($"{savesPath}{Path.Slash}{agentName}");
-                name = agentName;
-            }
-            catch (FileNotFoundException) { }
-            catch (DirectoryNotFoundException) { }
-        }
     }
 
     public class TemporalDifferenceAgent : Agent
     {
         public TemporalDifferenceAgent() : base()
         {
-            environment.Reset();
         }
 
-        public override int[] Exploit()
-        {
-            List<int> optimumPath = new List<int>();
-
-            while (!environment.isDone)
-            {
-                Action[] actions = environment.validActions;
-                float bestReward = float.MinValue;
-                Action bestAction = null;
-                foreach (Action action in actions)
-                {
-                    Environment future = environment.Clone();
-                    Observation observation = future.Step(action);
-                    if (observation.reward > bestReward)
-                    {
-                        bestReward = observation.reward;
-                        bestAction = action;
-                    }
-                }
-                optimumPath.Add(bestAction.Id);
-                environment.Step(bestAction);
-            }
-            return optimumPath.ToArray();
-        }
+        
     }
 }
