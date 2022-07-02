@@ -81,7 +81,7 @@ namespace LitsReinforcementLearning
                         if (favChild == null)
                             action = environment.GetRandomAction();
                         else
-                            action = Action.GetAction(cwt.FavouriteChild.prevActionId);
+                            action = cwt.FavouriteChild.PreviousAction;
                     }
                     Observation obs = environment.Step(action);
                     cwt = cwt.Branch(obs, action);
@@ -120,7 +120,7 @@ namespace LitsReinforcementLearning
 
             int[] optPath = new int[optimumPath.Count];
             for (int i = 0; i < optimumPath.Count; i++)
-                optPath[i] = optimumPath[i].prevActionId;
+                optPath[i] = optimumPath[i].PreviousAction.Id;
             return optPath;
         }
     }

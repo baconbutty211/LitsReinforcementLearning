@@ -16,7 +16,7 @@ namespace LitsReinforcementLearning
         int visitCount = 0; // Number of times this state/tree has been visited
         float success = 0;
         float value = 0; // The average reward to be gained from this state / The average value of the current state.
-        public int prevActionId;
+        int prevActionId;
         Observation root;
         Tree[] children;
 
@@ -31,6 +31,7 @@ namespace LitsReinforcementLearning
                     return root.reward + (FavouriteChild.Value * Discount);
             }
         }
+        public Action PreviousAction { get { return Action.GetAction(prevActionId); } }
         public bool Leaf { get { return root.isDone; } }
         public bool Empty { get { return ChildCount == 0; } }
         public int ChildCount
