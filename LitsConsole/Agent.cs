@@ -8,81 +8,33 @@ namespace LitsReinforcementLearning
 {
     public abstract class Agent
     {
-        private static string savesPath = $"{Path.directory}{Path.Slash}Agents";
 
-        protected Environment environment = new Environment();
         protected Tree litsTree; //Tree trunk
         protected Tree cwt; //Current working tree
 
-        private string name;
+        protected string name;
+        protected bool isStartPlayer;
 
-        public Agent()
+        public Agent(bool isStartPlayer = true) 
         {
-            Observation initial = environment.Reset();
+            this.isStartPlayer = isStartPlayer;
+        }
+        public Agent(bool isStartPlayer, Observation initial)
+        {
+            this.isStartPlayer = isStartPlayer;
+
             litsTree = new Tree(initial);
             cwt = litsTree;
         }
-
-        public abstract void Explore();
-        /// <summary>
-        /// Finds the optimum child/path. Sets the current working tree to the optimum child.
-        /// </summary>
-        public int[] Exploit() 
-        {
-            List<Tree> optimumPath = new List<Tree>();
-
-            cwt = litsTree;
-            while (!(cwt.Leaf || cwt.Empty))
-            {
-                Tree favChild = cwt.FavouriteChild;
-                if (favChild != null)
-                {
-                    cwt = favChild;
-                    optimumPath.Add(favChild);
-                }
-                else
-                    throw new NullReferenceException();
-            }
-            return GetOptimumPath(optimumPath);
-        }
-
-        /// <summary>
-        /// Saves the agents state tree to file.
-        /// If the directory already exists it will be overwritten.
-        /// Otherwise, it will be created.
-        /// </summary>
-        public void Save(string agentName)
-        {
-            Tree.Save(litsTree, $"{savesPath}{Path.Slash}{agentName}");
-        }
-        /// <summary>
-        /// Loads a the agents state tree from file
-        /// </summary>
-        public void Load(string agentName)
-        {
-            try
-            {
-                litsTree = Tree.Load($"{savesPath}{Path.Slash}{agentName}");
-                name = agentName;
-            }
-            catch (FileNotFoundException) { }
-            catch (DirectoryNotFoundException) { }
-        }
-
-        protected virtual int[] GetOptimumPath(List<Tree> optimumPath) 
-        {
-            int[] optPath = new int[optimumPath.Count];
-            for (int i = 0; i < optimumPath.Count; i++)
-                optPath[i] = optimumPath[i].PreviousAction.Id;
-            return optPath;
-        }
     }
-
     public class MonteCarloAgent : Agent
     {
+        private static string savesPath = $"{Path.directory}{Path.Slash}Agents";
+
         private Random rnd = new Random();
         private const float Exploration = 0.2f;
 
+        private Environment environment = new Environment();
         private new MonteCarloTree litsTree;
         private new MonteCarloTree cwt;
 
@@ -102,7 +54,7 @@ namespace LitsReinforcementLearning
                 Explore();
             }
         }
-        public override void Explore()
+        public void Explore()
         {
             cwt = litsTree;
             environment.Reset();
@@ -135,30 +87,60 @@ namespace LitsReinforcementLearning
             Log.Rotate();
             Log.Clear();
         }
+        /// <summary>
+        /// Finds the optimum child/path. Sets the current working tree to the optimum child.
+        /// </summary>
+        public int[] Exploit()
+        {
+            List<MonteCarloTree> optimumPath = new List<MonteCarloTree>();
+
+            cwt = litsTree;
+            while (!(cwt.Leaf || cwt.Empty))
+            {
+                MonteCarloTree favChild = cwt.FavouriteChild;
+                if (favChild != null)
+                {
+                    cwt = favChild;
+                    optimumPath.Add(favChild);
+                }
+                else
+                    throw new NullReferenceException();
+            }
+            int[] optPath = new int[optimumPath.Count];
+            for (int i = 0; i < optimumPath.Count; i++)
+                optPath[i] = optimumPath[i].PreviousAction.Id;
+            return optPath;
+        }
+
+        #region Save/Load
+        /// <summary>
+        /// Saves the agents state tree to file.
+        /// If the directory already exists it will be overwritten.
+        /// Otherwise, it will be created.
+        /// </summary>
+        public void Save(string agentName)
+        {
+            Tree.Save(litsTree, $"{savesPath}{Path.Slash}{agentName}");
+        }
+        /// <summary>
+        /// Loads a the agents state tree from file
+        /// </summary>
+        public void Load(string agentName)
+        {
+            try
+            {
+                litsTree = MonteCarloTree.Load($"{savesPath}{Path.Slash}{agentName}");
+                name = agentName;
+            }
+            catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
+        }
+        #endregion
     }
 
     public class DynamicProgrammingAgent : Agent
     {
-        public DynamicProgrammingAgent() : base() { }
-
-        public override void Explore()
-        {
-            while (!environment.isDone) 
-            {
-                Action[] validActions = environment.validActions;
-                foreach (Action action in validActions)
-                {
-                    Environment future = environment.Clone();
-                    Observation obs = future.Step(action);
-                    cwt.Branch(obs, action);
-                }
-
-                Tree favChild = cwt.FavouriteChild;
-                Action bestAction = favChild.PreviousAction;
-                environment.Step(bestAction);
-                cwt = favChild;
-            }
-        }
+        public DynamicProgrammingAgent(bool isStartPlayer, Observation initial) : base(isStartPlayer, initial) { }
 
         /// <summary>
         /// Steps through every valid action (depth = 1).
@@ -175,31 +157,41 @@ namespace LitsReinforcementLearning
                 cwt.Branch(obs, action);
             }
 
-            Tree favChild = cwt.FavouriteChild;
+            Tree favChild = isStartPlayer ? cwt.FavouriteChild : cwt.ProblemChild;
             Action bestAction = favChild.PreviousAction;
             cwt = favChild;
             return bestAction;
         }
     }
 
+    /// <summary>
+    /// Should be able to explore the entire state space. NEVER run it (its just nice to have).
+    /// </summary>
     public class ExhaustiveSearchAgent : Agent
     {
-        public ExhaustiveSearchAgent() : base() { }
+        private Environment environment = new Environment();
 
-        public override void Explore()
+        public ExhaustiveSearchAgent() : base()
+        {
+            Observation initial = environment.Reset();
+            litsTree = new Tree(initial);
+            cwt = litsTree;
+        }
+
+        public void Explore()
         {
             while (!environment.isDone)
             {
-                Explore(environment, cwt, 1);
+                Explore(environment, cwt);
                 Tree favChild = cwt.FavouriteChild;
                 Action bestAction = favChild.PreviousAction;
                 Observation obs = environment.Step(bestAction);
                 cwt = cwt.Branch(obs, bestAction);
             }
         }
-        private void Explore(Environment env, Tree cwt, int depth = 1)
+        private void Explore(Environment env, Tree cwt)
         {
-            if (depth == 0)
+            if (environment.isDone) //Not strictly necessary, but useful to see where the recursion stops.
                 return;
 
             Action[] validActions = env.validActions;
@@ -209,7 +201,7 @@ namespace LitsReinforcementLearning
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
                 Tree child = cwt.Branch(obs, action);
-                Explore(future, child, depth - 1);
+                Explore(future, child);
             }
         }
     }

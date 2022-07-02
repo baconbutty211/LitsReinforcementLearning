@@ -65,6 +65,26 @@ namespace LitsReinforcementLearning
                 return favChild;
             }
         }
+        public virtual Tree ProblemChild 
+        {
+            get
+            {
+                if (Leaf || Empty)
+                    return null;
+                float minVal = float.MaxValue;
+                Tree probChild = null;
+                foreach (Tree child in this)
+                {
+                    float childVal = child.Value;
+                    if (childVal < minVal)
+                    {
+                        minVal = childVal;
+                        probChild = child;
+                    }
+                }
+                return probChild;
+            }
+        }
 
         public Tree(Observation initialObservation)
         {

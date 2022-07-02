@@ -26,18 +26,7 @@ namespace LitsReinforcementLearning
         
 
         public int stepCount { get; private set; }
-        public bool isDone
-        {
-            get
-            {
-                return validActions.Length == 0;
-                //for (int i = 0; i < size; i++)
-                //    if (board[i] == Tile.X)
-                //        if (!state[i])
-                //            return false;
-                //return true;
-            }
-        }
+        public bool isDone { get { return validActions.Length == 0; } }
         
         bool[] state;
         private Dictionary<Tile, int> availableActions;

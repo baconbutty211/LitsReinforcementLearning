@@ -45,13 +45,21 @@ namespace LitsReinforcementLearning
             {
                 Log.Clear();
                 Environment environment = new Environment();
-                DynamicProgrammingAgent powers = new DynamicProgrammingAgent();
+                DynamicProgrammingAgent powers = new DynamicProgrammingAgent(true, environment.Reset());
+                DynamicProgrammingAgent drEvil = new DynamicProgrammingAgent(false, environment.Reset());
 
                 while (!environment.isDone)
                 {
                     Action action = powers.Exploit(environment);
                     environment.Step(action);
                     optimumPath.Add(action.Id);
+
+                    if (environment.isDone)
+                        break;
+
+                    Action counterAction = drEvil.Exploit(environment);
+                    environment.Step(counterAction);
+                    optimumPath.Add(counterAction.Id);
                 }
 
                 DisplayOptimumPath();
