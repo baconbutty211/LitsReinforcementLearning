@@ -159,6 +159,27 @@ namespace LitsReinforcementLearning
                 cwt = favChild;
             }
         }
+
+        /// <summary>
+        /// Steps through every valid action (depth = 1).
+        /// </summary>
+        /// <param name="environment">The current state of the environment.</param>
+        /// <returns>the best action found</returns>
+        public Action Exploit(Environment environment) 
+        {
+            Action[] validActions = environment.validActions;
+            foreach (Action action in validActions)
+            {
+                Environment future = environment.Clone();
+                Observation obs = future.Step(action);
+                cwt.Branch(obs, action);
+            }
+
+            Tree favChild = cwt.FavouriteChild;
+            Action bestAction = favChild.PreviousAction;
+            cwt = favChild;
+            return bestAction;
+        }
     }
 
     public class ExhaustiveSearchAgent : Agent

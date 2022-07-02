@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
@@ -6,6 +7,8 @@ namespace LitsReinforcementLearning
 {
     class Program
     {
+        static List<int> optimumPath = new List<int>();
+
         /// <summary>
         /// Args: [0 = Agent type], [1 = MC -> Episodes]
         /// </summary>
@@ -34,26 +37,28 @@ namespace LitsReinforcementLearning
                 bond.Save("Bond");
                 //Log.Write("...Saved Agent Bond");
 
-                int[] optimumPath = bond.Exploit();
-                DisplayOptimumPath(optimumPath);
+                int[] optPath = bond.Exploit();
+                optimumPath.AddRange(optPath);
+                DisplayOptimumPath();
             }
             else if(args[0] == "DP") 
             {
                 Log.Clear();
+                Environment environment = new Environment();
                 DynamicProgrammingAgent powers = new DynamicProgrammingAgent();
 
-                powers.Load("Powers");
+                while (!environment.isDone)
+                {
+                    Action action = powers.Exploit(environment);
+                    environment.Step(action);
+                    optimumPath.Add(action.Id);
+                }
 
-                powers.Explore();
-                
-                powers.Save("Powers");
-
-                int[] optimumPath = powers.Exploit();
-                DisplayOptimumPath(optimumPath);
+                DisplayOptimumPath();
             }
         }
 
-        static void DisplayOptimumPath(int[] optimumPath) 
+        static void DisplayOptimumPath() 
         {
             Environment environment = new Environment();
             string prevStr = environment.ToString();
