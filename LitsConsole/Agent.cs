@@ -156,6 +156,7 @@ namespace LitsReinforcementLearning
                 Tree favChild = cwt.FavouriteChild;
                 Action bestAction = favChild.PreviousAction;
                 environment.Step(bestAction);
+                cwt = favChild;
             }
         }
     }
