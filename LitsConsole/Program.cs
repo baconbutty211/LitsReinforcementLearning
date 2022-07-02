@@ -42,7 +42,7 @@ namespace LitsReinforcementLearning
             else if(args[0] == "TD") 
             {
                 Log.Clear();
-                TemporalDifferenceAgent powers = new TemporalDifferenceAgent();
+                DynamicProgrammingAgent powers = new DynamicProgrammingAgent();
 
                 powers.Load("Powers");
 

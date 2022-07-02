@@ -133,9 +133,9 @@ namespace LitsReinforcementLearning
         }
     }
 
-    public class TemporalDifferenceAgent : Agent
+    public class DynamicProgrammingAgent : Agent
     {
-        public TemporalDifferenceAgent() : base()
+        public DynamicProgrammingAgent() : base()
         {
         }
 
