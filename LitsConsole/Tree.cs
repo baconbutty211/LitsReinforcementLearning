@@ -358,4 +358,153 @@ namespace LitsReinforcementLearning
 
         #endregion
     }
+
+    public class DynamicProgrammingTree : Tree
+    {
+        private float expectedValue = 0;
+        private new DynamicProgrammingTree[] children;
+
+        public override float Value
+        {
+            get
+            {
+                if (Empty)
+                    return expectedValue;
+                else
+                    return expectedValue + (FavouriteChild.Value * Discount);
+            }
+        }
+        public override Tree FavouriteChild 
+        {
+            get
+            {
+                if (Leaf || Empty)
+                    return null;
+                float maxVal = float.MinValue;
+                DynamicProgrammingTree favChild = null;
+                foreach (DynamicProgrammingTree child in this)
+                {
+                    float childVal = child.expectedValue;
+                    if (childVal > maxVal)
+                    {
+                        maxVal = childVal;
+                        favChild = child;
+                    }
+                }
+                return favChild;
+            }
+        }
+
+        public DynamicProgrammingTree(Observation initialObservation) : base(initialObservation)
+        {
+            expectedValue = -1;
+            children = new DynamicProgrammingTree[size];
+        }
+        protected DynamicProgrammingTree(Observation root, int depth) : base(root, depth)
+        {
+            if (!Leaf)
+                children = new DynamicProgrammingTree[size];
+        }
+        protected DynamicProgrammingTree(string[] contents) : base(contents)
+        {
+            SetContents(contents);
+            if (!Leaf)
+                children = new DynamicProgrammingTree[size];
+        }
+
+        public new Tree Branch(Observation observation, Action action)
+        {
+            if (Leaf)
+            {
+                string exception = "Tree is a leaf (state is done). Should not be adding any children here.";
+                Log.Write(exception);
+                Log.RotateError();
+                //throw new Exception(exception); // Tree thinks the state isDone, when the environment disagrees. I suspect this is because on a previous episode the environment thought this state was done, but this time round the environment disagrees. Seems to be unpredictable.
+                return null;
+            }
+            DynamicProgrammingTree child = new DynamicProgrammingTree(observation, depth + 1);
+            return Branch(child, action.Id);
+        } // Agent calls this branch method
+        protected new DynamicProgrammingTree Branch(DynamicProgrammingTree child, int actionId)
+        {
+            child.prevActionId = actionId;
+            if (children[actionId] == null)
+                children[actionId] = child;
+            return children[actionId];
+        } // Tree Loading & Agent calls this branch method
+
+        public void UpdateExpectedValue() 
+        {
+            expectedValue = Value; //May need calling on the trunk and recursively updating downwards
+        }
+
+        #region Save/Load
+        private new string[] GetContents()
+        {
+            string state = "";
+            foreach (bool bit in root.state)
+                state += $"{(bit ? 1 : 0)},";
+
+            return new string[] {
+                $"depth:{depth}",
+                $"done:{ (root.isDone ? 1 : 0) }",
+                $"reward:{root.reward}",
+                $"state:{state}",
+                $"expected value:{expectedValue}",
+            };
+        }
+        private new void SetContents(string[] contents)
+        {
+            depth = int.Parse(contents[0].Split(':')[1]);
+
+            bool done = (contents[1].Split(':')[1] == "1");
+            float reward = float.Parse(contents[2].Split(':')[1]);
+
+            string[] stateStr = contents[3].Split(':')[1].Split(',');
+            bool[] state = new bool[stateStr.Length - 1];
+            for (int i = 0; i < state.Length; i++)
+                state[i] = (stateStr[i] == "1");
+            root = new Observation(state, reward, done);
+
+            expectedValue = float.Parse(contents[4].Split(':')[1]);
+        }
+        public static new void Save(DynamicProgrammingTree tree, string path)
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            //Save current branch variables
+            File.WriteAllLines(path + $"{Path.Slash}root.txt", tree.GetContents());
+
+            //Save all child variables
+            if (tree.Leaf || tree.Empty)
+                return;
+            for (int i = 0; i < tree.children.Length; i++)
+                if (tree.children[i] != null)
+                    Save(tree.children[i], $"{path}{Path.Slash}child{i}");
+        }
+        public static new DynamicProgrammingTree Load(string path)
+        {
+            if (!Directory.Exists(path))
+                throw new DirectoryNotFoundException();
+            if (!File.Exists($"{path}{Path.Slash}root.txt"))
+                throw new FileNotFoundException();
+
+            //Load tree
+            string[] contents = File.ReadAllLines($"{path}{Path.Slash}root.txt");
+            DynamicProgrammingTree tree = new DynamicProgrammingTree(contents);
+
+            //Load children
+            string[] dirs = Directory.GetDirectories(path);
+            foreach (string dir in dirs)
+            {
+                int actionId = int.Parse(dir.Split(Path.Slash)[dir.Split(Path.Slash).Length - 1].Substring(5));
+                tree.Branch(Load(dir), actionId);
+            }
+
+            return tree;
+        }
+
+        #endregion
+    }
 }

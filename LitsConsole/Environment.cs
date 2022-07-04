@@ -94,13 +94,13 @@ namespace LitsReinforcementLearning
                 switch (board[pos])
                 {
                     case Tile.O:
-                        reward -= 2;
+                        reward -= 1;
                         break;
                     case Tile.X:
-                        reward += 2;
+                        reward += 1;
                         break;
                     default: // Tile is Empty (_) or filled with (L, I, T, S)
-                        reward -= 1;
+                        reward -= 0;
                         break;
                 } // Set reward
 
