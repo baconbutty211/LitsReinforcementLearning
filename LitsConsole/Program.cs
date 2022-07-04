@@ -39,12 +39,14 @@ namespace LitsReinforcementLearning
 
                 int[] optPath = bond.Exploit();
                 optimumPath.AddRange(optPath);
-                DisplayOptimumPath();
+                //DisplayOptimumPath();
             }
-            else if(args[0] == "DP") 
+            else if (args[0] == "DP")
             {
                 Log.Clear();
                 Environment environment = new Environment();
+                prevStr = environment.ToString();
+
                 DynamicProgrammingAgent powers = new DynamicProgrammingAgent(true, environment.Reset());
                 DynamicProgrammingAgent drEvil = new DynamicProgrammingAgent(false, environment.Reset());
 
@@ -52,47 +54,115 @@ namespace LitsReinforcementLearning
                 {
                     Action action = powers.Exploit(environment);
                     environment.Step(action);
-                    optimumPath.Add(action.Id);
+                    DisplayBoard(environment, action);
 
                     if (environment.isDone)
                         break;
 
-                    Action counterAction = drEvil.Exploit(environment);
+                    Action counterAction;
+                    do
+                    {
+                        counterAction = GetUserInputAction(environment.validActions);
+                    } while (counterAction == null);
+                    
                     environment.Step(counterAction);
-                    optimumPath.Add(counterAction.Id);
+                    DisplayBoard(environment, counterAction);
                 }
-
-                DisplayOptimumPath();
             }
         }
 
-        static void DisplayOptimumPath() 
+        static Action GetUserInputAction(Action[] validActions) 
         {
-            Environment environment = new Environment();
-            string prevStr = environment.ToString();
-            string route = "Route: ";
-            foreach (int action in optimumPath)
+            int count = 0;
+            foreach (ActionType act in Enum.GetValues(typeof(ActionType)))
             {
-                environment.Step(Action.GetAction(action));
-                string stateStr = environment.ToString();
-                
-                Console.Clear();
-                for (int i = 0; i < prevStr.Length; i++)
-                {
-                    if (stateStr[i] != prevStr[i])
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.Write(stateStr[i]);
-                        Console.ResetColor();
-                    }
-                    else
-                        Console.Write(stateStr[i]);
-                }
-                route += $"{action}, ";
-                Console.WriteLine(route);
-                prevStr = stateStr;
-                Thread.Sleep(2000);
+                Console.WriteLine($"{count++}) {act}");
+                Console.WriteLine($"{Action.GetString(act)}");
             }
+            Console.Write("Enter the piece type:");
+            ActionType type = (ActionType)4+int.Parse(Console.ReadLine());
+
+            count = 0;
+            foreach (RotationType rot in Enum.GetValues(typeof(RotationType)))
+            {
+                Console.WriteLine($"{count++}) {rot}");
+                Console.WriteLine($"{Action.GetString(type, rot)}");
+            }
+            Console.Write("Enter the piece rotation:");
+            RotationType rotation = (RotationType)int.Parse(Console.ReadLine());
+
+            count = 0;
+            foreach (FlipType reflct in Enum.GetValues(typeof(FlipType)))
+            {
+                Console.WriteLine($"{count++}) {reflct}");
+                Console.WriteLine($"{Action.GetString(type, rotation, reflct)}");
+            }
+            Console.Write("Enter the piece reflection:");
+            FlipType flip = (FlipType)int.Parse(Console.ReadLine());
+
+            Console.Write("Enter the topLeft position (0 - 88):");
+            int topLeft = int.Parse(Console.ReadLine());
+
+            foreach (Action action in validActions)
+                if (action.Equals(topLeft, type, rotation, flip)) //User action matches
+                    return action;
+            return null;
+        }
+
+        static string prevStr = "";
+        static string route = "Route: ";
+        static void DisplayBoard(Environment environment, Action action)
+        {
+            string stateStr = environment.ToString();
+
+            Console.Clear();
+            for (int i = 0; i < prevStr.Length; i++)
+            {
+                char piece = (stateStr[i] != prevStr[i]) ? '#' : stateStr[i];
+                WritePieceColour(piece);
+            }
+            route += $"{action.Id}, ";
+            Console.WriteLine(route);
+            prevStr = stateStr;
+            Thread.Sleep(2000);
+        }
+
+        static void WritePieceColour(char pieceChar)
+        {
+            ConsoleColor colour = ConsoleColor.White;
+            switch (pieceChar) 
+            {
+                case '#':
+                    colour = ConsoleColor.Red;
+                    break;
+                case 'L':
+                    colour = ConsoleColor.Blue;
+                    break;
+                case 'I':
+                    colour = ConsoleColor.Green;
+                    break;
+                case 'T':
+                    colour = ConsoleColor.DarkMagenta;
+                    break;
+                case 'S':
+                    colour = ConsoleColor.DarkYellow;
+                    break;
+                default:
+                    break;
+            }
+            WriteColour(pieceChar, colour);
+        }
+        static void WriteColour(char text, ConsoleColor colour) 
+        {
+            Console.ForegroundColor = colour;
+            Console.Write(text);
+            Console.ResetColor();
+        }
+        static void WriteColour(string text, ConsoleColor colour) 
+        {
+            Console.ForegroundColor = colour;
+            Console.Write(text);
+            Console.ResetColor();
         }
     }
 }

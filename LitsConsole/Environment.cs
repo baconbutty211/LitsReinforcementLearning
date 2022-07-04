@@ -23,8 +23,6 @@ namespace LitsReinforcementLearning
                 return actions.ToArray();
             }
         }
-        
-
         public int stepCount { get; private set; }
         public bool isDone { get { return validActions.Length == 0; } }
         
@@ -82,17 +80,6 @@ namespace LitsReinforcementLearning
                 state[i] = false;
             return new Observation(state, 0, false);
         }
-        //public void Reset(Observation observation) 
-        //{
-        //    Reset(observation.state);
-        //}
-        ///// <summary>
-        ///// Sets the environment to the given state.
-        ///// </summary>
-        //public void Reset(bool[] state) 
-        //{
-        //    this.state = state.Clone() as bool[];
-        //}
         public Observation Step(Action action)
         {
             if (isDone)
@@ -130,6 +117,10 @@ namespace LitsReinforcementLearning
             return new Observation(state, reward, isDone);
         }
 
+        public string GetResult() 
+        {
+            throw new NotImplementedException();
+        }
         #region Validation
         private bool IsValid(Action action)
         {
@@ -258,9 +249,9 @@ namespace LitsReinforcementLearning
             {
                 if (i % 10 == 0)
                     boardStr += $"\n{i / 10} ";
-                if (state[i])
-                    boardStr += $"#,";
-                else
+                //if (state[i])
+                //    boardStr += $"#,";
+                //else
                     boardStr += $"{board[i]},";
             }
             return boardStr + '\n';
@@ -551,5 +542,30 @@ namespace LitsReinforcementLearning
             }
             return true;
         } // Called when the action space is set. No need to worry about outside of this class.
+
+        #region Front-End methods
+        public bool Equals(int topLeft, ActionType type, RotationType rotation, FlipType flip)
+        {
+            return (topLeft == this.topLeft) && (type == this.type) && (rotation == this.rotation) && (flip == this.flip);
+        }
+        public static string GetString(ActionType type, RotationType rotation = RotationType.None, FlipType flip = FlipType.None, int topLeft = 0)
+        {
+            int[] action = new Action(topLeft, type, rotation, flip).actionPreShift;
+
+            char[,] actionStr = new char[4, 4];
+            for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
+                    actionStr[i, j] = ' ';
+
+            foreach (int act in action)
+                actionStr[act / 10, act % 10] = '#';
+
+            string str = "";
+            for (int i = 0; i < 4; i++, str += '\n')
+                for (int j = 0; j < 4; j++)
+                    str += actionStr[i, j];
+            return str;
+        }
+        #endregion
     }
 }
