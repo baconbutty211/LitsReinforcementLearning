@@ -8,17 +8,18 @@ namespace LitsReinforcementLearning
 {
     public abstract class Agent
     {
+        protected static string savesPath = $"{Path.directory}{Path.Slash}Agents";
 
         protected Tree litsTree; //Tree trunk
         protected Tree cwt; //Current working tree
 
-        protected string name;
+        //protected string name;
         protected bool isStartPlayer;
 
         public Agent(bool isStartPlayer = true) 
         {
             this.isStartPlayer = isStartPlayer;
-        }
+        } //Hoping to phase out?
         public Agent(bool isStartPlayer, Observation initial)
         {
             this.isStartPlayer = isStartPlayer;
@@ -29,7 +30,6 @@ namespace LitsReinforcementLearning
     }
     public class MonteCarloAgent : Agent
     {
-        private static string savesPath = $"{Path.directory}{Path.Slash}Agents";
 
         private Random rnd = new Random();
         private const float Exploration = 0.2f;
@@ -120,7 +120,7 @@ namespace LitsReinforcementLearning
         /// </summary>
         public void Save(string agentName)
         {
-            Tree.Save(litsTree, $"{savesPath}{Path.Slash}{agentName}");
+            MonteCarloTree.Save(litsTree, $"{savesPath}{Path.Slash}{agentName}");
         }
         /// <summary>
         /// Loads a the agents state tree from file
@@ -130,7 +130,6 @@ namespace LitsReinforcementLearning
             try
             {
                 litsTree = MonteCarloTree.Load($"{savesPath}{Path.Slash}{agentName}");
-                name = agentName;
             }
             catch (FileNotFoundException) { }
             catch (DirectoryNotFoundException) { }
@@ -140,8 +139,24 @@ namespace LitsReinforcementLearning
 
     public class DynamicProgrammingAgent : Agent
     {
-        public DynamicProgrammingAgent(bool isStartPlayer, Observation initial) : base(isStartPlayer, initial) { }
+        private new DynamicProgrammingTree litsTree;
+        private new DynamicProgrammingTree cwt;
 
+        public DynamicProgrammingAgent(bool isStartPlayer, Observation initial) : base(isStartPlayer, initial) 
+        {
+            litsTree = new DynamicProgrammingTree(initial);
+            Reset();
+        }
+        public DynamicProgrammingAgent(bool isStartPlayer, string name) : base(isStartPlayer)
+        {
+            litsTree = Load(name);
+            Reset();
+        }
+
+        public void Reset() 
+        {
+            cwt = litsTree;
+        }
         /// <summary>
         /// Steps through every valid action (depth = 1).
         /// </summary>
@@ -157,11 +172,36 @@ namespace LitsReinforcementLearning
                 cwt.Branch(obs, action);
             }
 
-            Tree favChild = isStartPlayer ? cwt.FavouriteChild : cwt.ProblemChild;
+            DynamicProgrammingTree favChild = isStartPlayer ? cwt.FavouriteChild : cwt.ProblemChild;
             Action bestAction = favChild.PreviousAction;
+            favChild.UpdateExpectedValue();
             cwt = favChild;
             return bestAction;
         }
+
+        #region Save/Load
+        /// <summary>
+        /// Saves the agents state tree to file.
+        /// If the directory already exists it will be overwritten.
+        /// Otherwise, it will be created.
+        /// </summary>
+        public void Save(string agentName)
+        {
+            DynamicProgrammingTree.Save(litsTree, $"{savesPath}{Path.Slash}{agentName}");
+        }
+        /// <summary>
+        /// Loads a the agents state tree from file
+        /// </summary>
+        public DynamicProgrammingTree Load(string agentName)
+        {
+            try
+            {
+                return DynamicProgrammingTree.Load($"{savesPath}{Path.Slash}{agentName}");
+            }
+            catch (FileNotFoundException) { return null; }
+            catch (DirectoryNotFoundException) { return null; }
+        }
+        #endregion
     }
 
     /// <summary>

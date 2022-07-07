@@ -43,31 +43,49 @@ namespace LitsReinforcementLearning
             }
             else if (args[0] == "DP")
             {
+                bool isUserPlaying = bool.Parse(args[1]);
+                int epochs = isUserPlaying ? 1 : int.Parse(args[2]);
+
                 Log.Clear();
                 Environment environment = new Environment();
                 prevStr = environment.ToString();
 
-                DynamicProgrammingAgent powers = new DynamicProgrammingAgent(true, environment.Reset());
-                DynamicProgrammingAgent drEvil = new DynamicProgrammingAgent(false, environment.Reset());
-
-                while (!environment.isDone)
+                DynamicProgrammingAgent powers = new DynamicProgrammingAgent(true, "Powers");
+                DynamicProgrammingAgent drEvil = new DynamicProgrammingAgent(false, "Powers");
+                for (int k = 0; k < epochs; k++) 
                 {
-                    Action action = powers.Exploit(environment);
-                    environment.Step(action);
-                    DisplayBoard(environment, action);
-
-                    if (environment.isDone)
-                        break;
-
-                    Action counterAction;
-                    do
+                    while (!environment.isDone)
                     {
-                        counterAction = GetUserInputAction(environment.validActions);
-                    } while (counterAction == null);
-                    
-                    environment.Step(counterAction);
-                    DisplayBoard(environment, counterAction);
+                        Action action = powers.Exploit(environment);
+                        environment.Step(action);
+                        if(k == epochs)
+                            DisplayBoard(environment, action);
+
+                        //if (environment.isDone)
+                        //    break;
+
+                        //if (isUserPlaying)
+                        //{
+                        //    Action counterAction;
+                        //    do
+                        //    {
+                        //        counterAction = GetUserInputAction(environment.validActions);
+                        //    } while (counterAction == null);
+
+                        //    environment.Step(counterAction);
+                        //    DisplayBoard(environment, counterAction);
+                        //}
+                        //else
+                        //{
+                        //    Action counterAction = drEvil.Exploit(environment);
+                        //    environment.Step(counterAction);
+                        //    DisplayBoard(environment, counterAction);
+                        //}
+                    }
+                    environment.Reset();
+                    powers.Reset();
                 }
+                powers.Save("Powers");
             }
         }
 
@@ -124,7 +142,7 @@ namespace LitsReinforcementLearning
             route += $"{action.Id}, ";
             Console.WriteLine(route);
             prevStr = stateStr;
-            Thread.Sleep(2000);
+            //Thread.Sleep(2000);
         }
 
         static void WritePieceColour(char pieceChar)

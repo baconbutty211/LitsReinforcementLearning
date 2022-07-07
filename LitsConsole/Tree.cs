@@ -31,7 +31,7 @@ namespace LitsReinforcementLearning
         public Action PreviousAction { get { return Action.GetAction(prevActionId); } }
         public bool Leaf { get { return root.isDone; } }
         public bool Empty { get { return ChildCount == 0; } }
-        public int ChildCount
+        public virtual int ChildCount
         {
             get
             {
@@ -65,7 +65,7 @@ namespace LitsReinforcementLearning
                 return favChild;
             }
         }
-        public virtual Tree ProblemChild 
+        public virtual Tree ProblemChild
         {
             get
             {
@@ -209,18 +209,18 @@ namespace LitsReinforcementLearning
         private new MonteCarloTree[] children;
 
         public override float Value
-        { 
-            get 
+        {
+            get
             {
-                if(Empty)
+                if (Empty)
                     return expectedValue;
                 else
                     return expectedValue + (FavouriteChild.Value * Discount);
             }
         }
-        public override MonteCarloTree FavouriteChild 
+        public override MonteCarloTree FavouriteChild
         {
-            get 
+            get
             {
                 if (Leaf || Empty)
                     return null;
@@ -246,7 +246,7 @@ namespace LitsReinforcementLearning
         } // Constructs the tree trunk
         private MonteCarloTree(Observation root, int depth) : base(root, depth)
         {
-            if(!Leaf)
+            if (!Leaf)
                 children = new MonteCarloTree[size];
         } // Constructs new branches
         private MonteCarloTree(string[] contents) : base(contents)
@@ -256,7 +256,7 @@ namespace LitsReinforcementLearning
                 children = new MonteCarloTree[size];
         } // Constructs new & file branches
 
-        public new MonteCarloTree Branch(Observation observation, Action action) 
+        public new MonteCarloTree Branch(Observation observation, Action action)
         {
             if (Leaf)
             {
@@ -266,10 +266,10 @@ namespace LitsReinforcementLearning
                 //throw new Exception(exception); // Tree thinks the state isDone, when the environment disagrees. I suspect this is because on a previous episode the environment thought this state was done, but this time round the environment disagrees. Seems to be unpredictable.
                 return null;
             }
-            MonteCarloTree child = new MonteCarloTree(observation, depth+1);
+            MonteCarloTree child = new MonteCarloTree(observation, depth + 1);
             return Branch(child, action.Id);
         } // Agent calls this branch method
-        protected new MonteCarloTree Branch(MonteCarloTree child, int actionId) 
+        protected new MonteCarloTree Branch(MonteCarloTree child, int actionId)
         {
             child.prevActionId = actionId;
             if (children[actionId] == null)
@@ -277,12 +277,12 @@ namespace LitsReinforcementLearning
             return children[actionId];
         } // Tree Loading & Agent calls this branch method
 
-        public void ErrorCorrect(float newValue) 
+        public void ErrorCorrect(float newValue)
         {
             expectedValue = ((visitCount * expectedValue) + newValue) / ++visitCount; //Check which order brackets are calculated (makes a difference to visitCount)
         }
 
-        public override IEnumerator<MonteCarloTree> GetEnumerator() 
+        public override IEnumerator<MonteCarloTree> GetEnumerator()
         {
             yield return (MonteCarloTree)base.GetEnumerator();
         }
@@ -303,10 +303,10 @@ namespace LitsReinforcementLearning
                 $"expected value:{expectedValue}",
             };
         }
-        private new void SetContents(string[] contents) 
+        private new void SetContents(string[] contents)
         {
             depth = int.Parse(contents[0].Split(':')[1]);
-         
+
             bool done = (contents[1].Split(':')[1] == "1");
             float reward = float.Parse(contents[2].Split(':')[1]);
 
@@ -319,28 +319,28 @@ namespace LitsReinforcementLearning
             visitCount = int.Parse(contents[4].Split(':')[1]);
             expectedValue = float.Parse(contents[5].Split(':')[1]);
         }
-        public static new void Save(MonteCarloTree tree, string path) 
+        public static new void Save(MonteCarloTree tree, string path)
         {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
             //Save current branch variables
-            File.WriteAllLines(path+$"{Path.Slash}root.txt", tree.GetContents());
+            File.WriteAllLines(path + $"{Path.Slash}root.txt", tree.GetContents());
 
             //Save all child variables
             if (tree.Leaf || tree.Empty)
                 return;
-            for(int i = 0; i < tree.children.Length; i++)
-                if(tree.children[i] != null)
+            for (int i = 0; i < tree.children.Length; i++)
+                if (tree.children[i] != null)
                     Save(tree.children[i], $"{path}{Path.Slash}child{i}");
         }
-        public static new MonteCarloTree Load(string path) 
+        public static new MonteCarloTree Load(string path)
         {
             if (!Directory.Exists(path))
                 throw new DirectoryNotFoundException();
             if (!File.Exists($"{path}{Path.Slash}root.txt"))
                 throw new FileNotFoundException();
-            
+
             //Load tree
             string[] contents = File.ReadAllLines($"{path}{Path.Slash}root.txt");
             MonteCarloTree tree = new MonteCarloTree(contents);
@@ -362,6 +362,8 @@ namespace LitsReinforcementLearning
     public class DynamicProgrammingTree : Tree
     {
         private float expectedValue = 0;
+
+
         private new DynamicProgrammingTree[] children;
 
         public override float Value
@@ -369,12 +371,26 @@ namespace LitsReinforcementLearning
             get
             {
                 if (Empty)
-                    return expectedValue;
+                    return root.reward;
                 else
                     return expectedValue + (FavouriteChild.Value * Discount);
             }
         }
-        public override Tree FavouriteChild 
+        public override int ChildCount 
+        {
+            get
+            {
+                if (Leaf)
+                    return 0;
+
+                int count = 0;
+                foreach (Tree child in children)
+                    if (child != null)
+                        count++;
+                return count;
+            } 
+        }
+        public override DynamicProgrammingTree FavouriteChild 
         {
             get
             {
@@ -392,6 +408,26 @@ namespace LitsReinforcementLearning
                     }
                 }
                 return favChild;
+            }
+        }
+        public override DynamicProgrammingTree ProblemChild
+        {
+            get
+            {
+                if (Leaf || Empty)
+                    return null;
+                float minVal = float.MaxValue;
+                DynamicProgrammingTree probChild = null;
+                foreach (DynamicProgrammingTree child in this)
+                {
+                    float childVal = child.Value;
+                    if (childVal < minVal)
+                    {
+                        minVal = childVal;
+                        probChild = child;
+                    }
+                }
+                return probChild;
             }
         }
 
@@ -412,7 +448,7 @@ namespace LitsReinforcementLearning
                 children = new DynamicProgrammingTree[size];
         }
 
-        public new Tree Branch(Observation observation, Action action)
+        public new DynamicProgrammingTree Branch(Observation observation, Action action)
         {
             if (Leaf)
             {
@@ -436,6 +472,14 @@ namespace LitsReinforcementLearning
         public void UpdateExpectedValue() 
         {
             expectedValue = Value; //May need calling on the trunk and recursively updating downwards
+            //System.Diagnostics.Debug.WriteLine("UpdateExpectedValue()" + Value.ToString());
+        }
+
+        public new IEnumerator<DynamicProgrammingTree> GetEnumerator()
+        {
+            foreach (DynamicProgrammingTree child in children)
+                if (child != null)
+                    yield return child;
         }
 
         #region Save/Load
@@ -444,6 +488,8 @@ namespace LitsReinforcementLearning
             string state = "";
             foreach (bool bit in root.state)
                 state += $"{(bit ? 1 : 0)},";
+
+            //System.Diagnostics.Debug.WriteLine("Saving:" + expectedValue.ToString());
 
             return new string[] {
                 $"depth:{depth}",
@@ -466,7 +512,7 @@ namespace LitsReinforcementLearning
                 state[i] = (stateStr[i] == "1");
             root = new Observation(state, reward, done);
 
-            expectedValue = float.Parse(contents[4].Split(':')[1]);
+            expectedValue = float.TryParse(contents[4].Split(':')[1], out float expVal) ? expVal : 0;
         }
         public static new void Save(DynamicProgrammingTree tree, string path)
         {
@@ -474,7 +520,7 @@ namespace LitsReinforcementLearning
                 Directory.CreateDirectory(path);
 
             //Save current branch variables
-            File.WriteAllLines(path + $"{Path.Slash}root.txt", tree.GetContents());
+            File.WriteAllLines($"{path}{Path.Slash}root.txt", tree.GetContents());
 
             //Save all child variables
             if (tree.Leaf || tree.Empty)
