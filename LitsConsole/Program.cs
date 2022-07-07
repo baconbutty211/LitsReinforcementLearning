@@ -48,6 +48,7 @@ namespace LitsReinforcementLearning
 
                 Log.Clear();
                 Environment environment = new Environment();
+                Observation initial = environment.Reset();
                 prevStr = environment.ToString();
 
                 DynamicProgrammingAgent powers = new DynamicProgrammingAgent(true, "Powers");
@@ -86,6 +87,14 @@ namespace LitsReinforcementLearning
                     powers.Reset();
                 }
                 powers.Save("Powers");
+            }
+            else if (args[0] == "Debug") 
+            {
+                Tree powersTree = Tree.LoadJson($"{Path.directory}{Path.Slash}Agents", "Powers");
+                Tree.SaveJson(powersTree, $"{Path.directory}{Path.Slash}Agents", "Powers");
+
+                //DynamicProgrammingAgent powers = new DynamicProgrammingAgent(true, "Powers");
+                //powers.SaveJson("Powers");
             }
         }
 

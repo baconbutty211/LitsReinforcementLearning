@@ -19,12 +19,16 @@ namespace LitsReinforcementLearning
         public Agent(bool isStartPlayer = true) 
         {
             this.isStartPlayer = isStartPlayer;
-        } //Hoping to phase out?
+        }
         public Agent(bool isStartPlayer, Observation initial)
         {
             this.isStartPlayer = isStartPlayer;
 
             litsTree = new Tree(initial);
+            Reset();
+        }
+        public void Reset()
+        {
             cwt = litsTree;
         }
     }
@@ -153,10 +157,6 @@ namespace LitsReinforcementLearning
             Reset();
         }
 
-        public void Reset() 
-        {
-            cwt = litsTree;
-        }
         /// <summary>
         /// Steps through every valid action (depth = 1).
         /// </summary>
@@ -189,6 +189,10 @@ namespace LitsReinforcementLearning
         {
             DynamicProgrammingTree.Save(litsTree, $"{savesPath}{Path.Slash}{agentName}");
         }
+        public void SaveJson(string agentName) 
+        {
+            DynamicProgrammingTree.SaveJson(litsTree, savesPath, agentName);
+        }
         /// <summary>
         /// Loads a the agents state tree from file
         /// </summary>
@@ -200,6 +204,10 @@ namespace LitsReinforcementLearning
             }
             catch (FileNotFoundException) { return null; }
             catch (DirectoryNotFoundException) { return null; }
+        }
+        public DynamicProgrammingTree LoadJson(string agentName)
+        {
+            return (DynamicProgrammingTree)Tree.LoadJson(savesPath, agentName);
         }
         #endregion
     }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LitsReinforcementLearning
 {
@@ -91,7 +93,9 @@ namespace LitsReinforcementLearning
             depth = 0;
             root = initialObservation;
             children = new Tree[size];
-        } // Constructs the tree trunk
+        } // Initializes the tree trunk
+        protected Tree() { children = new Tree[size]; } // Initializes an empty tree trunk. Used for reading from the json file
+
         protected Tree(Observation root, int depth)
         {
             this.depth = depth;
@@ -105,7 +109,7 @@ namespace LitsReinforcementLearning
             if (!Leaf)
                 children = new Tree[size];
         } // Constructs new & file branches
-
+        
         public virtual Tree Branch(Observation observation, Action action)
         {
             if (Leaf)
@@ -126,6 +130,13 @@ namespace LitsReinforcementLearning
                 children[actionId] = child;
             return children[actionId];
         } // Tree Loading & Agent calls this branch method
+        protected virtual Tree Branch(Tree child)
+        {
+            int actionId = child.prevActionId;
+            if (children[actionId] == null)
+                children[actionId] = child;
+            return children[actionId];
+        } // Tree Loading & Agent calls this branch method
 
         public virtual IEnumerator<Tree> GetEnumerator()
         {
@@ -135,6 +146,22 @@ namespace LitsReinforcementLearning
         }
 
         #region Save/Load
+        #region Text
+        public static void Save(Tree tree, string path)
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            //Save current branch variables
+            File.WriteAllLines($"{path}{Path.Slash}root.txt", tree.GetContents());
+
+            //Save all child variables
+            if (tree.Leaf || tree.Empty)
+                return;
+            for (int i = 0; i < tree.children.Length; i++)
+                if (tree.children[i] != null)
+                    Save(tree.children[i], $"{path}{Path.Slash}child{i}");
+        }
         private string[] GetContents()
         {
             string state = "";
@@ -148,34 +175,7 @@ namespace LitsReinforcementLearning
                 $"state:{state}",
             };
         }
-        private void SetContents(string[] contents)
-        {
-            depth = int.Parse(contents[0].Split(':')[1]);
-
-            bool done = (contents[1].Split(':')[1] == "1");
-            float reward = float.Parse(contents[2].Split(':')[1]);
-
-            string[] stateStr = contents[3].Split(':')[1].Split(',');
-            bool[] state = new bool[stateStr.Length - 1];
-            for (int i = 0; i < state.Length; i++)
-                state[i] = (stateStr[i] == "1");
-            root = new Observation(state, reward, done);
-        }
-        public static void Save(Tree tree, string path)
-        {
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            //Save current branch variables
-            File.WriteAllLines(path + $"{Path.Slash}root.txt", tree.GetContents());
-
-            //Save all child variables
-            if (tree.Leaf || tree.Empty)
-                return;
-            for (int i = 0; i < tree.children.Length; i++)
-                if (tree.children[i] != null)
-                    Save(tree.children[i], $"{path}{Path.Slash}child{i}");
-        }
+        
         public static Tree Load(string path)
         {
             if (!Directory.Exists(path))
@@ -197,7 +197,139 @@ namespace LitsReinforcementLearning
 
             return tree;
         }
+        private void SetContents(string[] contents)
+        {
+            depth = int.Parse(contents[0].Split(':')[1]);
 
+            bool done = (contents[1].Split(':')[1] == "1");
+            float reward = float.Parse(contents[2].Split(':')[1]);
+
+            string[] stateStr = contents[3].Split(':')[1].Split(',');
+            bool[] state = new bool[stateStr.Length - 1];
+            for (int i = 0; i < state.Length; i++)
+                state[i] = (stateStr[i] == "1");
+            root = new Observation(state, reward, done);
+        }
+
+        #endregion
+
+
+        #region Json
+        /// <summary>
+        /// Only to be called at the trunk
+        /// </summary>
+        public static void SaveJson(Tree tree, string path, string name)
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb);
+            using (JsonWriter writer = new JsonTextWriter(sw))
+            {
+                tree.WriteTree(writer);
+                File.WriteAllText($"{path}{Path.Slash}{name}.json", sb.ToString());
+            }
+        }
+        public virtual void WriteTree(JsonWriter writer)
+        {
+            writer.Formatting = Formatting.Indented;
+
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("depth");
+            writer.WriteValue(depth);
+
+            writer.WritePropertyName("previousActionId");
+            writer.WriteValue(prevActionId);
+
+            writer.WritePropertyName("done");
+            writer.WriteValue(root.isDone);
+
+            writer.WritePropertyName("reward");
+            writer.WriteValue(root.reward);
+
+            writer.WritePropertyName("state");
+            writer.Formatting = Formatting.None;
+            writer.WriteStartArray();
+            foreach (bool bit in root.state)
+                writer.WriteValue(bit);
+            writer.WriteEndArray();
+            writer.Formatting = Formatting.Indented;
+
+            if ((Leaf || Empty))
+                writer.WriteEndObject();
+            else
+            {
+                writer.WritePropertyName("children");
+                writer.WriteStartArray();
+                foreach (Tree child in this)
+                    child.WriteTree(writer);
+                writer.WriteEndArray();
+
+                writer.WriteEndObject();
+            }
+        }
+
+        public static Tree LoadJson(string path, string name)
+        {
+            if (!Directory.Exists(path))
+                throw new DirectoryNotFoundException();
+            if (!File.Exists($"{path}{Path.Slash}{name}.json"))
+                throw new FileNotFoundException();
+
+            StreamReader sr = new StreamReader($"{path}{Path.Slash}{name}.json");
+            using (JsonTextReader reader = new JsonTextReader(sr))
+            {
+                reader.Read(); // Reads start object
+                return ReadTree(reader);
+            }
+        }
+        public static Tree ReadTree(JsonReader reader)
+        {
+            Tree tree = new Tree();
+
+
+            reader.Read(); // Reads depth name
+            reader.Read(); // Reads depth value
+            tree.depth = Convert.ToInt32(reader.Value);
+
+            reader.Read(); // Reads previous action id name
+            reader.Read(); // Reads previous action id value
+            tree.prevActionId = Convert.ToInt32(reader.Value);
+
+            reader.Read(); // Reads is done name
+            reader.Read(); // Reads is done value
+            bool done = (bool)reader.Value;
+
+            reader.Read(); // Reads reward name
+            reader.Read(); // Reads reward value
+            float reward = Convert.ToSingle(reader.Value);
+
+            reader.Read(); // Reads state name
+            reader.Read(); // Reads start of array
+            int count = 0;
+            bool[] state = new bool[Environment.size];
+            while (reader.Read() && reader.TokenType != JsonToken.EndArray) // Reads next bit of state array & checks array hasn't ended
+                state[count++] = (bool)reader.Value;
+            tree.root = new Observation(state, reward, done);
+
+            reader.Read(); // Reads children OR end of object if Empty
+            if (reader.TokenType == JsonToken.EndObject)
+                return tree;
+
+            reader.Read(); // Reads start of array
+            while (reader.Read() && reader.TokenType != JsonToken.EndArray)
+            {
+                tree.Branch(ReadTree(reader)); // Reads the child tree
+            } // Reads until the end of the children array
+            reader.Read(); // Reads end object
+            
+            if (tree.Leaf)
+                tree.children = null;
+            return tree;
+        }
+        #endregion
         #endregion
     }
 
@@ -483,6 +615,22 @@ namespace LitsReinforcementLearning
         }
 
         #region Save/Load
+        #region Text
+        public static new void Save(DynamicProgrammingTree tree, string path)
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            //Save current branch variables
+            File.WriteAllLines($"{path}{Path.Slash}root.txt", tree.GetContents());
+
+            //Save all child variables
+            if (tree.Leaf || tree.Empty)
+                return;
+            for (int i = 0; i < tree.children.Length; i++)
+                if (tree.children[i] != null)
+                    Save(tree.children[i], $"{path}{Path.Slash}child{i}");
+        }
         private new string[] GetContents()
         {
             string state = "";
@@ -499,6 +647,7 @@ namespace LitsReinforcementLearning
                 $"expected value:{expectedValue}",
             };
         }
+
         private new void SetContents(string[] contents)
         {
             depth = int.Parse(contents[0].Split(':')[1]);
@@ -513,21 +662,6 @@ namespace LitsReinforcementLearning
             root = new Observation(state, reward, done);
 
             expectedValue = float.TryParse(contents[4].Split(':')[1], out float expVal) ? expVal : 0;
-        }
-        public static new void Save(DynamicProgrammingTree tree, string path)
-        {
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            //Save current branch variables
-            File.WriteAllLines($"{path}{Path.Slash}root.txt", tree.GetContents());
-
-            //Save all child variables
-            if (tree.Leaf || tree.Empty)
-                return;
-            for (int i = 0; i < tree.children.Length; i++)
-                if (tree.children[i] != null)
-                    Save(tree.children[i], $"{path}{Path.Slash}child{i}");
         }
         public static new DynamicProgrammingTree Load(string path)
         {
@@ -550,7 +684,70 @@ namespace LitsReinforcementLearning
 
             return tree;
         }
+        #endregion
 
+
+        #region Json
+
+        /// <summary>
+        /// Only to be called at the trunk
+        /// </summary>
+        public static void SaveJson(DynamicProgrammingTree tree, string path, string name)
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb);
+            using (JsonWriter writer = new JsonTextWriter(sw))
+            {
+                tree.ToJson(writer);
+                File.WriteAllText($"{path}{Path.Slash}{name}.json", sb.ToString());
+            }
+        }
+        public virtual void ToJson(JsonWriter writer)
+        {
+            writer.Formatting = Formatting.Indented;
+
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("depth");
+            writer.WriteValue(depth);
+
+            writer.WritePropertyName("previousActionId");
+            writer.WriteValue(prevActionId);
+
+            writer.WritePropertyName("done");
+            writer.WriteValue(root.isDone);
+
+            writer.WritePropertyName("reward");
+            writer.WriteValue(root.reward);
+
+            writer.WritePropertyName("state");
+            writer.Formatting = Formatting.None;
+            writer.WriteStartArray();
+            foreach (bool bit in root.state)
+                writer.WriteValue(bit);
+            writer.WriteEndArray();
+            writer.Formatting = Formatting.Indented;
+
+            if ((Leaf || Empty))
+                writer.WriteEndObject();
+            else
+            {
+                writer.WritePropertyName("children");
+                writer.WriteStartArray();
+                foreach (DynamicProgrammingTree child in this)
+                    child.ToJson(writer);
+                writer.WriteEndArray();
+
+                writer.WriteEndObject();
+            }
+        }
+
+        
+
+        #endregion
         #endregion
     }
 }
