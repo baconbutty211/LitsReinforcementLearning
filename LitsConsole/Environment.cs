@@ -9,7 +9,6 @@ namespace LitsReinforcementLearning
     public class Environment
     {
         private enum Tile { _, O, X, L, I, T, S }
-        private Dictionary<Tile, int> availableActions;
         public const int size = 100;
         private Random rnd = new Random();
 
@@ -24,23 +23,11 @@ namespace LitsReinforcementLearning
                 return actions.ToArray();
             }
         }
-        
-
         public int stepCount { get; private set; }
-        public bool isDone
-        {
-            get
-            {
-                return validActions.Length == 0;
-                //for (int i = 0; i < size; i++)
-                //    if (board[i] == Tile.X)
-                //        if (!state[i])
-                //            return false;
-                //return true;
-            }
-        }
+        public bool isDone { get { return validActions.Length == 0; } }
         
         bool[] state;
+        private Dictionary<Tile, int> availableActions;
 
         private static Tile[] SetBoard()
         {
@@ -65,9 +52,22 @@ namespace LitsReinforcementLearning
         static Tile[] initialBoard = SetBoard();
         Tile[] board;
 
+        /// <summary>
+        /// Initializes the environment
+        /// </summary>
         public Environment()
         {
             Reset();
+        }
+        /// <summary>
+        /// Only to be used for cloning
+        /// </summary>
+        private Environment(Environment original)
+        {
+            stepCount = original.stepCount;
+            state = original.state.Clone() as bool[];
+            board = original.board.Clone() as Tile[];
+            availableActions = original.availableActions.ToDictionary(entry => entry.Key, entry => entry.Value);
         }
 
         public Observation Reset()
@@ -80,17 +80,6 @@ namespace LitsReinforcementLearning
                 state[i] = false;
             return new Observation(state, 0, false);
         }
-        //public void Reset(Observation observation) 
-        //{
-        //    Reset(observation.state);
-        //}
-        ///// <summary>
-        ///// Sets the environment to the given state.
-        ///// </summary>
-        //public void Reset(bool[] state) 
-        //{
-        //    this.state = state.Clone() as bool[];
-        //}
         public Observation Step(Action action)
         {
             if (isDone)
@@ -102,6 +91,19 @@ namespace LitsReinforcementLearning
             float reward = 0;
             foreach (int pos in action.action)
             {
+                switch (board[pos])
+                {
+                    case Tile.O:
+                        reward -= 1;
+                        break;
+                    case Tile.X:
+                        reward += 1;
+                        break;
+                    default: // Tile is Empty (_) or filled with (L, I, T, S)
+                        reward -= 0;
+                        break;
+                } // Set reward
+
                 if (!state[pos])
                 {
                     state[pos] = true;
@@ -109,25 +111,16 @@ namespace LitsReinforcementLearning
                 }
                 else
                     throw new IndexOutOfRangeException($"Action has already been taken.");
-
-                switch (board[pos])
-                {
-                    case Tile.O:
-                        reward -= 2;
-                        break;
-                    case Tile.X:
-                        reward += 2;
-                        break;
-                    default: // Tile is Empty (_) or filled with (L, I, T, S)
-                        reward -= 1;
-                        break;
-                } // Set reward
             }
             availableActions[ActionTypeToTile(action.type)]--;
             stepCount++;
             return new Observation(state, reward, isDone);
         }
 
+        public string GetResult() 
+        {
+            throw new NotImplementedException();
+        }
         #region Validation
         private bool IsValid(Action action)
         {
@@ -256,9 +249,9 @@ namespace LitsReinforcementLearning
             {
                 if (i % 10 == 0)
                     boardStr += $"\n{i / 10} ";
-                if (state[i])
-                    boardStr += $"#,";
-                else
+                //if (state[i])
+                //    boardStr += $"#,";
+                //else
                     boardStr += $"{board[i]},";
             }
             return boardStr + '\n';
@@ -278,6 +271,11 @@ namespace LitsReinforcementLearning
                     boardStr += $"{initialBoard[i]},";
             }
             return boardStr + '\n';
+        }
+    
+        public Environment Clone() 
+        {
+            return new Environment(this);
         }
     }
 
@@ -544,5 +542,30 @@ namespace LitsReinforcementLearning
             }
             return true;
         } // Called when the action space is set. No need to worry about outside of this class.
+
+        #region Front-End methods
+        public bool Equals(int topLeft, ActionType type, RotationType rotation, FlipType flip)
+        {
+            return (topLeft == this.topLeft) && (type == this.type) && (rotation == this.rotation) && (flip == this.flip);
+        }
+        public static string GetString(ActionType type, RotationType rotation = RotationType.None, FlipType flip = FlipType.None, int topLeft = 0)
+        {
+            int[] action = new Action(topLeft, type, rotation, flip).actionPreShift;
+
+            char[,] actionStr = new char[4, 4];
+            for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
+                    actionStr[i, j] = ' ';
+
+            foreach (int act in action)
+                actionStr[act / 10, act % 10] = '#';
+
+            string str = "";
+            for (int i = 0; i < 4; i++, str += '\n')
+                for (int j = 0; j < 4; j++)
+                    str += actionStr[i, j];
+            return str;
+        }
+        #endregion
     }
 }
