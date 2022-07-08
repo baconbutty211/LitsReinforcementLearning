@@ -494,8 +494,6 @@ namespace LitsReinforcementLearning
     public class DynamicProgrammingTree : Tree
     {
         private float expectedValue = 0;
-
-
         private new DynamicProgrammingTree[] children;
 
         public override float Value
@@ -505,7 +503,7 @@ namespace LitsReinforcementLearning
                 if (Empty)
                     return root.reward;
                 else
-                    return expectedValue + (FavouriteChild.Value * Discount);
+                    return root.reward + (FavouriteChild.Value * Discount);
             }
         }
         public override int ChildCount 
@@ -568,6 +566,8 @@ namespace LitsReinforcementLearning
             expectedValue = -1;
             children = new DynamicProgrammingTree[size];
         }
+        protected DynamicProgrammingTree() : base() { children = new DynamicProgrammingTree[size]; } // Initializes an empty tree trunk. Used for reading from the json file
+
         protected DynamicProgrammingTree(Observation root, int depth) : base(root, depth)
         {
             if (!Leaf)
@@ -745,7 +745,64 @@ namespace LitsReinforcementLearning
             }
         }
 
-        
+        public static DynamicProgrammingTree LoadJson(string path, string name)
+        {
+            if (!Directory.Exists(path))
+                throw new DirectoryNotFoundException();
+            if (!File.Exists($"{path}{Path.Slash}{name}.json"))
+                throw new FileNotFoundException();
+
+            StreamReader sr = new StreamReader($"{path}{Path.Slash}{name}.json");
+            using (JsonTextReader reader = new JsonTextReader(sr))
+            {
+                reader.Read(); // Reads start object
+                return ReadTree(reader);
+            }
+        }
+        public static DynamicProgrammingTree ReadTree(JsonReader reader)
+        {
+            DynamicProgrammingTree tree = new DynamicProgrammingTree();
+
+
+            reader.Read(); // Reads depth name
+            reader.Read(); // Reads depth value
+            tree.depth = Convert.ToInt32(reader.Value);
+
+            reader.Read(); // Reads previous action id name
+            reader.Read(); // Reads previous action id value
+            tree.prevActionId = Convert.ToInt32(reader.Value);
+
+            reader.Read(); // Reads is done name
+            reader.Read(); // Reads is done value
+            bool done = (bool)reader.Value;
+
+            reader.Read(); // Reads reward name
+            reader.Read(); // Reads reward value
+            float reward = Convert.ToSingle(reader.Value);
+
+            reader.Read(); // Reads state name
+            reader.Read(); // Reads start of array
+            int count = 0;
+            bool[] state = new bool[Environment.size];
+            while (reader.Read() && reader.TokenType != JsonToken.EndArray) // Reads next bit of state array & checks array hasn't ended
+                state[count++] = (bool)reader.Value;
+            tree.root = new Observation(state, reward, done);
+
+            reader.Read(); // Reads children OR end of object if Empty
+            if (reader.TokenType == JsonToken.EndObject)
+                return tree;
+
+            reader.Read(); // Reads start of array
+            while (reader.Read() && reader.TokenType != JsonToken.EndArray)
+            {
+                tree.Branch(ReadTree(reader)); // Reads the child tree
+            } // Reads until the end of the children array
+            reader.Read(); // Reads end object
+
+            if (tree.Leaf)
+                tree.children = null;
+            return tree;
+        }
 
         #endregion
         #endregion

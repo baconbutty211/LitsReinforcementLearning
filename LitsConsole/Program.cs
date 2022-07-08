@@ -53,7 +53,7 @@ namespace LitsReinforcementLearning
 
                 DynamicProgrammingAgent powers = new DynamicProgrammingAgent(true, "Powers");
                 DynamicProgrammingAgent drEvil = new DynamicProgrammingAgent(false, "Powers");
-                for (int k = 0; k < epochs; k++) 
+                for (int k = 0; k <= epochs; k++) 
                 {
                     while (!environment.isDone)
                     {
@@ -62,39 +62,37 @@ namespace LitsReinforcementLearning
                         if(k == epochs)
                             DisplayBoard(environment, action);
 
-                        //if (environment.isDone)
-                        //    break;
+                        if (environment.isDone)
+                            break;
 
-                        //if (isUserPlaying)
-                        //{
-                        //    Action counterAction;
-                        //    do
-                        //    {
-                        //        counterAction = GetUserInputAction(environment.validActions);
-                        //    } while (counterAction == null);
+                        if (isUserPlaying)
+                        {
+                            Action counterAction;
+                            do
+                            {
+                                counterAction = GetUserInputAction(environment.validActions);
+                            } while (counterAction == null);
 
-                        //    environment.Step(counterAction);
-                        //    DisplayBoard(environment, counterAction);
-                        //}
-                        //else
-                        //{
-                        //    Action counterAction = drEvil.Exploit(environment);
-                        //    environment.Step(counterAction);
-                        //    DisplayBoard(environment, counterAction);
-                        //}
+                            environment.Step(counterAction);
+                            DisplayBoard(environment, counterAction);
+                        }
+                        else
+                        {
+                            Action counterAction = drEvil.Exploit(environment);
+                            environment.Step(counterAction);
+                            if(k == epochs)
+                                DisplayBoard(environment, counterAction);
+                        }
                     }
                     environment.Reset();
                     powers.Reset();
+                    drEvil.Reset();
                 }
-                powers.Save("Powers");
+                powers.SaveJson("Powers");
             }
             else if (args[0] == "Debug") 
             {
-                Tree powersTree = Tree.LoadJson($"{Path.directory}{Path.Slash}Agents", "Powers");
-                Tree.SaveJson(powersTree, $"{Path.directory}{Path.Slash}Agents", "Powers");
-
-                //DynamicProgrammingAgent powers = new DynamicProgrammingAgent(true, "Powers");
-                //powers.SaveJson("Powers");
+                
             }
         }
 
@@ -151,7 +149,7 @@ namespace LitsReinforcementLearning
             route += $"{action.Id}, ";
             Console.WriteLine(route);
             prevStr = stateStr;
-            //Thread.Sleep(2000);
+            Thread.Sleep(2000);
         }
 
         static void WritePieceColour(char pieceChar)

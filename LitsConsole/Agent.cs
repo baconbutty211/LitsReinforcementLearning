@@ -27,7 +27,7 @@ namespace LitsReinforcementLearning
             litsTree = new Tree(initial);
             Reset();
         }
-        public void Reset()
+        public virtual void Reset()
         {
             cwt = litsTree;
         }
@@ -153,8 +153,12 @@ namespace LitsReinforcementLearning
         }
         public DynamicProgrammingAgent(bool isStartPlayer, string name) : base(isStartPlayer)
         {
-            litsTree = Load(name);
+            litsTree = LoadJson(name);
             Reset();
+        }
+        public override void Reset()
+        {
+            cwt = litsTree;
         }
 
         /// <summary>
@@ -207,7 +211,7 @@ namespace LitsReinforcementLearning
         }
         public DynamicProgrammingTree LoadJson(string agentName)
         {
-            return (DynamicProgrammingTree)Tree.LoadJson(savesPath, agentName);
+            return DynamicProgrammingTree.LoadJson(savesPath, agentName);
         }
         #endregion
     }
