@@ -9,93 +9,49 @@ namespace LitsReinforcementLearning
     {
         static List<int> optimumPath = new List<int>();
 
-        /// <summary>
-        /// Args: [0 = Agent type], [1 = MC -> Episodes]
-        /// </summary>
         static void Main(string[] args)
         {
-            if (args[0] == "MC")
+            bool isUserPlaying = bool.Parse(args[0]);
+
+            Log.Clear();
+            Environment environment = new Environment();
+            Observation initial = environment.Reset();
+            prevStr = environment.ToString();
+
+            Agent powers = new Agent(AgentType.DynamicProgramming, "Powers", true);
+            Agent drEvil = new Agent(AgentType.DynamicProgramming, "Powers", false);
+            while (!environment.isDone)
             {
-                if (!int.TryParse(args[1], out int episodes))
-                    return;
-                if (episodes == -1)
-                    episodes = int.MaxValue;
+                Action action = powers.Exploit(environment);
+                environment.Step(action);
+                DisplayBoard(environment, action);
 
-                Log.Clear();
+                if (environment.isDone)
+                    break;
 
-                MonteCarloAgent bond = new MonteCarloAgent();
-
-                //Log.Write("Loading Agent Bond...");
-                bond.Load("Bond");
-                //Log.Write("...Loaded Agent Bond");
-
-                //Log.Write("Exploring for 1 episode...");
-                bond.Explore(episodes);
-                //Log.Write("...Explored 1 episode");
-
-                //Log.Write("Saving Agent Bond...");
-                bond.Save("Bond");
-                //Log.Write("...Saved Agent Bond");
-
-                int[] optPath = bond.Exploit();
-                optimumPath.AddRange(optPath);
-                //DisplayOptimumPath();
-            }
-            else if (args[0] == "DP")
-            {
-                bool isUserPlaying = bool.Parse(args[1]);
-                int epochs = isUserPlaying ? 1 : int.Parse(args[2]);
-
-                Log.Clear();
-                Environment environment = new Environment();
-                Observation initial = environment.Reset();
-                prevStr = environment.ToString();
-
-                DynamicProgrammingAgent powers = new DynamicProgrammingAgent(true, "Powers");
-                DynamicProgrammingAgent drEvil = new DynamicProgrammingAgent(false, "Powers");
-                for (int k = 0; k < epochs; k++) 
+                if (isUserPlaying)
                 {
-                    while (!environment.isDone)
+                    Action counterAction;
+                    do
                     {
-                        Action action = powers.Exploit(environment);
-                        environment.Step(action);
-                        if(k == epochs)
-                            DisplayBoard(environment, action);
+                        counterAction = GetUserInputAction(environment.validActions);
+                    } while (counterAction == null);
 
-                        //if (environment.isDone)
-                        //    break;
-
-                        //if (isUserPlaying)
-                        //{
-                        //    Action counterAction;
-                        //    do
-                        //    {
-                        //        counterAction = GetUserInputAction(environment.validActions);
-                        //    } while (counterAction == null);
-
-                        //    environment.Step(counterAction);
-                        //    DisplayBoard(environment, counterAction);
-                        //}
-                        //else
-                        //{
-                        //    Action counterAction = drEvil.Exploit(environment);
-                        //    environment.Step(counterAction);
-                        //    DisplayBoard(environment, counterAction);
-                        //}
-                    }
-                    environment.Reset();
-                    powers.Reset();
+                    environment.Step(counterAction);
+                    DisplayBoard(environment, counterAction);
                 }
-                powers.Save("Powers");
+                else
+                {
+                    Action counterAction = drEvil.Exploit(environment);
+                    environment.Step(counterAction);
+                    DisplayBoard(environment, counterAction);
+                }
             }
-            else if (args[0] == "Debug") 
-            {
-                Tree powersTree = Tree.LoadJson($"{Path.directory}{Path.Slash}Agents", "Powers");
-                Tree.SaveJson(powersTree, $"{Path.directory}{Path.Slash}Agents", "Powers");
-
-                //DynamicProgrammingAgent powers = new DynamicProgrammingAgent(true, "Powers");
-                //powers.SaveJson("Powers");
-            }
+            //environment.Reset();
+            //powers.Reset();
+            //drEvil.Reset();
+            
+            powers.Save("Powers");
         }
 
         static Action GetUserInputAction(Action[] validActions) 
@@ -151,7 +107,7 @@ namespace LitsReinforcementLearning
             route += $"{action.Id}, ";
             Console.WriteLine(route);
             prevStr = stateStr;
-            //Thread.Sleep(2000);
+            Thread.Sleep(2000);
         }
 
         static void WritePieceColour(char pieceChar)
