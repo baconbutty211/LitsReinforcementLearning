@@ -20,8 +20,7 @@ namespace LitsReinforcementLearning
 
             Agent powers = new Agent(AgentType.DynamicProgramming, "Powers", true);
             Agent drEvil = new Agent(AgentType.DynamicProgramming, "Powers", false);
-            //while (!environment.isDone)
-            while (!true)
+            while (!environment.isDone)
             {
                 Action action = powers.Exploit(environment);
                 environment.Step(action);
