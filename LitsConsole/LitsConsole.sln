@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.32228.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LitsConsole", "LitsConsole.csproj", "{C3920B5A-1C75-470B-9AE6-80392FA0DFAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LitsConsoleDebug", "..\LitsConsoleDebug\LitsConsoleDebug.csproj", "{0547A950-A52E-48D8-8ED9-42AAE2118613}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LitsConsoleDebug", "..\LitsConsoleDebug\LitsConsoleDebug.csproj", "{0547A950-A52E-48D8-8ED9-42AAE2118613}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LitsFormsDebug", "..\LitsFormsDebug\LitsFormsDebug.csproj", "{93FE3B28-381D-4253-80C9-B1D14AC10935}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{0547A950-A52E-48D8-8ED9-42AAE2118613}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0547A950-A52E-48D8-8ED9-42AAE2118613}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0547A950-A52E-48D8-8ED9-42AAE2118613}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93FE3B28-381D-4253-80C9-B1D14AC10935}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93FE3B28-381D-4253-80C9-B1D14AC10935}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93FE3B28-381D-4253-80C9-B1D14AC10935}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93FE3B28-381D-4253-80C9-B1D14AC10935}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
