@@ -187,9 +187,9 @@ namespace LitsReinforcementLearning
                 stateClone[act] = ActionTypeToTile(action.type);
 
             for(int i = 0; i < stateClone.Length; i++) 
-                if (i >= 89 || i == 9) // 2*2 Area will be out of range of the board
+                if (i >= 89 || i%10 == 9) // 2*2 Area will be out of range of the board
                     continue;
-                else if (TileIsFilled(i) && TileIsFilled(i+1) && TileIsFilled(i+10) && TileIsFilled(i+11)) // Checks if a 2*2 area on the board is filled
+                else if ((int)stateClone[i] >= 3 && (int)stateClone[i+1] >= 3 && (int)stateClone[i+10] >= 3 && (int)stateClone[i+11] >= 3) // Checks if a 2*2 area on the board is filled
                     return true;
             
             return false;
@@ -229,7 +229,6 @@ namespace LitsReinforcementLearning
             }
         }
         private bool TileIsEmpty(int pos) { return (int)board[pos] < 3; }
-        private bool TileIsFilled(int pos) { return !TileIsEmpty(pos); }
         public override string ToString()
         {
             string boardStr = "  ";
