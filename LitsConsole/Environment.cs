@@ -195,9 +195,9 @@ namespace LitsReinforcementLearning
                 stateClone[act] = true;
 
             for(int i = 0; i < stateClone.Length; i++) 
-                if (i >= 89 || i == 9) // 2*2 Area will be out of range of the board
+                if (i >= 89 || i%10 == 9) // 2*2 Area will be out of range of the board
                     continue;
-                else if (stateClone[i] && stateClone[i + 1] && stateClone[i + 10] && stateClone[i + 11]) // Checks if a 2*2 area on the board is filled
+                else if (stateClone[i] && stateClone[i+1] && stateClone[i+10] && stateClone[i+11]) // Checks if a 2*2 area on the board is filled
                     return true;
             
             return false;
