@@ -76,7 +76,15 @@ namespace LitsFormsDebug
                 this.board[i].BackColor = backColour;
             }
         }
-
-
+        
+        private void ResetEnvironmentBtn_Click(object sender, EventArgs e)
+        {
+            environment.Reset();
+        }
+        private void RandomActionBtn_Click(object sender, EventArgs e)
+        {
+            LitsReinforcementLearning.Action randAct = environment.GetRandomAction();
+            environment.Step(randAct);
+        }
     }
 }

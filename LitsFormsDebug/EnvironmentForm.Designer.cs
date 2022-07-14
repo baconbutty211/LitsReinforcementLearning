@@ -31,6 +31,8 @@ namespace LitsFormsDebug
         {
             this.boardPanel = new System.Windows.Forms.Panel();
             this.boardLab = new System.Windows.Forms.Label();
+            this.RandomActionBtn = new System.Windows.Forms.Button();
+            this.ResetEnvironmentBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // boardPanel
@@ -50,12 +52,34 @@ namespace LitsFormsDebug
             this.boardLab.TabIndex = 1;
             this.boardLab.Text = "Board";
             // 
+            // RandomActionBtn
+            // 
+            this.RandomActionBtn.Location = new System.Drawing.Point(919, 713);
+            this.RandomActionBtn.Name = "RandomActionBtn";
+            this.RandomActionBtn.Size = new System.Drawing.Size(146, 49);
+            this.RandomActionBtn.TabIndex = 2;
+            this.RandomActionBtn.Text = "Random";
+            this.RandomActionBtn.UseVisualStyleBackColor = true;
+            this.RandomActionBtn.Click += new System.EventHandler(this.RandomActionBtn_Click);
+            // 
+            // ResetEnvironmentBtn
+            // 
+            this.ResetEnvironmentBtn.Location = new System.Drawing.Point(565, 713);
+            this.ResetEnvironmentBtn.Name = "ResetEnvironmentBtn";
+            this.ResetEnvironmentBtn.Size = new System.Drawing.Size(146, 49);
+            this.ResetEnvironmentBtn.TabIndex = 3;
+            this.ResetEnvironmentBtn.Text = "Reset";
+            this.ResetEnvironmentBtn.UseVisualStyleBackColor = true;
+            this.ResetEnvironmentBtn.Click += new System.EventHandler(this.ResetEnvironmentBtn_Click);
+            // 
             // EnvironmentForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1796, 976);
+            this.Controls.Add(this.ResetEnvironmentBtn);
+            this.Controls.Add(this.RandomActionBtn);
             this.Controls.Add(this.boardLab);
             this.Controls.Add(this.boardPanel);
             this.Name = "EnvironmentForm";
@@ -70,5 +94,7 @@ namespace LitsFormsDebug
         #endregion
         private System.Windows.Forms.Panel boardPanel;
         private System.Windows.Forms.Label boardLab;
+        private System.Windows.Forms.Button RandomActionBtn;
+        private System.Windows.Forms.Button ResetEnvironmentBtn;
     }
 }
