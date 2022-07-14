@@ -16,17 +16,20 @@ namespace LitsFormsDebug
         private static int size = LitsReinforcementLearning.Environment.size;
         private LitsReinforcementLearning.Environment environment = new LitsReinforcementLearning.Environment();
         private Button[] board = new Button[size];
-        private Dictionary<LitsReinforcementLearning.Action, LitsReinforcementLearning.Environment> previousActionsStack = new Dictionary<LitsReinforcementLearning.Action, LitsReinforcementLearning.Environment>();
+        private Stack<KeyValuePair<int, LitsReinforcementLearning.Environment>> previousActionsStack = new Stack<KeyValuePair<int, LitsReinforcementLearning.Environment>>(); // Keeps track of the previous environment states and the accompanying action the is applied next.
 
         public EnvironmentForm()
         {
             InitializeComponent();
+            
             environment.boardChanged += Environment_BoardChanged;
-            validActionsList.MouseDoubleClick += ValidActionsList_MouseDoubleClick; ;
+            
+            validActionsList.MouseDoubleClick += ValidActionsList_MouseDoubleClick;
             validActionsList.KeyDown += ValidActionsList_KeyDown;
-        }
 
-        
+            previousActionsList.MouseDoubleClick += PreviousActionsList_MouseDoubleClick;
+            previousActionsList.KeyDown += PreviousActionsList_KeyDown;
+        }
 
         private void EnvironmentForm_Load(object sender, EventArgs e)
         {
@@ -89,8 +92,7 @@ namespace LitsFormsDebug
             foreach (LitsReinforcementLearning.Action act in validActions)
                 validActionsList.Items.Add(act);
 
-            if (environment.isDone)
-                RandomActionBtn.Enabled = false;
+            RandomActionBtn.Enabled = !environment.isDone;
         }
         
         private void ResetEnvironmentBtn_Click(object sender, EventArgs e)
@@ -111,6 +113,7 @@ namespace LitsFormsDebug
             string act = validActionsList.SelectedItem.ToString();
             int actId = int.Parse(act.Split(')')[0]);
             LitsReinforcementLearning.Action action = LitsReinforcementLearning.Action.GetAction(actId);
+
             ApplyAction(action);
         }
         private void ValidActionsList_KeyDown(object sender, KeyEventArgs e)
@@ -119,9 +122,36 @@ namespace LitsFormsDebug
                 validActionsList.SelectedItem = null;
         }
 
+        private void PreviousActionsList_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            string act = previousActionsList.SelectedItem.ToString();
+            int actId = int.Parse(act.Split(')')[0]);
+            LitsReinforcementLearning.Action action = LitsReinforcementLearning.Action.GetAction(actId);
+
+            KeyValuePair<int, LitsReinforcementLearning.Environment> state;
+            do
+            {
+                state = previousActionsStack.Pop();
+                previousActionsList.Items.RemoveAt(previousActionsList.Items.Count - 1);
+            }
+            while (state.Key != actId);
+
+            environment.boardChanged -= Environment_BoardChanged;
+            environment = state.Value;
+            environment.boardChanged += Environment_BoardChanged;
+
+            ApplyAction(action);
+        }
+        private void PreviousActionsList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (previousActionsList.SelectedItem != null)
+                previousActionsList.SelectedItem = null;
+        }
+
         private void ApplyAction(LitsReinforcementLearning.Action action) 
         {
-            previousActionsStack.Add(action, environment.Clone()); // Stores the environment before the action is applied, so that when it is recalled the action is applied and the board will update.
+            KeyValuePair<int, LitsReinforcementLearning.Environment> state = new KeyValuePair<int, LitsReinforcementLearning.Environment>(action.Id, environment.Clone());
+            previousActionsStack.Push(state); // Stores the environment before the action is applied, so that when it is recalled the action is applied and the board will update.
             previousActionsList.Items.Add(action);
 
             environment.Step(action);
