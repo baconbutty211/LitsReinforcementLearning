@@ -16,15 +16,21 @@ namespace LitsFormsDebug
         private static int size = LitsReinforcementLearning.Environment.size;
         private LitsReinforcementLearning.Environment environment = new LitsReinforcementLearning.Environment();
         private Button[] board = new Button[size];
+        private Stack<Button[]> previousState;
 
         public EnvironmentForm()
         {
             InitializeComponent();
             environment.boardChanged += Environment_BoardChanged;
+            validActionsList.MouseDoubleClick += ValidActionsList_MouseDoubleClick; ;
+            validActionsList.KeyDown += ValidActionsList_KeyDown;
         }
+
+        
 
         private void EnvironmentForm_Load(object sender, EventArgs e)
         {
+            // Initializes Board
             int boardSize = (int)Math.Sqrt(size);
             for (int i = 0; i < size; i++)
             {
@@ -39,6 +45,7 @@ namespace LitsFormsDebug
         }
         private void Environment_BoardChanged(LitsReinforcementLearning.Environment.Tile[] board)
         {
+            // Updates the board buttons
             for (int i = 0; i < board.Length; i++)
             {
                 string text = " "; // Default text
@@ -75,6 +82,12 @@ namespace LitsFormsDebug
                 this.board[i].Text = text;
                 this.board[i].BackColor = backColour;
             }
+
+            // Updates the valid actions ListBox
+            validActionsList.Items.Clear();
+            LitsReinforcementLearning.Action[] validActions = environment.validActions;
+            foreach (LitsReinforcementLearning.Action act in validActions)
+                validActionsList.Items.Add(act);
         }
         
         private void ResetEnvironmentBtn_Click(object sender, EventArgs e)
@@ -88,6 +101,19 @@ namespace LitsFormsDebug
             environment.Step(randAct);
             if (environment.isDone)
                 RandomActionBtn.Enabled = false;
+        }
+        
+        private void ValidActionsList_MouseDoubleClick(object sender, EventArgs e)
+        {
+            string act = validActionsList.SelectedItem.ToString();
+            int actId = int.Parse(act.Split(')')[0]);
+            LitsReinforcementLearning.Action action = LitsReinforcementLearning.Action.GetAction(actId);
+            environment.Step(action);
+        }
+        private void ValidActionsList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (validActionsList.SelectedItem != null)
+                validActionsList.SelectedItem = null;
         }
     }
 }
