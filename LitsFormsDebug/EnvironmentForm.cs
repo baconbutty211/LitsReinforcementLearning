@@ -88,6 +88,9 @@ namespace LitsFormsDebug
             LitsReinforcementLearning.Action[] validActions = environment.validActions;
             foreach (LitsReinforcementLearning.Action act in validActions)
                 validActionsList.Items.Add(act);
+
+            if (environment.isDone)
+                RandomActionBtn.Enabled = false;
         }
         
         private void ResetEnvironmentBtn_Click(object sender, EventArgs e)
@@ -99,8 +102,6 @@ namespace LitsFormsDebug
         {
             LitsReinforcementLearning.Action randAct = environment.GetRandomAction();
             environment.Step(randAct);
-            if (environment.isDone)
-                RandomActionBtn.Enabled = false;
         }
         
         private void ValidActionsList_MouseDoubleClick(object sender, EventArgs e)
