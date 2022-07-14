@@ -35,12 +35,14 @@ namespace LitsFormsDebug
             this.ResetEnvironmentBtn = new System.Windows.Forms.Button();
             this.validActionsList = new System.Windows.Forms.ListBox();
             this.validActionsLab = new System.Windows.Forms.Label();
+            this.previousActionsList = new System.Windows.Forms.ListBox();
+            this.PreviousActionsLab = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // boardPanel
             // 
             this.boardPanel.AutoSize = true;
-            this.boardPanel.Location = new System.Drawing.Point(565, 207);
+            this.boardPanel.Location = new System.Drawing.Point(635, 207);
             this.boardPanel.Name = "boardPanel";
             this.boardPanel.Size = new System.Drawing.Size(500, 500);
             this.boardPanel.TabIndex = 0;
@@ -48,7 +50,7 @@ namespace LitsFormsDebug
             // boardLab
             // 
             this.boardLab.AutoSize = true;
-            this.boardLab.Location = new System.Drawing.Point(565, 179);
+            this.boardLab.Location = new System.Drawing.Point(635, 179);
             this.boardLab.Name = "boardLab";
             this.boardLab.Size = new System.Drawing.Size(59, 25);
             this.boardLab.TabIndex = 1;
@@ -56,7 +58,7 @@ namespace LitsFormsDebug
             // 
             // RandomActionBtn
             // 
-            this.RandomActionBtn.Location = new System.Drawing.Point(919, 713);
+            this.RandomActionBtn.Location = new System.Drawing.Point(989, 713);
             this.RandomActionBtn.Name = "RandomActionBtn";
             this.RandomActionBtn.Size = new System.Drawing.Size(146, 49);
             this.RandomActionBtn.TabIndex = 2;
@@ -66,7 +68,7 @@ namespace LitsFormsDebug
             // 
             // ResetEnvironmentBtn
             // 
-            this.ResetEnvironmentBtn.Location = new System.Drawing.Point(565, 713);
+            this.ResetEnvironmentBtn.Location = new System.Drawing.Point(635, 713);
             this.ResetEnvironmentBtn.Name = "ResetEnvironmentBtn";
             this.ResetEnvironmentBtn.Size = new System.Drawing.Size(146, 49);
             this.ResetEnvironmentBtn.TabIndex = 3;
@@ -78,7 +80,7 @@ namespace LitsFormsDebug
             // 
             this.validActionsList.FormattingEnabled = true;
             this.validActionsList.ItemHeight = 25;
-            this.validActionsList.Location = new System.Drawing.Point(54, 78);
+            this.validActionsList.Location = new System.Drawing.Point(124, 78);
             this.validActionsList.Name = "validActionsList";
             this.validActionsList.Size = new System.Drawing.Size(394, 829);
             this.validActionsList.TabIndex = 4;
@@ -86,11 +88,29 @@ namespace LitsFormsDebug
             // validActionsLab
             // 
             this.validActionsLab.AutoSize = true;
-            this.validActionsLab.Location = new System.Drawing.Point(54, 50);
+            this.validActionsLab.Location = new System.Drawing.Point(124, 50);
             this.validActionsLab.Name = "validActionsLab";
             this.validActionsLab.Size = new System.Drawing.Size(114, 25);
             this.validActionsLab.TabIndex = 5;
             this.validActionsLab.Text = "Valid Actions";
+            // 
+            // previousActionsList
+            // 
+            this.previousActionsList.FormattingEnabled = true;
+            this.previousActionsList.ItemHeight = 25;
+            this.previousActionsList.Location = new System.Drawing.Point(1269, 78);
+            this.previousActionsList.Name = "previousActionsList";
+            this.previousActionsList.Size = new System.Drawing.Size(394, 829);
+            this.previousActionsList.TabIndex = 6;
+            // 
+            // PreviousActionsLab
+            // 
+            this.PreviousActionsLab.AutoSize = true;
+            this.PreviousActionsLab.Location = new System.Drawing.Point(1269, 43);
+            this.PreviousActionsLab.Name = "PreviousActionsLab";
+            this.PreviousActionsLab.Size = new System.Drawing.Size(143, 25);
+            this.PreviousActionsLab.TabIndex = 7;
+            this.PreviousActionsLab.Text = "Previous Actions";
             // 
             // EnvironmentForm
             // 
@@ -98,6 +118,8 @@ namespace LitsFormsDebug
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1796, 976);
+            this.Controls.Add(this.PreviousActionsLab);
+            this.Controls.Add(this.previousActionsList);
             this.Controls.Add(this.validActionsLab);
             this.Controls.Add(this.validActionsList);
             this.Controls.Add(this.ResetEnvironmentBtn);
@@ -120,5 +142,7 @@ namespace LitsFormsDebug
         private System.Windows.Forms.Button ResetEnvironmentBtn;
         private System.Windows.Forms.ListBox validActionsList;
         private System.Windows.Forms.Label validActionsLab;
+        private System.Windows.Forms.ListBox previousActionsList;
+        private System.Windows.Forms.Label PreviousActionsLab;
     }
 }

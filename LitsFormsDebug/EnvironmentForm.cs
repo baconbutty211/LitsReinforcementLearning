@@ -16,7 +16,7 @@ namespace LitsFormsDebug
         private static int size = LitsReinforcementLearning.Environment.size;
         private LitsReinforcementLearning.Environment environment = new LitsReinforcementLearning.Environment();
         private Button[] board = new Button[size];
-        private Stack<Button[]> previousState;
+        private Dictionary<LitsReinforcementLearning.Action, LitsReinforcementLearning.Environment> previousActionsStack = new Dictionary<LitsReinforcementLearning.Action, LitsReinforcementLearning.Environment>();
 
         public EnvironmentForm()
         {
@@ -96,12 +96,14 @@ namespace LitsFormsDebug
         private void ResetEnvironmentBtn_Click(object sender, EventArgs e)
         {
             environment.Reset();
+            previousActionsList.Items.Clear();
+            previousActionsStack.Clear();
             RandomActionBtn.Enabled = true;
         }
         private void RandomActionBtn_Click(object sender, EventArgs e)
         {
             LitsReinforcementLearning.Action randAct = environment.GetRandomAction();
-            environment.Step(randAct);
+            ApplyAction(randAct);
         }
         
         private void ValidActionsList_MouseDoubleClick(object sender, EventArgs e)
@@ -109,12 +111,20 @@ namespace LitsFormsDebug
             string act = validActionsList.SelectedItem.ToString();
             int actId = int.Parse(act.Split(')')[0]);
             LitsReinforcementLearning.Action action = LitsReinforcementLearning.Action.GetAction(actId);
-            environment.Step(action);
+            ApplyAction(action);
         }
         private void ValidActionsList_KeyDown(object sender, KeyEventArgs e)
         {
             if (validActionsList.SelectedItem != null)
                 validActionsList.SelectedItem = null;
+        }
+
+        private void ApplyAction(LitsReinforcementLearning.Action action) 
+        {
+            previousActionsStack.Add(action, environment.Clone()); // Stores the environment before the action is applied, so that when it is recalled the action is applied and the board will update.
+            previousActionsList.Items.Add(action);
+
+            environment.Step(action);
         }
     }
 }
