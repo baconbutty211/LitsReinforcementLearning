@@ -80,11 +80,14 @@ namespace LitsFormsDebug
         private void ResetEnvironmentBtn_Click(object sender, EventArgs e)
         {
             environment.Reset();
+            RandomActionBtn.Enabled = true;
         }
         private void RandomActionBtn_Click(object sender, EventArgs e)
         {
             LitsReinforcementLearning.Action randAct = environment.GetRandomAction();
             environment.Step(randAct);
+            if (environment.isDone)
+                RandomActionBtn.Enabled = false;
         }
     }
 }
