@@ -289,6 +289,11 @@ namespace LitsReinforcementLearning
             this.reward = observation.reward;
             this.isDone = observation.isDone;
         }
+
+        public void SetCustomReward(float newReward) 
+        {
+            this.reward = newReward;
+        }
         public Observation Clone() 
         {
             return new Observation(this);

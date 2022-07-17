@@ -18,13 +18,14 @@ namespace LitsReinforcementLearning
             Observation initial = environment.Reset();
             prevStr = environment.ToString();
 
+            //Agent powers = new Agent(AgentType.DynamicProgramming, initial, true);
             Agent powers = new Agent(AgentType.DynamicProgramming, "Powers", true);
             Agent drEvil = new Agent(AgentType.DynamicProgramming, "Powers", false);
             while (!environment.isDone)
             {
                 Action action = powers.Exploit(environment);
                 environment.Step(action);
-                DisplayBoard(environment, action);
+                DisplayBoard(environment, action, 50);
 
                 if (environment.isDone)
                     break;
@@ -94,7 +95,7 @@ namespace LitsReinforcementLearning
 
         static string prevStr = "";
         static string route = "Route: ";
-        static void DisplayBoard(Environment environment, Action action)
+        static void DisplayBoard(Environment environment, Action action, int sleep = 2000)
         {
             string stateStr = environment.ToString();
 
@@ -107,7 +108,7 @@ namespace LitsReinforcementLearning
             route += $"{action.Id}, ";
             Console.WriteLine(route);
             prevStr = stateStr;
-            Thread.Sleep(2000);
+            Thread.Sleep(sleep);
         }
 
         static void WritePieceColour(char pieceChar)
