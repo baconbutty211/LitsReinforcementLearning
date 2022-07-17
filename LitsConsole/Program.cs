@@ -18,35 +18,35 @@ namespace LitsReinforcementLearning
             Observation initial = environment.Reset();
             prevStr = environment.ToString();
 
-            //Agent powers = new Agent(AgentType.DynamicProgramming, initial, true);
-            Agent powers = new Agent(AgentType.DynamicProgramming, "Powers", true);
-            Agent drEvil = new Agent(AgentType.DynamicProgramming, "Powers", false);
+            Agent powers = new Agent(AgentType.DynamicProgramming, initial, true);
+            //Agent powers = new Agent(AgentType.DynamicProgramming, "Powers", true);
+            //Agent drEvil = new Agent(AgentType.DynamicProgramming, "Powers", false);
             while (!environment.isDone)
             {
                 Action action = powers.Exploit(environment);
                 environment.Step(action);
                 DisplayBoard(environment, action, 50);
 
-                if (environment.isDone)
-                    break;
+                //if (environment.isDone)
+                //    break;
 
-                if (isUserPlaying)
-                {
-                    Action counterAction;
-                    do
-                    {
-                        counterAction = GetUserInputAction(environment.validActions);
-                    } while (counterAction == null);
+                //if (isUserPlaying)
+                //{
+                //    Action counterAction;
+                //    do
+                //    {
+                //        counterAction = GetUserInputAction(environment.validActions);
+                //    } while (counterAction == null);
 
-                    environment.Step(counterAction);
-                    DisplayBoard(environment, counterAction);
-                }
-                else
-                {
-                    Action counterAction = drEvil.Exploit(environment);
-                    environment.Step(counterAction);
-                    DisplayBoard(environment, counterAction);
-                }
+                //    environment.Step(counterAction);
+                //    DisplayBoard(environment, counterAction);
+                //}
+                //else
+                //{
+                //    Action counterAction = drEvil.Exploit(environment);
+                //    environment.Step(counterAction);
+                //    DisplayBoard(environment, counterAction);
+                //}
             }
             //environment.Reset();
             //powers.Reset();
