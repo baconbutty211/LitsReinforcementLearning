@@ -62,6 +62,10 @@ namespace LitsReinforcementLearning
                 foreach (KeyValuePair<Tile, int> kvp in availableActions) // Adds the number of available tile types left to play
                     featsLst.Add(kvp.Value);
 
+                //Consider adding a score
+
+                featsLst.Add(isDone ? 1 : 0); // Adds whether the board state is done.
+
                 return new Vector<float>(featsLst.ToArray());
             }
         }
