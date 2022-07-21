@@ -79,7 +79,10 @@ namespace LitsReinforcementLearning
             }
             return null;
         }
-        
+        private float Evaluate(Vector<float> features)
+        {
+            return Vector.Dot(features, weights);
+        }
     }
 
     /// <summary>
@@ -95,6 +98,11 @@ namespace LitsReinforcementLearning
             {
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
+
+                // Custom dynamic programming value
+                float futureValue = Evaluate(future.features);
+                obs.SetCustomReward(futureValue);
+                
                 cwt.Branch(obs);
             }
 
@@ -103,9 +111,6 @@ namespace LitsReinforcementLearning
             cwt = favChild;
             return bestAction;
         }
-        private float Evaluate(Vector<float> features)
-        {
-            return Vector.Dot(features, weights);
-        }
+        
     }
 }
