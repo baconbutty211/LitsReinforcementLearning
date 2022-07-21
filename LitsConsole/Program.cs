@@ -18,7 +18,7 @@ namespace LitsReinforcementLearning
             Observation initial = environment.Reset();
             prevStr = environment.ToString();
 
-            Agent powers = new Agent(AgentType.DynamicProgramming, initial, true);
+            Agent powers = new Agent(AgentType.DynamicProgramming, initial, environment.features, true);
             //Agent powers = new Agent(AgentType.DynamicProgramming, "Powers", true);
             //Agent drEvil = new Agent(AgentType.DynamicProgramming, "Powers", false);
             while (!environment.isDone)

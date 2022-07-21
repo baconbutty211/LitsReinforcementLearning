@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+using System.Numerics;
 
 namespace LitsReinforcementLearning
 {
     public enum AgentType { Abstract, MonteCarlo, DynamicProgramming, ExhaustiveSearch }
-    public class Agent
+    public partial class Agent
     {
         protected static string savesPath = $"{Path.directory}{Path.Slash}Agents";
 
@@ -17,23 +15,34 @@ namespace LitsReinforcementLearning
         protected Tree cwt; //Current working tree
 
         protected bool isStartPlayer;
-        
-        public Agent(AgentType type, Observation initial, bool isStartPlayer = true)
+
+        private Vector<float> weights; // This vector must be the same size as the Environment's features vector.
+
+        public Agent(AgentType type, Observation initial, Vector<float> initialFeatures, bool isStartPlayer = true) 
         {
             this.type = type;
             this.isStartPlayer = isStartPlayer;
 
+            // Sets random weights
+            Random rnd = new Random();
+            Span<float> featsLst = new Span<float>();
+            initialFeatures.CopyTo(featsLst);
+            for (int i = 0; i < featsLst.Length; i++)
+                featsLst[i] = Convert.ToSingle(rnd.NextDouble());
+            weights = new Vector<float>(featsLst);
+
             litsTree = new Tree(initial);
             Reset();
-        }
+        } // Creates a new agent.
         public Agent(AgentType type, string agentName, bool isStartPlayer = true) 
         {
             this.type = type;
             this.isStartPlayer = isStartPlayer;
 
             litsTree = Tree.LoadJson(savesPath, agentName);
+            // Weights = LoadJson(path, agentName);
             Reset();
-        }
+        } // Loads an agent from a save file.
        
         public virtual void Reset()
         {
@@ -70,7 +79,16 @@ namespace LitsReinforcementLearning
             }
             return null;
         }
-        private Action ExploitDynamicProgramming(Environment env) 
+        
+    }
+
+    /// <summary>
+    /// All the dynamic programming stuff.
+    /// </summary>
+    public partial class Agent
+    {
+
+        private Action ExploitDynamicProgramming(Environment env)
         {
             Action[] validActions = env.validActions;
             foreach (Action action in validActions)
@@ -84,6 +102,10 @@ namespace LitsReinforcementLearning
             Action bestAction = favChild.PreviousAction;
             cwt = favChild;
             return bestAction;
+        }
+        private float Evaluate(Vector<float> features)
+        {
+            return Vector.Dot(features, weights);
         }
     }
 }
