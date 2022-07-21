@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 
 namespace LitsReinforcementLearning
 {
@@ -50,6 +49,22 @@ namespace LitsReinforcementLearning
         }
         static Tile[] initialBoard = SetBoard();
         Tile[] board;
+
+        public Vector<float> features
+        {
+            get
+            {
+                List<float> featsLst = new List<float>();
+
+                foreach (Tile tile in board) // Adds all the states/tiles
+                    featsLst.Add(TileIsEmpty((int)tile) ? 0 : 1);
+
+                foreach (KeyValuePair<Tile, int> kvp in availableActions) // Adds the number of available tile types left to play
+                    featsLst.Add(kvp.Value);
+
+                return new Vector<float>(featsLst.ToArray());
+            }
+        }
 
         /// <summary>
         /// Initializes the environment
