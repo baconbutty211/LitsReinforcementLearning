@@ -91,41 +91,43 @@ namespace LitsReinforcementLearning
         {
             Tree favChild = null;
             float bestChildVal = isStartPlayer ? float.MinValue : float.MaxValue;
+            float currentValue = Evaluate(env.features);
+            float bestChildReward = 0;
+
             Action[] validActions = env.validActions;
             foreach (Action action in validActions)
             {
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
-
-                float currentValue = Evaluate(env.features);
-                float futureValue = Evaluate(future.features);
-
-                Vector deltaWeights = learningRate * ( (obs.reward + (discount * futureValue) ) - currentValue) * env.features;
-                weights -= deltaWeights; //Shift weights in the optimal direction
-
                 Tree child = cwt.Branch(obs);
 
+                float futureValue = Evaluate(future.features);
+                
                 if (isStartPlayer)
                 {
-                    if (futureValue > bestChildVal)
+                    if (futureValue >= bestChildVal)
                     {
                         favChild = child;
                         bestChildVal = futureValue;
+                        bestChildReward = obs.reward;
                     }
                 }
                 else
                 {
-                    if (futureValue < bestChildVal)
+                    if (futureValue <= bestChildVal)
                     {
                         favChild = child;
                         bestChildVal = futureValue;
+                        bestChildReward = obs.reward;
                     }
                 }
             }
 
+            Vector deltaWeights = learningRate * ((bestChildReward + (discount * bestChildVal)) - currentValue) * env.features;
+            weights -= deltaWeights; //Shift weights in the optimal direction
+
             cwt = favChild;
             return favChild.PreviousAction;
         }
-        
     }
 }
