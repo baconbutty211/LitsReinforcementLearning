@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
 
 namespace LitsReinforcementLearning
 {
@@ -16,20 +15,15 @@ namespace LitsReinforcementLearning
 
         protected bool isStartPlayer;
 
-        private Vector<float> weights; // This vector must be the same size as the Environment's features vector.
+        private Vector weights; // This vector must be the same size as the Environment's features vector.
 
-        public Agent(AgentType type, Observation initial, Vector<float> initialFeatures, bool isStartPlayer = true) 
+        public Agent(AgentType type, Observation initial, Vector initialFeatures, bool isStartPlayer = true) 
         {
             this.type = type;
             this.isStartPlayer = isStartPlayer;
 
             // Sets random weights
-            Random rnd = new Random();
-            Span<float> featsLst = new Span<float>();
-            initialFeatures.CopyTo(featsLst);
-            for (int i = 0; i < featsLst.Length; i++)
-                featsLst[i] = Convert.ToSingle(rnd.NextDouble());
-            weights = new Vector<float>(featsLst);
+            weights = Vector.InitializeRandom(initialFeatures.Count);
 
             litsTree = new Tree(initial);
             Reset();
@@ -79,7 +73,7 @@ namespace LitsReinforcementLearning
             }
             return null;
         }
-        private float Evaluate(Vector<float> features)
+        private float Evaluate(Vector features)
         {
             return Vector.Dot(features, weights);
         }
@@ -106,8 +100,8 @@ namespace LitsReinforcementLearning
                 float currentValue = Evaluate(env.features);
                 float futureValue = Evaluate(future.features);
 
-                Vector<float> deltaWeights = learningRate * ( (obs.reward + (discount * futureValue) ) - currentValue) * env.features;
-                weights += deltaWeights; //Shift weights in the optimal direction
+                Vector deltaWeights = learningRate * ( (obs.reward + (discount * futureValue) ) - currentValue) * env.features;
+                weights -= deltaWeights; //Shift weights in the optimal direction
 
                 Tree child = cwt.Branch(obs);
 

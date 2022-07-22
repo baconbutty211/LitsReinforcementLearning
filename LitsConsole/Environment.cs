@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace LitsReinforcementLearning
 {
@@ -50,7 +49,7 @@ namespace LitsReinforcementLearning
         static Tile[] initialBoard = SetBoard();
         Tile[] board;
 
-        public Vector<float> features
+        public Vector features
         {
             get
             {
@@ -62,11 +61,11 @@ namespace LitsReinforcementLearning
                 foreach (KeyValuePair<Tile, int> kvp in availableActions) // Adds the number of available tile types left to play
                     featsLst.Add(kvp.Value);
 
-                //Consider adding a score
+                //Consider adding a score feature
 
                 featsLst.Add(isDone ? 1 : 0); // Adds whether the board state is done.
 
-                return new Vector<float>(featsLst.ToArray());
+                return new Vector(featsLst.ToArray());
             }
         }
 
