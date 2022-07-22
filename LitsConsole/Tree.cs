@@ -12,7 +12,6 @@ namespace LitsReinforcementLearning
     public class Tree
     {
         protected static int size = Action.actionSpaceSize;
-        protected static float Discount = 0.95f;
 
         protected int depth;
         protected Observation root;
@@ -25,7 +24,7 @@ namespace LitsReinforcementLearning
                 if (Empty)
                     return root.reward;
                 else
-                    return root.reward + (FavouriteChild.Value * Discount);
+                    return root.reward + (FavouriteChild.Value * Agent.discount);
             }
         }
         public Action PreviousAction { get { return Action.GetAction(root.previousActionId); } }

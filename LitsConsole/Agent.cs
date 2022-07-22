@@ -90,26 +90,47 @@ namespace LitsReinforcementLearning
     /// </summary>
     public partial class Agent
     {
+        public static float discount = 0.95f;
+        private static float learningRate = 0.1f;
 
         private Action ExploitDynamicProgramming(Environment env)
         {
+            Tree favChild = null;
+            float bestChildVal = isStartPlayer ? float.MinValue : float.MaxValue;
             Action[] validActions = env.validActions;
             foreach (Action action in validActions)
             {
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
 
-                // Custom dynamic programming value
+                float currentValue = Evaluate(env.features);
                 float futureValue = Evaluate(future.features);
-                obs.SetCustomReward(futureValue);
-                
-                cwt.Branch(obs);
+
+                Vector<float> deltaWeights = learningRate * ( (obs.reward + (discount * futureValue) ) - currentValue) * env.features;
+                weights += deltaWeights; //Shift weights in the optimal direction
+
+                Tree child = cwt.Branch(obs);
+
+                if (isStartPlayer)
+                {
+                    if (futureValue > bestChildVal)
+                    {
+                        favChild = child;
+                        bestChildVal = futureValue;
+                    }
+                }
+                else
+                {
+                    if (futureValue < bestChildVal)
+                    {
+                        favChild = child;
+                        bestChildVal = futureValue;
+                    }
+                }
             }
 
-            Tree favChild = isStartPlayer ? cwt.FavouriteChild : cwt.ProblemChild;
-            Action bestAction = favChild.PreviousAction;
             cwt = favChild;
-            return bestAction;
+            return favChild.PreviousAction;
         }
         
     }
