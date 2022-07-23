@@ -63,15 +63,15 @@ namespace LitsReinforcementLearning
                     featsLst.Add(stepCount == i ? 1 : 0);
 
                 //Consider adding a score feature
-                featsLst.Add(xFilled);
-                featsLst.Add(oFilled);
-                featsLst.Add(_Filled);
+                featsLst.Add((float)xFilled/30);
+                featsLst.Add((float)oFilled/30);
+                featsLst.Add((float)_Filled/40);
 
                 foreach (Tile tile in board) // Adds all the states/tiles
                     featsLst.Add(TileIsEmpty((int)tile) ? 0 : 1);
 
                 foreach (KeyValuePair<Tile, int> kvp in availableActions) // Adds the number of available tile types left to play
-                    featsLst.Add(kvp.Value);
+                    featsLst.Add((float)kvp.Value/5);
 
                 featsLst.Add(isDone ? 1 : 0); // Adds whether the board state is done.
 
@@ -584,8 +584,15 @@ namespace LitsReinforcementLearning
         }
         public static string GetString(ActionType type, RotationType rotation = RotationType.None, FlipType flip = FlipType.None, int topLeft = 0)
         {
-            int[] action = new Action(topLeft, type, rotation, flip).actionPreShift;
-
+            int[] action;
+            try
+            {
+                action = new Action(topLeft, type, rotation, flip).actionPreShift;
+            }
+            catch (NotImplementedException)
+            {
+                return "Action not available.";
+            }
             char[,] actionStr = new char[4, 4];
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < 4; j++)
