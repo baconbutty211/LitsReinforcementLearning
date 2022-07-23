@@ -6,6 +6,7 @@ namespace LitsReinforcementLearning
 {
     public class Environment
     {
+        public enum End { Win, Draw, Lose }
         private enum Tile { _, O, X, L, I, T, S }
         public const int size = 100;
         private Random rnd = new Random();
@@ -59,22 +60,12 @@ namespace LitsReinforcementLearning
             {
                 List<float> featsLst = new List<float>();
 
-                for(int i = 0; i < 20; i++)
-                    featsLst.Add(stepCount == i ? 1 : 0);
+                featsLst.Add((float)xFilled/30); // Adds a X Tile filled count feature
+                featsLst.Add((float)oFilled/30); // Adds a O Tile filled count feature
 
-                //Consider adding a score feature
-                featsLst.Add((float)xFilled/30);
-                featsLst.Add((float)oFilled/30);
-                featsLst.Add((float)_Filled/40);
-
-                foreach (Tile tile in board) // Adds all the states/tiles
-                    featsLst.Add(TileIsEmpty((int)tile) ? 0 : 1);
-
-                foreach (KeyValuePair<Tile, int> kvp in availableActions) // Adds the number of available tile types left to play
-                    featsLst.Add((float)kvp.Value/5);
-
-                featsLst.Add(isDone ? 1 : 0); // Adds whether the board state is done.
-
+                int result = isDone ? (int)GetResult() : -1;
+                for(int i = 0; i < 3; i++)
+                    featsLst.Add( i == result ? 1 : 0 ); // Adds a feature for each type of end game state. All are 0 if the game is not Done.
                 return new Vector(featsLst.ToArray());
             }
         }
@@ -117,24 +108,20 @@ namespace LitsReinforcementLearning
             if(!Debug.IsDebug)
                 Log.Write($"Applying action {action.Id}");
 
-            float reward = 0;
             foreach (int pos in action.action)
             {
                 switch (board[pos])
                 {
                     case Tile.O:
-                        reward -= 1;
                         oFilled += 1;
                         break;
                     case Tile.X:
-                        reward += 1;
                         xFilled += 1;
                         break;
                     default: // Tile is Empty (_) or filled with (L, I, T, S)
-                        reward -= 0;
                         _Filled += 1;
                         break;
-                } // Set reward
+                } // Increments X/O/_ filled counts
 
                 if (TileIsEmpty(pos))
                     board[pos] = ActionTypeToTile(action.type); // Set board position to the new action type
@@ -143,18 +130,39 @@ namespace LitsReinforcementLearning
             }
             availableActions[ActionTypeToTile(action.type)]--;
             stepCount++;
-            return new Observation(action.Id, reward, isDone);
+            return new Observation(action.Id, Reward(), isDone);
+        }
+        private float Reward()
+        {
+            float reward = -stepCount;
+            if (isDone) // Adds a reward for the end state of the game
+            {
+                switch (GetResult())
+                {
+                    case End.Win:
+                        reward += 100;
+                        break;
+                    case End.Lose:
+                        reward += -100;
+                        break;
+                    case End.Draw:
+                        reward += -1;
+                        break;
+                }
+            }
+            return reward;
         }
 
-        public string GetResult() 
+        public End GetResult() 
         {
             if (xFilled > oFilled)
-                return $"User wins. Score is User:{xFilled} > Comp:{oFilled}";
-            else if (xFilled < oFilled)
-                return $"Computer wins. Score is User:{xFilled} < Comp:{oFilled}";
+                return End.Win;
+            if (xFilled < oFilled)
+                return End.Lose;
             else
-                return $"Draw. Score is User:{xFilled} = Comp:{oFilled}";
+                return End.Draw;
         }
+        
         #region Validation
         private bool IsValid(Action action)
         {
