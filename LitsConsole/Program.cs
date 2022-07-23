@@ -25,7 +25,7 @@ namespace LitsReinforcementLearning
             {
                 Action action = powers.Exploit(environment);
                 environment.Step(action);
-                DisplayBoard(environment, action, 50);
+                DisplayBoard(environment, action, 500);
 
                 //if (environment.isDone)
                 //    break;
@@ -48,11 +48,12 @@ namespace LitsReinforcementLearning
                 //    DisplayBoard(environment, counterAction);
                 //}
             }
+            Console.WriteLine(environment.GetResult());
             //environment.Reset();
             //powers.Reset();
             //drEvil.Reset();
             
-            powers.Save("Powers");
+            //powers.Save("Powers");
         }
 
         static Action GetUserInputAction(Action[] validActions) 

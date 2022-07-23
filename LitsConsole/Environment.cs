@@ -49,19 +49,29 @@ namespace LitsReinforcementLearning
         static Tile[] initialBoard = SetBoard();
         Tile[] board;
 
+        private int xFilled = 0;
+        private int oFilled = 0;
+        private int _Filled = 0;
+
         public Vector features
         {
             get
             {
                 List<float> featsLst = new List<float>();
 
+                for(int i = 0; i < 20; i++)
+                    featsLst.Add(stepCount == i ? 1 : 0);
+
+                //Consider adding a score feature
+                featsLst.Add(xFilled);
+                featsLst.Add(oFilled);
+                featsLst.Add(_Filled);
+
                 foreach (Tile tile in board) // Adds all the states/tiles
                     featsLst.Add(TileIsEmpty((int)tile) ? 0 : 1);
 
                 foreach (KeyValuePair<Tile, int> kvp in availableActions) // Adds the number of available tile types left to play
                     featsLst.Add(kvp.Value);
-
-                //Consider adding a score feature
 
                 featsLst.Add(isDone ? 1 : 0); // Adds whether the board state is done.
 
@@ -84,6 +94,9 @@ namespace LitsReinforcementLearning
             stepCount = original.stepCount;
             board = original.board.Clone() as Tile[];
             availableActions = original.availableActions.ToDictionary(entry => entry.Key, entry => entry.Value);
+            xFilled = original.xFilled;
+            oFilled = original.oFilled;
+            _Filled = original._Filled;
         }
 
         public Observation Reset()
@@ -91,6 +104,9 @@ namespace LitsReinforcementLearning
             stepCount = 0;
             availableActions = new Dictionary<Tile, int>() { { Tile.L, 5 }, { Tile.I, 5 }, { Tile.T, 5 }, { Tile.S, 5 } };
             board = initialBoard.Clone() as Tile[];
+            xFilled = 0;
+            oFilled = 0;
+            _Filled = 0;
             return new Observation(-1, 0, false);
         }
         public Observation Step(Action action)
@@ -108,12 +124,15 @@ namespace LitsReinforcementLearning
                 {
                     case Tile.O:
                         reward -= 1;
+                        oFilled += 1;
                         break;
                     case Tile.X:
                         reward += 1;
+                        xFilled += 1;
                         break;
                     default: // Tile is Empty (_) or filled with (L, I, T, S)
                         reward -= 0;
+                        _Filled += 1;
                         break;
                 } // Set reward
 
@@ -129,7 +148,12 @@ namespace LitsReinforcementLearning
 
         public string GetResult() 
         {
-            throw new NotImplementedException();
+            if (xFilled > oFilled)
+                return $"User wins. Score is User:{xFilled} > Comp:{oFilled}";
+            else if (xFilled < oFilled)
+                return $"Computer wins. Score is User:{xFilled} < Comp:{oFilled}";
+            else
+                return $"Draw. Score is User:{xFilled} = Comp:{oFilled}";
         }
         #region Validation
         private bool IsValid(Action action)

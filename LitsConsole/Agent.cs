@@ -105,7 +105,7 @@ namespace LitsReinforcementLearning
                 
                 if (isStartPlayer)
                 {
-                    if (futureValue >= bestChildVal)
+                    if (futureValue > bestChildVal)
                     {
                         favChild = child;
                         bestChildVal = futureValue;
@@ -114,7 +114,7 @@ namespace LitsReinforcementLearning
                 }
                 else
                 {
-                    if (futureValue <= bestChildVal)
+                    if (futureValue < bestChildVal)
                     {
                         favChild = child;
                         bestChildVal = futureValue;
