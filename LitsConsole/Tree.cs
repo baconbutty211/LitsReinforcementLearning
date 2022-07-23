@@ -133,7 +133,7 @@ namespace LitsReinforcementLearning
         /// <summary>
         /// Only to be called at the trunk
         /// </summary>
-        public static void SaveJson(Tree tree, string path, string name)
+        public static void SaveJson(Tree tree, string path)
         {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -143,7 +143,7 @@ namespace LitsReinforcementLearning
             using (JsonWriter writer = new JsonTextWriter(sw))
             {
                 tree.WriteTree(writer);
-                File.WriteAllText($"{path}{Path.Slash}{name}.json", sb.ToString());
+                File.WriteAllText($"{path}{Path.Slash}Tree.json", sb.ToString());
             }
         }
         public virtual void WriteTree(JsonWriter writer)
@@ -178,14 +178,14 @@ namespace LitsReinforcementLearning
             }
         }
 
-        public static Tree LoadJson(string path, string name)
+        public static Tree LoadJson(string path)
         {
             if (!Directory.Exists(path))
                 throw new DirectoryNotFoundException();
-            if (!File.Exists($"{path}{Path.Slash}{name}.json"))
+            if (!File.Exists($"{path}{Path.Slash}Tree.json"))
                 throw new FileNotFoundException();
 
-            StreamReader sr = new StreamReader($"{path}{Path.Slash}{name}.json");
+            StreamReader sr = new StreamReader($"{path}{Path.Slash}Tree.json");
             using (JsonTextReader reader = new JsonTextReader(sr))
             {
                 reader.Read(); // Reads start object

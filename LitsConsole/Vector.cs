@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace LitsReinforcementLearning
 {
@@ -63,6 +65,63 @@ namespace LitsReinforcementLearning
                 dotProduct += a[i] * b[i];
             return dotProduct;
         }
+
+        #region Save/Load
+        public static void SaveJson(Vector v, string path)
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb);
+            using (JsonWriter writer = new JsonTextWriter(sw))
+            {
+                v.WriteVector(writer);
+                File.WriteAllText($"{path}{Path.Slash}Weights.json", sb.ToString());
+            }
+        }
+        private void WriteVector(JsonWriter writer) 
+        {
+            writer.Formatting = Formatting.Indented;
+
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("Values");
+            writer.WriteStartArray();
+            foreach(float val in values)
+                writer.WriteValue(val);
+            writer.WriteEndArray();
+
+            writer.WriteEndObject();
+        }
+        public static Vector LoadJson(string path) 
+        {
+            if (!Directory.Exists(path))
+                throw new DirectoryNotFoundException();
+            if (!File.Exists($"{path}{Path.Slash}Tree.json"))
+                throw new FileNotFoundException();
+
+            StreamReader sr = new StreamReader($"{path}{Path.Slash}Weights.json");
+            using (JsonTextReader reader = new JsonTextReader(sr))
+            {
+                return ReadVector(reader);
+            }
+        }
+        private static Vector ReadVector(JsonReader reader) 
+        {
+            List<float> values = new List<float>();
+
+            reader.Read(); // Reads start object
+            reader.Read(); // Reads values name
+            reader.Read(); // Reads start array
+
+            while (reader.Read() && reader.TokenType != JsonToken.EndArray) // Reads until end array
+                values.Add(Convert.ToSingle(reader.Value));
+
+            reader.Read(); // Reads end object
+            return new Vector(values);
+        }
+        #endregion
 
         public Vector Clone()
         {

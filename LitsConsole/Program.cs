@@ -18,8 +18,8 @@ namespace LitsReinforcementLearning
             Observation initial = environment.Reset();
             prevStr = environment.ToString();
 
-            Agent powers = new Agent(AgentType.DynamicProgramming, initial, environment.features, true);
-            //Agent powers = new Agent(AgentType.DynamicProgramming, "Powers", true);
+            //Agent powers = new Agent(AgentType.DynamicProgramming, initial, environment.features, true);
+            Agent powers = new Agent(AgentType.DynamicProgramming, "Powers", true);
             //Agent drEvil = new Agent(AgentType.DynamicProgramming, "Powers", false);
             while (!environment.isDone)
             {
@@ -53,7 +53,7 @@ namespace LitsReinforcementLearning
             //powers.Reset();
             //drEvil.Reset();
             
-            //powers.Save("Powers");
+            powers.Save("Powers");
         }
 
         static Action GetUserInputAction(Action[] validActions) 

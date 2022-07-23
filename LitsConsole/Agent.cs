@@ -33,8 +33,7 @@ namespace LitsReinforcementLearning
             this.type = type;
             this.isStartPlayer = isStartPlayer;
 
-            litsTree = Tree.LoadJson(savesPath, agentName);
-            // Weights = LoadJson(path, agentName);
+            Load(agentName);
             Reset();
         } // Loads an agent from a save file.
        
@@ -43,10 +42,20 @@ namespace LitsReinforcementLearning
             cwt = litsTree;
         }
 
+        #region Save/Load
+        private void Load(string agentName) 
+        {
+            string path = $"{savesPath}{Path.Slash}{agentName}";
+            litsTree = Tree.LoadJson(path);
+            weights = Vector.LoadJson(path);
+        }
         public void Save(string agentName) 
         {
-            Tree.SaveJson(litsTree, savesPath, agentName);
+            string path = $"{savesPath}{Path.Slash}{agentName}";
+            Tree.SaveJson(litsTree, path);
+            Vector.SaveJson(weights, path);
         }
+        #endregion
 
         public void Explore() 
         {
