@@ -10,15 +10,16 @@ namespace LitsReinforcementLearning
         static void Main(string[] args)
         {
             //Trainer.CreateNewAgent("Fresh");
+            string agentName = args[2].ToLower();
 
-            Agent powers = new Agent(AgentType.DynamicProgramming, "Powers", true);
-            Agent drEvil = new Agent(AgentType.DynamicProgramming, "Powers", false);
+            Agent powers = new Agent(AgentType.DynamicProgramming, agentName, true);
+            Agent drEvil = new Agent(AgentType.DynamicProgramming, agentName, false);
 
             string trainORplay = args[0].ToLower();
             string aiOrsoloORuser = args[1].ToLower();
             if (trainORplay == "train")
             {
-                if (!int.TryParse(args[2], out int episodes))
+                if (!int.TryParse(args[3], out int episodes))
                 {
                     Console.WriteLine("No integer value for episodes given.");
                     return;
