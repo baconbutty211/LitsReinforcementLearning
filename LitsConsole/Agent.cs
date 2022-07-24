@@ -22,10 +22,9 @@ namespace LitsReinforcementLearning
             this.type = type;
             this.isStartPlayer = isStartPlayer;
 
-            // Sets random weights
-            weights = Vector.InitializeRandom(initialFeatures.Count);
+            weights = Vector.InitializeRandom(initialFeatures.Count);   // Initializes random weights
+            litsTree = new Tree(initial);                               // Initializes new tree
 
-            litsTree = new Tree(initial);
             Reset();
         } // Creates a new agent.
         public Agent(AgentType type, string agentName, bool isStartPlayer = true) 
@@ -36,7 +35,7 @@ namespace LitsReinforcementLearning
             Load(agentName);
             Reset();
         } // Loads an agent from a save file.
-       
+        
         public virtual void Reset()
         {
             cwt = litsTree;
@@ -133,7 +132,10 @@ namespace LitsReinforcementLearning
             }
 
             Vector deltaWeights = learningRate * ((bestChildReward + (discount * bestChildVal)) - currentValue) * env.features;
-            weights -= deltaWeights; //Shift weights in the optimal direction
+            if(isStartPlayer)
+                weights -= deltaWeights; //Shift weights in the optimal direction
+            else
+                weights += deltaWeights; //Shift weights in the optimal direction
 
             cwt = favChild;
             return favChild.PreviousAction;
