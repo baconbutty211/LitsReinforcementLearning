@@ -160,6 +160,7 @@ namespace LitsReinforcementLearning
             }
             availableActions[ActionTypeToTile(action.type)]--;
             stepCount++;
+            boardChanged?.Invoke(board);
             return new Observation(action.Id, Reward(), isDone);
         }
         private float Reward()
