@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LitsReinforcementLearning
 {
     public class Environment
     {
+        public enum End { Win, Draw, Lose }
         private enum Tile { _, O, X, L, I, T, S }
         public const int size = 100;
         private Random rnd = new Random();
@@ -26,7 +25,6 @@ namespace LitsReinforcementLearning
         public int stepCount { get; private set; }
         public bool isDone { get { return validActions.Length == 0; } }
         
-        bool[] state;
         private Dictionary<Tile, int> availableActions;
 
         private static Tile[] SetBoard()
@@ -52,6 +50,30 @@ namespace LitsReinforcementLearning
         static Tile[] initialBoard = SetBoard();
         Tile[] board;
 
+        public int xFilled = 0;
+        public int oFilled = 0;
+        private int _Filled = 0;
+
+        public Vector features
+        {
+            get
+            {
+                List<float> featsLst = new List<float>();
+
+                foreach (Tile tile in board)
+                    featsLst.Add((float)( (int)tile ) / 7);
+
+                //featsLst.Add((float)xFilled/30); // Adds a X Tile filled count feature
+                //featsLst.Add((float)oFilled/30); // Adds a O Tile filled count feature
+
+                //int result = isDone ? (int)GetResult() : -1;
+                //for(int i = 0; i < 3; i++)
+                //    featsLst.Add( i == result ? 1 : 0 ); // Adds a feature for each type of end game state. All are 0 if the game is not Done.
+                
+                return new Vector(featsLst.ToArray());
+            }
+        }
+
         /// <summary>
         /// Initializes the environment
         /// </summary>
@@ -65,9 +87,11 @@ namespace LitsReinforcementLearning
         private Environment(Environment original)
         {
             stepCount = original.stepCount;
-            state = original.state.Clone() as bool[];
             board = original.board.Clone() as Tile[];
             availableActions = original.availableActions.ToDictionary(entry => entry.Key, entry => entry.Value);
+            xFilled = original.xFilled;
+            oFilled = original.oFilled;
+            _Filled = original._Filled;
         }
 
         public Observation Reset()
@@ -75,52 +99,74 @@ namespace LitsReinforcementLearning
             stepCount = 0;
             availableActions = new Dictionary<Tile, int>() { { Tile.L, 5 }, { Tile.I, 5 }, { Tile.T, 5 }, { Tile.S, 5 } };
             board = initialBoard.Clone() as Tile[];
-            state = new bool[size];
-            for (int i = 0; i < size; i++)
-                state[i] = false;
-            return new Observation(state, 0, false);
+            xFilled = 0;
+            oFilled = 0;
+            _Filled = 0;
+            return new Observation(-1, 0, false);
         }
         public Observation Step(Action action)
         {
             if (isDone)
-                throw new IndexOutOfRangeException($"Already reached the end state ({state}). Don't ask for a new action.");
+                throw new IndexOutOfRangeException($"Already reached the end state ({board}). Don't ask for a new action.");
             
             if(!Debug.IsDebug)
                 Log.Write($"Applying action {action.Id}");
 
-            float reward = 0;
             foreach (int pos in action.action)
             {
                 switch (board[pos])
                 {
                     case Tile.O:
-                        reward -= 1;
+                        oFilled += 1;
                         break;
                     case Tile.X:
-                        reward += 1;
+                        xFilled += 1;
                         break;
                     default: // Tile is Empty (_) or filled with (L, I, T, S)
-                        reward -= 0;
+                        _Filled += 1;
                         break;
-                } // Set reward
+                } // Increments X/O/_ filled counts
 
-                if (!state[pos])
-                {
-                    state[pos] = true;
+                if (TileIsEmpty(pos))
                     board[pos] = ActionTypeToTile(action.type); // Set board position to the new action type
-                }
                 else
                     throw new IndexOutOfRangeException($"Action has already been taken.");
             }
             availableActions[ActionTypeToTile(action.type)]--;
             stepCount++;
-            return new Observation(state, reward, isDone);
+            return new Observation(action.Id, Reward(), isDone);
+        }
+        private float Reward()
+        {
+            float reward = -stepCount;
+            if (isDone) // Adds a reward for the end state of the game
+            {
+                switch (GetResult())
+                {
+                    case End.Win:
+                        reward += 100;
+                        break;
+                    case End.Lose:
+                        reward += -100;
+                        break;
+                    case End.Draw:
+                        reward += -1;
+                        break;
+                }
+            }
+            return reward;
         }
 
-        public string GetResult() 
+        public End GetResult() 
         {
-            throw new NotImplementedException();
+            if (xFilled > oFilled)
+                return End.Win;
+            if (xFilled < oFilled)
+                return End.Lose;
+            else
+                return End.Draw;
         }
+        
         #region Validation
         private bool IsValid(Action action)
         {
@@ -143,7 +189,7 @@ namespace LitsReinforcementLearning
         private bool IsOverlapingOtherAction(Action action) 
         {
             foreach (int act in action)
-                if (state[act]) //Check if a tile has already been placed in that position
+                if (!TileIsEmpty(act)) //Check if a tile has already been placed in that position
                     return true;
             return false;
         } //Check if a tile has already been placed in that position
@@ -190,14 +236,14 @@ namespace LitsReinforcementLearning
         } // Check if the new piece is adjacent to another piece of the same type;
         private bool Is2By2Filled(Action action) 
         {
-            bool[] stateClone = state.Clone() as bool[];
+            Tile[] stateClone = board.Clone() as Tile[];
             foreach (int act in action)
-                stateClone[act] = true;
+                stateClone[act] = ActionTypeToTile(action.type);
 
             for(int i = 0; i < stateClone.Length; i++) 
                 if (i >= 89 || i%10 == 9) // 2*2 Area will be out of range of the board
                     continue;
-                else if (stateClone[i] && stateClone[i+1] && stateClone[i+10] && stateClone[i+11]) // Checks if a 2*2 area on the board is filled
+                else if ((int)stateClone[i] >= 3 && (int)stateClone[i+1] >= 3 && (int)stateClone[i+10] >= 3 && (int)stateClone[i+11] >= 3) // Checks if a 2*2 area on the board is filled
                     return true;
             
             return false;
@@ -236,10 +282,7 @@ namespace LitsReinforcementLearning
                     throw new NotImplementedException();
             }
         }
-        private bool TileIsEmpty(int pos) 
-        {
-            return (int)board[pos] < 3; 
-        }
+        private bool TileIsEmpty(int pos) { return (int)board[pos] < 3; }
         public override string ToString()
         {
             string boardStr = "  ";
@@ -281,15 +324,13 @@ namespace LitsReinforcementLearning
 
     public struct Observation
     {
-        //public static Observation initial { get { return new Observation(Environment.initialState, 0, false); } }
-
-        public bool[] state { get; private set; }
+        public int previousActionId { get; private set; }
         public float reward { get; private set; }
         public bool isDone { get; private set; }
 
-        public Observation(bool[] state, float reward, bool isDone)
+        public Observation(int prevActionId, float reward, bool isDone)
         {
-            this.state = state.Clone() as bool[];
+            this.previousActionId = prevActionId;
             this.reward = reward;
             this.isDone = isDone;
         }
@@ -298,9 +339,14 @@ namespace LitsReinforcementLearning
         /// </summary>
         private Observation(Observation observation) 
         {
-            this.state = observation.state.Clone() as bool[];
+            this.previousActionId = observation.previousActionId;
             this.reward = observation.reward;
             this.isDone = observation.isDone;
+        }
+
+        public void SetCustomReward(float newReward) 
+        {
+            this.reward = newReward;
         }
         public Observation Clone() 
         {
@@ -550,8 +596,15 @@ namespace LitsReinforcementLearning
         }
         public static string GetString(ActionType type, RotationType rotation = RotationType.None, FlipType flip = FlipType.None, int topLeft = 0)
         {
-            int[] action = new Action(topLeft, type, rotation, flip).actionPreShift;
-
+            int[] action;
+            try
+            {
+                action = new Action(topLeft, type, rotation, flip).actionPreShift;
+            }
+            catch (NotImplementedException)
+            {
+                return "Action not available.";
+            }
             char[,] actionStr = new char[4, 4];
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < 4; j++)
