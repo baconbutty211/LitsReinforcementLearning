@@ -7,7 +7,7 @@ namespace LitsReinforcementLearning
     public class Environment
     {
         public enum End { Win, Draw, Lose }
-        private enum Tile { _, O, X, L, I, T, S }
+        public enum Tile { _, O, X, L, I, T, S }
         public const int size = 100;
         private Random rnd = new Random();
 
@@ -17,7 +17,7 @@ namespace LitsReinforcementLearning
             {
                 List<Action> actions = new List<Action>();
                 foreach (Action action in Action.GetActions())
-                    if(IsValid(action))
+                    if (IsValid(action))
                         actions.Add(action);
                 return actions.ToArray();
             }
@@ -26,6 +26,18 @@ namespace LitsReinforcementLearning
         public bool isDone { get { return validActions.Length == 0; } }
         
         private Dictionary<Tile, int> availableActions;
+
+        static bool[] initialState
+        {
+            get
+            {
+                bool[] state = new bool[size];
+                for (int i = 0; i < state.Length; i++)
+                    state[i] = false;
+                return state;
+            }
+        }
+        private bool[] state;
 
         private static Tile[] SetBoard()
         {
@@ -48,7 +60,8 @@ namespace LitsReinforcementLearning
             return board;
         }
         static Tile[] initialBoard = SetBoard();
-        Tile[] board;
+        private Tile[] board;
+        public event System.Action<Tile[]> boardChanged;
 
         public int xFilled = 0;
         public int oFilled = 0;
@@ -87,8 +100,12 @@ namespace LitsReinforcementLearning
         private Environment(Environment original)
         {
             stepCount = original.stepCount;
+            
             board = original.board.Clone() as Tile[];
+            state = original.state.Clone() as bool[];
+            
             availableActions = original.availableActions.ToDictionary(entry => entry.Key, entry => entry.Value);
+            
             xFilled = original.xFilled;
             oFilled = original.oFilled;
             _Filled = original._Filled;
@@ -98,16 +115,22 @@ namespace LitsReinforcementLearning
         {
             stepCount = 0;
             availableActions = new Dictionary<Tile, int>() { { Tile.L, 5 }, { Tile.I, 5 }, { Tile.T, 5 }, { Tile.S, 5 } };
+            
             board = initialBoard.Clone() as Tile[];
+            
             xFilled = 0;
             oFilled = 0;
             _Filled = 0;
+            
+            state = initialState;
+            boardChanged?.Invoke(board);
+
             return new Observation(-1, 0, false);
         }
         public Observation Step(Action action)
         {
-            if (isDone)
-                throw new IndexOutOfRangeException($"Already reached the end state ({board}). Don't ask for a new action.");
+            //if (isDone)
+            //    throw new IndexOutOfRangeException($"Already reached the end state ({board}). Don't ask for a new action.");
             
             if(!Debug.IsDebug)
                 Log.Write($"Applying action {action.Id}");
@@ -127,8 +150,11 @@ namespace LitsReinforcementLearning
                         break;
                 } // Increments X/O/_ filled counts
 
-                if (TileIsEmpty(pos))
+                if (!state[pos])
+                {
                     board[pos] = ActionTypeToTile(action.type); // Set board position to the new action type
+                    state[pos] = true;
+                }
                 else
                     throw new IndexOutOfRangeException($"Action has already been taken.");
             }
@@ -156,7 +182,6 @@ namespace LitsReinforcementLearning
             }
             return reward;
         }
-
         public End GetResult() 
         {
             if (xFilled > oFilled)
@@ -173,11 +198,11 @@ namespace LitsReinforcementLearning
             if (stepCount == 0) //All actions are valid on the first move
                 return true;
 
+            if (!IsAdjacentToOtherAction(action)) // Check if the new piece is adjacent to another piece of the same type;
+                return false;
             if (IsOverlapingOtherAction(action)) //Check if a tile has already been placed in that position
                 return false;
             if (IsAdjacentToSameActionType(action)) // Check if the new piece is adjacent to another piece
-                return false;
-            if (!IsAdjacentToOtherAction(action)) // Check if the new piece is adjacent to another piece of the same type;
                 return false;
             if (Is2By2Filled(action)) // Checks if a 2*2 area on the board is filled
                 return false;
@@ -189,7 +214,7 @@ namespace LitsReinforcementLearning
         private bool IsOverlapingOtherAction(Action action) 
         {
             foreach (int act in action)
-                if (!TileIsEmpty(act)) //Check if a tile has already been placed in that position
+                if (state[act]) //Check if a tile has already been placed in that position
                     return true;
             return false;
         } //Check if a tile has already been placed in that position
@@ -208,7 +233,7 @@ namespace LitsReinforcementLearning
                     adjTiles.Add(act + 1);
 
                 foreach (int adjPos in adjTiles)
-                    if (!TileIsEmpty(adjPos)) // Check if the new piece is adjacent to another piece
+                    if (state[adjPos]) // Check if the new piece is adjacent to another piece
                         return true;
             }
             return false;
@@ -236,14 +261,14 @@ namespace LitsReinforcementLearning
         } // Check if the new piece is adjacent to another piece of the same type;
         private bool Is2By2Filled(Action action) 
         {
-            Tile[] stateClone = board.Clone() as Tile[];
+            bool[] stateClone = state.Clone() as bool[];
             foreach (int act in action)
-                stateClone[act] = ActionTypeToTile(action.type);
+                stateClone[act] = true;
 
             for(int i = 0; i < stateClone.Length; i++) 
                 if (i >= 89 || i%10 == 9) // 2*2 Area will be out of range of the board
                     continue;
-                else if ((int)stateClone[i] >= 3 && (int)stateClone[i+1] >= 3 && (int)stateClone[i+10] >= 3 && (int)stateClone[i+11] >= 3) // Checks if a 2*2 area on the board is filled
+                else if (stateClone[i] && stateClone[i+1] && stateClone[i+10] && stateClone[i+11]) // Checks if a 2*2 area on the board is filled
                     return true;
             
             return false;
@@ -620,5 +645,9 @@ namespace LitsReinforcementLearning
             return str;
         }
         #endregion
+        public override string ToString()
+        {
+            return $"{Id}) {topLeft}, {type}, {rotation}, {flip}";
+        }
     }
 }

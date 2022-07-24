@@ -19,9 +19,10 @@ namespace LitsReinforcementLearning
             get
             {
                 string dir = Directory.GetCurrentDirectory();
-                while (new DirectoryInfo(dir).Name != "LitsConsole") 
+                while (new DirectoryInfo(dir).Name != "LitsGitRL") // Gets all the way to the root (LitsGitRL) of the path
                     dir = GetParent(dir);
-                return dir;
+
+                return $"{dir}{Slash}LitsConsole";
             }
         }
         private static string GetParent(string path) 
