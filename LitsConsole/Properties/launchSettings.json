@@ -2,7 +2,7 @@
   "profiles": {
     "LitsConsole": {
       "commandName": "Project",
-      "commandLineArgs": "true"
+      "commandLineArgs": "false"
     }
   }
 }

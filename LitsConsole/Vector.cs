@@ -65,6 +65,16 @@ namespace LitsReinforcementLearning
                 dotProduct += a[i] * b[i];
             return dotProduct;
         }
+        /// <summary>
+        /// Returns the sum of all values in the vector
+        /// </summary>
+        public static float Sum(Vector a) 
+        {
+            float sum = 0;
+            foreach (float val in a)
+                sum += val;
+            return sum;
+        }
 
         #region Save/Load
         public static void SaveJson(Vector v, string path)
