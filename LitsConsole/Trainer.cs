@@ -20,8 +20,11 @@ namespace LitsReinforcementLearning
             return newAgent;
         }
 
-        public static void PlaySolo(Agent subject1, Verbosity verbosity) 
+        public static void PlaySolo(Agent subject1, Verbosity verbosity = Verbosity.High) 
         {
+            if (verbosity >= Verbosity.High)
+                DisplayBoard(environment);
+
             while (!environment.isDone)
             {
                 Action action = subject1.Exploit(environment);
@@ -34,8 +37,11 @@ namespace LitsReinforcementLearning
             environment.Reset();
             subject1.Reset();
         }
-        public static void PlayAI(Agent subject1, Agent subject2, Verbosity verbosity) 
+        public static void PlayAI(Agent subject1, Agent subject2, Verbosity verbosity = Verbosity.High) 
         {
+            if (verbosity >= Verbosity.High)
+                DisplayBoard(environment);
+
             while (!environment.isDone)
             {
                 Action action = subject1.Exploit(environment);
@@ -57,22 +63,28 @@ namespace LitsReinforcementLearning
             subject1.Reset();
             subject2.Reset();
         }
-        public static void TrainSolo(Agent subject1, int episodes, Verbosity verbosity) 
+        public static void TrainSolo(Agent subject1, int episodes, Verbosity verbosity = Verbosity.Low) 
         {
             for (int i = 0; i < episodes; i++)
             {
                 PlaySolo(subject1, verbosity);
-                if (verbosity >= Verbosity.Low)
-                    Console.WriteLine($"Completed {i} games of training");
+
+                if (verbosity == Verbosity.Low)
+                    Console.Write($"\rGames of training completed: {i}");
+                else if(verbosity > Verbosity.Low)
+                    Console.WriteLine($"Games of training completed: {i}");
             }
         }
-        public static void TrainAI(Agent subject1, Agent subject2, int episodes, Verbosity verbosity)
+        public static void TrainAI(Agent subject1, Agent subject2, int episodes, Verbosity verbosity = Verbosity.Low)
         {
             for (int i = 0; i < episodes; i++)
             {
                 PlayAI(subject1, subject2, verbosity);
-                if (verbosity >= Verbosity.Low)
-                    Console.WriteLine($"Completed {i} games of training");
+
+                if (verbosity == Verbosity.Low)
+                    Console.Write($"\rGames of training completed: {i}");
+                else if (verbosity > Verbosity.Low)
+                    Console.WriteLine($"Games of training completed: {i}");
             }
         }
         
@@ -142,11 +154,11 @@ namespace LitsReinforcementLearning
             switch (result)
             {
                 case Environment.End.Win:
-                    return "User wins. \nScore is User:{xFilled} > Comp:{oFilled}";
+                    return $"User wins. \nScore is User:{environment.xFilled} > Comp:{environment.oFilled}";
                 case Environment.End.Lose:
-                    return "Computer wins. \nScore is User:{xFilled} < Comp:{oFilled}";
+                    return $"Computer wins. \nScore is User:{environment.xFilled} < Comp:{environment.oFilled}";
                 case Environment.End.Draw:
-                    return "Draw. \nScore is User:{xFilled} = Comp:{oFilled}";
+                    return $"Draw. \nScore is User:{environment.xFilled} = Comp:{environment.oFilled}";
                 default:
                     throw new NotImplementedException();
             }
@@ -154,7 +166,7 @@ namespace LitsReinforcementLearning
 
         static string prevStr = "";
         static string route = "Route: ";
-        static void DisplayBoard(Environment environment, Action action, int sleep = 2000)
+        static void DisplayBoard(Environment environment, Action action = null, int sleep = 2000)
         {
             string stateStr = environment.ToString();
 
@@ -164,8 +176,11 @@ namespace LitsReinforcementLearning
                 char piece = (stateStr[i] != prevStr[i]) ? '#' : stateStr[i];
                 WritePieceColour(piece);
             }
-            route += $"{action.Id}, ";
-            Console.WriteLine(route);
+            if (action != null)
+            {
+                route += $"{action.Id}, ";
+                Console.WriteLine(route);
+            }
             prevStr = stateStr;
             Thread.Sleep(sleep);
         }
@@ -206,6 +221,5 @@ namespace LitsReinforcementLearning
             Console.Write(text);
             Console.ResetColor();
         }
-
     }
 }

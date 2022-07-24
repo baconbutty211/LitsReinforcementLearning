@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 
 namespace LitsReinforcementLearning
@@ -42,7 +43,7 @@ namespace LitsReinforcementLearning
         }
 
         #region Save/Load
-        private void Load(string agentName) 
+        private void Load(string agentName)
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
             litsTree = Tree.LoadJson(path);
@@ -133,7 +134,7 @@ namespace LitsReinforcementLearning
 
             Vector deltaWeights = learningRate * ((bestChildReward + (discount * bestChildVal)) - currentValue) * env.features;
             if(isStartPlayer)
-                weights -= deltaWeights; //Shift weights in the optimal direction
+                weights += deltaWeights; //Shift weights in the optimal direction
             else
                 weights += deltaWeights; //Shift weights in the optimal direction
 

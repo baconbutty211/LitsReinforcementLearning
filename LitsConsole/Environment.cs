@@ -50,8 +50,8 @@ namespace LitsReinforcementLearning
         static Tile[] initialBoard = SetBoard();
         Tile[] board;
 
-        private int xFilled = 0;
-        private int oFilled = 0;
+        public int xFilled = 0;
+        public int oFilled = 0;
         private int _Filled = 0;
 
         public Vector features
@@ -60,12 +60,16 @@ namespace LitsReinforcementLearning
             {
                 List<float> featsLst = new List<float>();
 
-                featsLst.Add((float)xFilled/30); // Adds a X Tile filled count feature
-                featsLst.Add((float)oFilled/30); // Adds a O Tile filled count feature
+                foreach (Tile tile in board)
+                    featsLst.Add((float)( (int)tile ) / 7);
 
-                int result = isDone ? (int)GetResult() : -1;
-                for(int i = 0; i < 3; i++)
-                    featsLst.Add( i == result ? 1 : 0 ); // Adds a feature for each type of end game state. All are 0 if the game is not Done.
+                //featsLst.Add((float)xFilled/30); // Adds a X Tile filled count feature
+                //featsLst.Add((float)oFilled/30); // Adds a O Tile filled count feature
+
+                //int result = isDone ? (int)GetResult() : -1;
+                //for(int i = 0; i < 3; i++)
+                //    featsLst.Add( i == result ? 1 : 0 ); // Adds a feature for each type of end game state. All are 0 if the game is not Done.
+                
                 return new Vector(featsLst.ToArray());
             }
         }
