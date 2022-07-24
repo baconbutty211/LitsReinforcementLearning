@@ -9,15 +9,11 @@ namespace LitsReinforcementLearning
     {
         static void Main(string[] args)
         {
-            Trainer.CreateNewAgent("Fresh");
+            //Trainer.CreateNewAgent("Fresh");
 
             Agent powers = new Agent(AgentType.DynamicProgramming, "Powers", true);
             Agent drEvil = new Agent(AgentType.DynamicProgramming, "Powers", false);
 
-            Trainer.TrainAI(powers, drEvil, 20);
-            powers.Save("Powers +-");
-            
-            
             string trainORplay = args[0].ToLower();
             string aiOrsoloORuser = args[1].ToLower();
             if (trainORplay == "train")
