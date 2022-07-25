@@ -9,11 +9,17 @@ namespace LitsReinforcementLearning
     {
         static void Main(string[] args)
         {
-            //Trainer.CreateNewAgent("Fresh");
+            Agent fresh1 = Trainer.CreateNewAgent("Fresh");
+            Agent fresh2 = Trainer.CreateNewAgent("Fresh");
+            Trainer.TrainAI(fresh1, fresh2, 5);
+            Trainer.PlayAI(fresh1, fresh2);
+            return;
+
             string agentName = args[2];
 
-            Agent powers = new Agent(AgentType.DynamicProgramming, agentName, true);
-            Agent drEvil = new Agent(AgentType.DynamicProgramming, agentName, false);
+            Agent agent1 = new Agent(AgentType.DynamicProgramming, agentName, true);
+            Agent agent2 = new Agent(AgentType.DynamicProgramming, agentName, false);
+
 
             string trainORplay = args[0].ToLower();
             string aiOrsoloORuser = args[1].ToLower();
@@ -28,14 +34,14 @@ namespace LitsReinforcementLearning
                 if (aiOrsoloORuser == "ai")
                 {
                     Console.Title = "Training AI...";
-                    Trainer.TrainAI(powers, drEvil, episodes);
-                    powers.Save("Powers");
+                    Trainer.TrainAI(agent1, agent2, episodes);
+                    agent1.Save("Powers");
                 }
                 else if(aiOrsoloORuser == "solo") 
                 {
                     Console.Title = "Training solo...";
-                    Trainer.TrainSolo(powers, episodes);
-                    powers.Save("Powers");
+                    Trainer.TrainSolo(agent1, episodes);
+                    agent1.Save("Powers");
                 }
                 else 
                 {
@@ -47,17 +53,17 @@ namespace LitsReinforcementLearning
                 if (aiOrsoloORuser == "ai")
                 {
                     Console.Title = "Playing AI...";
-                    Trainer.PlayAI(powers, drEvil);
+                    Trainer.PlayAI(agent1, agent2);
                 }
                 else if (aiOrsoloORuser == "solo")
                 {
                     Console.Title = "Playing solo...";
-                    Trainer.PlaySolo(powers);
+                    Trainer.PlaySolo(agent1);
                 }
                 else if (aiOrsoloORuser == "user")
                 {
                     Console.Title = "Playing user...";
-                    Trainer.PlaySolo(powers);
+                    Trainer.PlaySolo(agent1);
                 }
                 else
                 {

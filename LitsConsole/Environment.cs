@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace LitsReinforcementLearning
 {
@@ -11,7 +12,7 @@ namespace LitsReinforcementLearning
         public const int size = 100;
         private Random rnd = new Random();
 
-        public Action[] validActions = Action.GetActions().ToArray(); // This is updated after every step.
+        public Action[] validActions; // This is updated after every step.
         public int stepCount { get; private set; }
         public bool isDone { get { return validActions.Length == 0; } }
         
@@ -57,25 +58,31 @@ namespace LitsReinforcementLearning
         public int oFilled = 0;
         private int _Filled = 0;
 
-        public Vector features
+        public Vector<float> features
         {
             get
             {
                 List<float> featsLst = new List<float>();
 
                 foreach (Tile tile in board)
-                    featsLst.Add((float)( (int)tile ) / 7);
+                {
+                    switch (tile)
+                    {
+                        case Tile.X:
+                            featsLst.Add(1);
+                            break;
+                        case Tile.O:
+                            featsLst.Add(-1);
+                            break;
+                        default:
+                            featsLst.Add(0);
+                            break;
+                    }
+                }
+                //featsLst.Add((float)( (int)tile ) / 7);
 
                 featsLst.Add(1);
-
-                //featsLst.Add((float)xFilled/30); // Adds a X Tile filled count feature
-                //featsLst.Add((float)oFilled/30); // Adds a O Tile filled count feature
-
-                //int result = isDone ? (int)GetResult() : -1;
-                //for(int i = 0; i < 3; i++)
-                //    featsLst.Add( i == result ? 1 : 0 ); // Adds a feature for each type of end game state. All are 0 if the game is not Done.
-                
-                return new Vector(featsLst.ToArray());
+                return Vector<float>.Build.Dense(featsLst.ToArray());
             }
         }
 
@@ -110,14 +117,14 @@ namespace LitsReinforcementLearning
             availableActions = new Dictionary<Tile, int>() { { Tile.L, 5 }, { Tile.I, 5 }, { Tile.T, 5 }, { Tile.S, 5 } };
             
             board = initialBoard.Clone() as Tile[];
-            
+
             xFilled = 0;
             oFilled = 0;
             _Filled = 0;
             
             state = initialState;
+            validActions = Action.GetActions().ToArray();
             boardChanged?.Invoke(board);
-
             return new Observation(-1, 0, false);
         }
         public Observation Step(Action action)
@@ -125,9 +132,6 @@ namespace LitsReinforcementLearning
             //if (isDone)
             //    throw new IndexOutOfRangeException($"Already reached the end state ({board}). Don't ask for a new action.");
             
-            if(!Debug.IsDebug)
-                Log.Write($"Applying action {action.Id}");
-
             foreach (int pos in action.action)
             {
                 switch (board[pos])
@@ -166,7 +170,7 @@ namespace LitsReinforcementLearning
         }
         private float Reward()
         {
-            float reward = -stepCount;
+            float reward = xFilled - oFilled;
             if (isDone) // Adds a reward for the end state of the game
             {
                 switch (GetResult())
@@ -178,7 +182,7 @@ namespace LitsReinforcementLearning
                         reward += -100;
                         break;
                     case End.Draw:
-                        reward += -1;
+                        reward += 0;
                         break;
                 }
             }
@@ -290,6 +294,13 @@ namespace LitsReinforcementLearning
         public Action GetRandomAction()
         {
             return validActions[rnd.Next(validActions.Length)];
+        }
+        public bool ContainsValidAction(int actionId) 
+        {
+            foreach (Action action in validActions)
+                if (action.Id == actionId)
+                    return true;
+            return false;
         }
 
         private Tile ActionTypeToTile(ActionType type) 

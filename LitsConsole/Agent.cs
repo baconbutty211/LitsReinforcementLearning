@@ -1,6 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
+using MathNet.Numerics.Distributions;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace LitsReinforcementLearning
 {
@@ -8,22 +8,23 @@ namespace LitsReinforcementLearning
     public partial class Agent
     {
         protected static string savesPath = $"{Path.directory}{Path.Slash}Agents";
+        public const float discount = 0.95f;
 
         private AgentType type;
+        NeuralNet model;
 
         protected Tree litsTree; //Tree trunk
         protected Tree cwt; //Current working tree
 
         protected bool isStartPlayer;
 
-        private Vector weights; // This vector must be the same size as the Environment's features vector.
 
-        public Agent(AgentType type, Observation initial, Vector initialFeatures, bool isStartPlayer = true) 
+        public Agent(AgentType type, Observation initial, Vector<float> initialFeatures, bool isStartPlayer = true) 
         {
             this.type = type;
             this.isStartPlayer = isStartPlayer;
 
-            weights = Vector.InitializeRandom(initialFeatures.Count);   // Initializes random weights
+            model = new NeuralNet(initialFeatures.Count);
             litsTree = new Tree(initial);                               // Initializes new tree
 
             Reset();
@@ -47,13 +48,11 @@ namespace LitsReinforcementLearning
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
             litsTree = Tree.LoadJson(path);
-            weights = Vector.LoadJson(path);
         }
         public void Save(string agentName) 
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
             Tree.SaveJson(litsTree, path);
-            Vector.SaveJson(weights, path);
         }
         #endregion
 
@@ -82,63 +81,72 @@ namespace LitsReinforcementLearning
             }
             return null;
         }
-        private float Evaluate(Vector features)
-        {
-            return Vector.Dot(features, weights);
-        }
     }
+
+    
 
     /// <summary>
     /// All the dynamic programming stuff.
     /// </summary>
     public partial class Agent
     {
-        public static float discount = 0.95f;
-        private static float learningRate = 0.1f;
-
         private Action ExploitDynamicProgramming(Environment env)
         {
             Tree favChild = null;
-            float bestChildVal = isStartPlayer ? float.MinValue : float.MaxValue;
-            float currentValue = Evaluate(env.features);
-            float bestChildReward = 0;
+            Vector<float> currentValues = model.Evaluate(env.features);
 
+            float bestChildVal = isStartPlayer ? float.MinValue : float.MaxValue;
+            Vector<float> bestChildsVals = null;
+            float bestChildReward = 0;
             foreach (Action action in env.validActions)
             {
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
                 Tree child = cwt.Branch(obs);
 
-                float futureValue = Evaluate(future.features);
-                
+                Vector<float> futureValues = model.Evaluate(future.features);
+                float futureValue = MaxValidActionValue(env, futureValues);
+
                 if (isStartPlayer)
                 {
-                    if (futureValue > bestChildVal)
+                    if (futureValue >= bestChildVal)
                     {
                         favChild = child;
                         bestChildVal = futureValue;
+                        bestChildsVals = futureValues;
                         bestChildReward = obs.reward;
                     }
                 }
                 else
                 {
-                    if (futureValue < bestChildVal)
+                    if (futureValue <= bestChildVal)
                     {
                         favChild = child;
                         bestChildVal = futureValue;
+                        bestChildsVals = futureValues;
                         bestChildReward = obs.reward;
                     }
                 }
             }
 
-            Vector deltaWeights = learningRate * ((bestChildReward + (discount * bestChildVal)) - currentValue) * env.features;
-            if(isStartPlayer)
-                weights += deltaWeights; //Shift weights in the optimal direction
-            else
-                weights += deltaWeights; //Shift weights in the optimal direction
+            model.Update(bestChildReward, bestChildsVals, currentValues, env.features);
 
             cwt = favChild;
             return favChild.PreviousAction;
+        }
+        private float MaxValidActionValue(Environment env, Vector<float> values) 
+        {
+            if (env.isDone)
+            {
+                Log.RotateError();
+                throw new ArgumentNullException("No valid actions to return.");
+            }
+
+            float maxVal = float.MinValue;
+            foreach(Action action in env.validActions)
+                if (values[action.Id] > maxVal)
+                    maxVal = values[action.Id];
+            return maxVal;
         }
     }
 }

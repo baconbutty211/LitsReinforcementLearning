@@ -45,6 +45,7 @@ namespace LitsReinforcementLearning
             while (!environment.isDone)
             {
                 Action action = subject1.Exploit(environment);
+                Log.Write($"Applying action {action}...");
                 environment.Step(action);
                 if(verbosity >= Verbosity.High)
                     DisplayBoard(environment, action);
@@ -53,6 +54,7 @@ namespace LitsReinforcementLearning
                     break;
 
                 Action counterAction = subject2.Exploit(environment);
+                Log.Write($"Applying action {counterAction}");
                 environment.Step(counterAction);
                 if (verbosity >= Verbosity.High)
                     DisplayBoard(environment, counterAction);
