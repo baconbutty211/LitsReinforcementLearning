@@ -181,7 +181,10 @@ namespace LitsReinforcementLearning
         public static Tree LoadJson(string path)
         {
             if (!Directory.Exists(path))
-                throw new DirectoryNotFoundException();
+            {
+            	Console.WriteLine(path);
+            	throw new DirectoryNotFoundException();
+            }
             if (!File.Exists($"{path}{Path.Slash}Tree.json"))
                 throw new FileNotFoundException();
 

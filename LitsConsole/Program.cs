@@ -10,7 +10,7 @@ namespace LitsReinforcementLearning
         static void Main(string[] args)
         {
             //Trainer.CreateNewAgent("Fresh");
-            string agentName = args[2].ToLower();
+            string agentName = args[2];
 
             Agent powers = new Agent(AgentType.DynamicProgramming, agentName, true);
             Agent drEvil = new Agent(AgentType.DynamicProgramming, agentName, false);
