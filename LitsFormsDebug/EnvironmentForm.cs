@@ -88,8 +88,7 @@ namespace LitsFormsDebug
 
             // Updates the valid actions ListBox
             validActionsList.Items.Clear();
-            LitsReinforcementLearning.Action[] validActions = environment.validActions;
-            foreach (LitsReinforcementLearning.Action act in validActions)
+            foreach (LitsReinforcementLearning.Action act in environment.validActions)
                 validActionsList.Items.Add(act);
 
             RandomActionBtn.Enabled = !environment.isDone;

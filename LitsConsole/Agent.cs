@@ -103,8 +103,7 @@ namespace LitsReinforcementLearning
             float currentValue = Evaluate(env.features);
             float bestChildReward = 0;
 
-            Action[] validActions = env.validActions;
-            foreach (Action action in validActions)
+            foreach (Action action in env.validActions)
             {
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);

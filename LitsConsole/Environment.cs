@@ -11,17 +11,7 @@ namespace LitsReinforcementLearning
         public const int size = 100;
         private Random rnd = new Random();
 
-        public Action[] validActions 
-        {
-            get 
-            {
-                List<Action> actions = new List<Action>();
-                foreach (Action action in Action.GetActions())
-                    if (IsValid(action))
-                        actions.Add(action);
-                return actions.ToArray();
-            }
-        }
+        public Action[] validActions = Action.GetActions().ToArray(); // This is updated after every step.
         public int stepCount { get; private set; }
         public bool isDone { get { return validActions.Length == 0; } }
         
@@ -76,6 +66,8 @@ namespace LitsReinforcementLearning
                 foreach (Tile tile in board)
                     featsLst.Add((float)( (int)tile ) / 7);
 
+                featsLst.Add(1);
+
                 //featsLst.Add((float)xFilled/30); // Adds a X Tile filled count feature
                 //featsLst.Add((float)oFilled/30); // Adds a O Tile filled count feature
 
@@ -103,7 +95,8 @@ namespace LitsReinforcementLearning
             
             board = original.board.Clone() as Tile[];
             state = original.state.Clone() as bool[];
-            
+
+            validActions = original.validActions.Clone() as Action[];
             availableActions = original.availableActions.ToDictionary(entry => entry.Key, entry => entry.Value);
             
             xFilled = original.xFilled;
@@ -160,6 +153,14 @@ namespace LitsReinforcementLearning
             }
             availableActions[ActionTypeToTile(action.type)]--;
             stepCount++;
+
+            // Calculates the valid actions that can be applied.
+            List<Action> validActions = new List<Action>();
+            foreach (Action a in Action.GetActions())
+                if (IsValid(a))
+                    validActions.Add(a);
+            this.validActions = validActions.ToArray();
+
             boardChanged?.Invoke(board);
             return new Observation(action.Id, Reward(), isDone);
         }
@@ -288,8 +289,7 @@ namespace LitsReinforcementLearning
 
         public Action GetRandomAction()
         {
-            Action[] actions = validActions;
-            return actions[rnd.Next(actions.Length)];
+            return validActions[rnd.Next(validActions.Length)];
         }
 
         private Tile ActionTypeToTile(ActionType type) 
