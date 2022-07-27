@@ -2,7 +2,7 @@
   "profiles": {
     "LitsConsole": {
       "commandName": "Project",
-      "commandLineArgs": "Play AI Fresh 1"
+      "commandLineArgs": "Train AI Fresh 1"
     }
   }
 }

@@ -153,7 +153,7 @@ namespace LitsReinforcementLearning
                     state[pos] = true;
                 }
                 else
-                    throw new IndexOutOfRangeException($"Action has already been taken.");
+                    throw new IndexOutOfRangeException($"Action {action} has already been taken.");
             }
             availableActions[ActionTypeToTile(action.type)]--;
             stepCount++;

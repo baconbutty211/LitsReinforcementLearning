@@ -11,7 +11,7 @@ namespace LitsReinforcementLearning
         {
             string agentName = args[2];
 
-            //Trainer.CreateNewAgent("Fresh");            
+            Trainer.CreateNewAgent("Fresh");            
 
             Agent agent1 = new Agent(AgentType.DynamicProgramming, agentName, true);
             Agent agent2 = new Agent(AgentType.DynamicProgramming, agentName, false);
@@ -59,7 +59,7 @@ namespace LitsReinforcementLearning
                 else if (aiOrsoloORuser == "user")
                 {
                     Console.Title = "Playing user...";
-                    Trainer.PlaySolo(agent1);
+                    Trainer.PlayUser(agent1);
                 }
                 else
                 {

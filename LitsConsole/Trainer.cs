@@ -20,14 +20,14 @@ namespace LitsReinforcementLearning
             return newAgent;
         }
 
-        public static void PlaySolo(Agent subject1, Verbosity verbosity = Verbosity.High) 
+        public static void PlaySolo(Agent subject1, bool isTrain = false, Verbosity verbosity = Verbosity.High) 
         {
             if (verbosity >= Verbosity.High)
                 DisplayBoard(environment);
 
             while (!environment.isDone)
             {
-                Action action = subject1.Exploit(environment);
+                Action action = subject1.Exploit(environment, isTrain);
                 environment.Step(action);
                 if (verbosity >= Verbosity.High)
                     DisplayBoard(environment, action);
@@ -37,14 +37,14 @@ namespace LitsReinforcementLearning
             environment.Reset();
             subject1.Reset();
         }
-        public static void PlayAI(Agent subject1, Agent subject2, Verbosity verbosity = Verbosity.High) 
+        public static void PlayAI(Agent subject1, Agent subject2, bool isTrain = false, Verbosity verbosity = Verbosity.High) 
         {
             if (verbosity >= Verbosity.High)
                 DisplayBoard(environment);
 
             while (!environment.isDone)
             {
-                Action action = subject1.Exploit(environment);
+                Action action = subject1.Exploit(environment, isTrain);
                 Log.Write($"Applying action {action}...");
                 environment.Step(action);
                 if(verbosity >= Verbosity.High)
@@ -53,7 +53,7 @@ namespace LitsReinforcementLearning
                 if (environment.isDone)
                     break;
 
-                Action counterAction = subject2.Exploit(environment);
+                Action counterAction = subject2.Exploit(environment, isTrain);
                 Log.Write($"Applying action {counterAction}");
                 environment.Step(counterAction);
                 if (verbosity >= Verbosity.High)
@@ -69,7 +69,7 @@ namespace LitsReinforcementLearning
         {
             for (int i = 0; i < episodes; i++)
             {
-                PlaySolo(subject1, verbosity);
+                PlaySolo(subject1, isTrain: true, verbosity);
 
                 if (verbosity == Verbosity.Low)
                     Console.Write($"\rGames of training completed: {i}");
@@ -81,7 +81,7 @@ namespace LitsReinforcementLearning
         {
             for (int i = 0; i < episodes; i++)
             {
-                PlayAI(subject1, subject2, verbosity);
+                PlayAI(subject1, subject2, isTrain: true, verbosity);
 
                 if (verbosity == Verbosity.Low)
                     Console.Write($"\rGames of training completed: {i}");

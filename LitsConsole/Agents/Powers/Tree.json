@@ -2258,1969 +2258,7 @@
       "depth": 1,
       "previousActionId": 375,
       "done": false,
-      "reward": 1.0,
-      "children": [
-        {
-          "depth": 2,
-          "previousActionId": 9,
-          "done": false,
-          "reward": 4.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 24,
-          "done": false,
-          "reward": 3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 25,
-          "done": false,
-          "reward": 3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 30,
-          "done": false,
-          "reward": 3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 32,
-          "done": false,
-          "reward": 2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 35,
-          "done": false,
-          "reward": 2.0,
-          "children": [
-            {
-              "depth": 3,
-              "previousActionId": 0,
-              "done": false,
-              "reward": 4.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 11,
-              "done": false,
-              "reward": 3.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 112,
-              "done": false,
-              "reward": -2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 120,
-              "done": false,
-              "reward": -2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 126,
-              "done": false,
-              "reward": -2.0,
-              "children": [
-                {
-                  "depth": 4,
-                  "previousActionId": 148,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 297,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 426,
-                  "done": false,
-                  "reward": -2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 435,
-                  "done": false,
-                  "reward": -2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 446,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 568,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 576,
-                  "done": false,
-                  "reward": 3.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 592,
-                  "done": false,
-                  "reward": 1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 593,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 594,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 604,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 608,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 626,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 653,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 658,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 687,
-                  "done": false,
-                  "reward": 1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 688,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 708,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 722,
-                  "done": false,
-                  "reward": 1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 727,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 728,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 729,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 730,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 731,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 732,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 758,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 760,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 762,
-                  "done": false,
-                  "reward": -1.0,
-                  "children": [
-                    {
-                      "depth": 5,
-                      "previousActionId": 687,
-                      "done": false,
-                      "reward": -2.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 688,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 722,
-                      "done": false,
-                      "reward": -2.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 725,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 730,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 801,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 802,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 829,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 838,
-                      "done": false,
-                      "reward": 1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 873,
-                      "done": false,
-                      "reward": 1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 913,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 914,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 934,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 948,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 949,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 952,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 953,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 954,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 955,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 956,
-                      "done": false,
-                      "reward": -4.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 957,
-                      "done": false,
-                      "reward": -2.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 958,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 959,
-                      "done": false,
-                      "reward": -4.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 961,
-                      "done": false,
-                      "reward": -2.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 970,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 971,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 972,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 973,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 975,
-                      "done": false,
-                      "reward": -2.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 976,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 984,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 989,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 990,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 991,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 992,
-                      "done": false,
-                      "reward": 0.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 993,
-                      "done": false,
-                      "reward": -2.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 994,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 995,
-                      "done": false,
-                      "reward": 0.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1011,
-                      "done": false,
-                      "reward": -2.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1021,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1024,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1026,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1027,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1029,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1032,
-                      "done": false,
-                      "reward": 0.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1038,
-                      "done": false,
-                      "reward": -1.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1042,
-                      "done": false,
-                      "reward": 0.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1043,
-                      "done": false,
-                      "reward": -5.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1054,
-                      "done": false,
-                      "reward": -5.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1063,
-                      "done": false,
-                      "reward": -5.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1182,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1183,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1184,
-                      "done": false,
-                      "reward": -2.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1185,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1188,
-                      "done": false,
-                      "reward": -3.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1189,
-                      "done": false,
-                      "reward": -3.0,
-                      "children": [
-                        {
-                          "depth": 6,
-                          "previousActionId": 687,
-                          "done": false,
-                          "reward": -3.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 688,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 722,
-                          "done": false,
-                          "reward": -3.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 725,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 730,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 873,
-                          "done": false,
-                          "reward": 0.0,
-                          "children": [
-                            {
-                              "depth": 7,
-                              "previousActionId": 957,
-                              "done": true,
-                              "reward": 104.0
-                            },
-                            {
-                              "depth": 7,
-                              "previousActionId": 975,
-                              "done": true,
-                              "reward": 104.0
-                            }
-                          ]
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 957,
-                          "done": false,
-                          "reward": -3.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 970,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 973,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 975,
-                          "done": false,
-                          "reward": -3.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 985,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 991,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 993,
-                          "done": false,
-                          "reward": -3.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 994,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1002,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1004,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1005,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1007,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1011,
-                          "done": false,
-                          "reward": -3.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1013,
-                          "done": false,
-                          "reward": -1.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1014,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1021,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1024,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1026,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1027,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1029,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1032,
-                          "done": false,
-                          "reward": -1.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1038,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1042,
-                          "done": false,
-                          "reward": -1.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1129,
-                          "done": false,
-                          "reward": 0.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1140,
-                          "done": false,
-                          "reward": -1.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1147,
-                          "done": false,
-                          "reward": 0.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1151,
-                          "done": false,
-                          "reward": 0.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1156,
-                          "done": false,
-                          "reward": 0.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1219,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1220,
-                          "done": false,
-                          "reward": -3.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1221,
-                          "done": false,
-                          "reward": -2.0
-                        },
-                        {
-                          "depth": 6,
-                          "previousActionId": 1235,
-                          "done": false,
-                          "reward": 1.0
-                        }
-                      ]
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1190,
-                      "done": false,
-                      "reward": -2.0
-                    },
-                    {
-                      "depth": 5,
-                      "previousActionId": 1191,
-                      "done": false,
-                      "reward": -3.0
-                    }
-                  ]
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 771,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 774,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 777,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 779,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 789,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 792,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 796,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 797,
-                  "done": false,
-                  "reward": -1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 801,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 829,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 838,
-                  "done": false,
-                  "reward": 4.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 939,
-                  "done": false,
-                  "reward": 1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 949,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 952,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 954,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 955,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 957,
-                  "done": false,
-                  "reward": 1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 958,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 961,
-                  "done": false,
-                  "reward": 1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 970,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 971,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 972,
-                  "done": false,
-                  "reward": 0.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 973,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 975,
-                  "done": false,
-                  "reward": 1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 976,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 984,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 989,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 990,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 991,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 992,
-                  "done": false,
-                  "reward": 3.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 993,
-                  "done": false,
-                  "reward": 1.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 994,
-                  "done": false,
-                  "reward": 2.0
-                },
-                {
-                  "depth": 4,
-                  "previousActionId": 995,
-                  "done": false,
-                  "reward": 3.0
-                }
-              ]
-            },
-            {
-              "depth": 3,
-              "previousActionId": 131,
-              "done": false,
-              "reward": -2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 132,
-              "done": false,
-              "reward": -2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 133,
-              "done": false,
-              "reward": -2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 134,
-              "done": false,
-              "reward": -1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 140,
-              "done": false,
-              "reward": -1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 141,
-              "done": false,
-              "reward": -1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 152,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 154,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 160,
-              "done": false,
-              "reward": 3.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 258,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 275,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 277,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 278,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 280,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 285,
-              "done": false,
-              "reward": -1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 286,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 300,
-              "done": false,
-              "reward": 4.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 303,
-              "done": false,
-              "reward": 4.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 316,
-              "done": false,
-              "reward": 4.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 324,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 328,
-              "done": false,
-              "reward": 4.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 407,
-              "done": false,
-              "reward": -2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 415,
-              "done": false,
-              "reward": -3.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 419,
-              "done": false,
-              "reward": -1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 426,
-              "done": false,
-              "reward": -2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 430,
-              "done": false,
-              "reward": -2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 435,
-              "done": false,
-              "reward": -2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 448,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 451,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 453,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 454,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 456,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 457,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 460,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 470,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 475,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 483,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 491,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 494,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 559,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 568,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 576,
-              "done": false,
-              "reward": 3.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 580,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 582,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 605,
-              "done": false,
-              "reward": 5.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 624,
-              "done": false,
-              "reward": 3.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 627,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 628,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 631,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 653,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 658,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 687,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 688,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 708,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 722,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 727,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 728,
-              "done": false,
-              "reward": -1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 729,
-              "done": false,
-              "reward": -1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 730,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 731,
-              "done": false,
-              "reward": -1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 732,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 801,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 829,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 838,
-              "done": false,
-              "reward": 4.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 939,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 949,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 952,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 954,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 955,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 957,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 958,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 961,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 970,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 971,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 972,
-              "done": false,
-              "reward": 0.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 973,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 975,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 976,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 984,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 989,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 990,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 991,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 992,
-              "done": false,
-              "reward": 3.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 993,
-              "done": false,
-              "reward": 1.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 994,
-              "done": false,
-              "reward": 2.0
-            },
-            {
-              "depth": 3,
-              "previousActionId": 995,
-              "done": false,
-              "reward": 3.0
-            }
-          ]
-        },
-        {
-          "depth": 2,
-          "previousActionId": 41,
-          "done": false,
-          "reward": 3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 52,
-          "done": false,
-          "reward": 2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 112,
-          "done": false,
-          "reward": -3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 120,
-          "done": false,
-          "reward": -3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 126,
-          "done": false,
-          "reward": -3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 131,
-          "done": false,
-          "reward": -3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 132,
-          "done": false,
-          "reward": -3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 133,
-          "done": false,
-          "reward": -3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 134,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 140,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 141,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 179,
-          "done": false,
-          "reward": 1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 182,
-          "done": false,
-          "reward": 2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 184,
-          "done": false,
-          "reward": 2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 196,
-          "done": false,
-          "reward": 2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 252,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 256,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 271,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 307,
-          "done": false,
-          "reward": 4.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 326,
-          "done": false,
-          "reward": 3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 328,
-          "done": false,
-          "reward": 3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 330,
-          "done": false,
-          "reward": 2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 331,
-          "done": false,
-          "reward": 2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 345,
-          "done": false,
-          "reward": 2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 400,
-          "done": false,
-          "reward": -3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 414,
-          "done": false,
-          "reward": -1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 415,
-          "done": false,
-          "reward": -4.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 416,
-          "done": false,
-          "reward": -3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 417,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 421,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 422,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 456,
-          "done": false,
-          "reward": 0.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 475,
-          "done": false,
-          "reward": 1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 479,
-          "done": false,
-          "reward": 2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 480,
-          "done": false,
-          "reward": 2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 494,
-          "done": false,
-          "reward": 1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 499,
-          "done": false,
-          "reward": 1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 532,
-          "done": false,
-          "reward": -1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 536,
-          "done": false,
-          "reward": -1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 551,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 605,
-          "done": false,
-          "reward": 4.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 624,
-          "done": false,
-          "reward": 2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 627,
-          "done": false,
-          "reward": -1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 628,
-          "done": false,
-          "reward": 0.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 631,
-          "done": false,
-          "reward": -1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 658,
-          "done": false,
-          "reward": -1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 662,
-          "done": false,
-          "reward": -1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 694,
-          "done": false,
-          "reward": 1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 695,
-          "done": false,
-          "reward": -4.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 696,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 697,
-          "done": false,
-          "reward": 1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 701,
-          "done": false,
-          "reward": 0.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 702,
-          "done": false,
-          "reward": 1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 772,
-          "done": false,
-          "reward": -4.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 790,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 791,
-          "done": false,
-          "reward": -3.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 794,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 795,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 798,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 808,
-          "done": false,
-          "reward": 0.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 809,
-          "done": false,
-          "reward": -1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 813,
-          "done": false,
-          "reward": 0.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 814,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 825,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 826,
-          "done": false,
-          "reward": 2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 827,
-          "done": false,
-          "reward": 1.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 828,
-          "done": false,
-          "reward": -2.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 832,
-          "done": false,
-          "reward": 0.0
-        },
-        {
-          "depth": 2,
-          "previousActionId": 833,
-          "done": false,
-          "reward": 0.0
-        }
-      ]
+      "reward": 1.0
     },
     {
       "depth": 1,
@@ -7142,7 +5180,2029 @@
       "depth": 1,
       "previousActionId": 862,
       "done": false,
-      "reward": 4.0
+      "reward": 4.0,
+      "children": [
+        {
+          "depth": 2,
+          "previousActionId": 73,
+          "done": false,
+          "reward": -6.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 74,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 76,
+          "done": false,
+          "reward": -6.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 79,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 81,
+          "done": false,
+          "reward": -5.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 87,
+          "done": false,
+          "reward": -3.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 89,
+          "done": false,
+          "reward": -5.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 96,
+          "done": false,
+          "reward": -6.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 106,
+          "done": false,
+          "reward": -5.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 116,
+          "done": false,
+          "reward": -5.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 212,
+          "done": false,
+          "reward": -3.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 222,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 225,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 227,
+          "done": false,
+          "reward": -2.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 228,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 235,
+          "done": false,
+          "reward": -3.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 238,
+          "done": false,
+          "reward": -5.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 244,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 265,
+          "done": false,
+          "reward": -5.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 371,
+          "done": false,
+          "reward": -6.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 372,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 373,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 374,
+          "done": false,
+          "reward": -6.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 382,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 383,
+          "done": false,
+          "reward": -5.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 388,
+          "done": false,
+          "reward": -6.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 414,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 520,
+          "done": false,
+          "reward": -2.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 521,
+          "done": false,
+          "reward": -3.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 523,
+          "done": false,
+          "reward": -3.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 526,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 532,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 540,
+          "done": false,
+          "reward": -1.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 548,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 563,
+          "done": false,
+          "reward": -3.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 659,
+          "done": false,
+          "reward": -3.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 669,
+          "done": false,
+          "reward": -3.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 672,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 674,
+          "done": false,
+          "reward": -5.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 675,
+          "done": false,
+          "reward": -3.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 678,
+          "done": false,
+          "reward": -3.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 681,
+          "done": false,
+          "reward": -2.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 688,
+          "done": false,
+          "reward": -2.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 691,
+          "done": false,
+          "reward": -4.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 704,
+          "done": false,
+          "reward": -3.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 706,
+          "done": false,
+          "reward": -2.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 712,
+          "done": false,
+          "reward": -2.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 716,
+          "done": false,
+          "reward": -2.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 725,
+          "done": false,
+          "reward": -2.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 733,
+          "done": false,
+          "reward": -2.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 826,
+          "done": false,
+          "reward": -1.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 836,
+          "done": false,
+          "reward": 0.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 839,
+          "done": false,
+          "reward": 0.0,
+          "children": [
+            {
+              "depth": 3,
+              "previousActionId": 48,
+              "done": false,
+              "reward": 0.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 49,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 69,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 70,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 79,
+              "done": false,
+              "reward": -4.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 81,
+              "done": false,
+              "reward": -5.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 82,
+              "done": false,
+              "reward": -4.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 86,
+              "done": false,
+              "reward": -5.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 87,
+              "done": false,
+              "reward": -3.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 194,
+              "done": false,
+              "reward": -3.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 197,
+              "done": false,
+              "reward": -2.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 200,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 202,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 212,
+              "done": false,
+              "reward": -3.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 214,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 325,
+              "done": false,
+              "reward": 1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 344,
+              "done": false,
+              "reward": 0.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 346,
+              "done": false,
+              "reward": 0.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 348,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 349,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 363,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 474,
+              "done": false,
+              "reward": -3.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 493,
+              "done": false,
+              "reward": -2.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 497,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 498,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 512,
+              "done": false,
+              "reward": -2.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 517,
+              "done": false,
+              "reward": -2.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 623,
+              "done": false,
+              "reward": 1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 642,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 645,
+              "done": false,
+              "reward": -4.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 646,
+              "done": false,
+              "reward": -3.0,
+              "children": [
+                {
+                  "depth": 4,
+                  "previousActionId": 1,
+                  "done": false,
+                  "reward": 2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 4,
+                  "done": false,
+                  "reward": 2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 6,
+                  "done": false,
+                  "reward": 2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 7,
+                  "done": false,
+                  "reward": 2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 10,
+                  "done": false,
+                  "reward": 2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 13,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 23,
+                  "done": false,
+                  "reward": 2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 36,
+                  "done": false,
+                  "reward": 2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 44,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 197,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 349,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 360,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 363,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 466,
+                  "done": false,
+                  "reward": -2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 467,
+                  "done": false,
+                  "reward": -3.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 468,
+                  "done": false,
+                  "reward": -3.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 469,
+                  "done": false,
+                  "reward": -1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 474,
+                  "done": false,
+                  "reward": -1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 477,
+                  "done": false,
+                  "reward": -3.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 478,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 483,
+                  "done": false,
+                  "reward": -2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 493,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 497,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 509,
+                  "done": false,
+                  "reward": -1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 615,
+                  "done": false,
+                  "reward": -1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 616,
+                  "done": false,
+                  "reward": -2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 618,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 621,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 627,
+                  "done": false,
+                  "reward": -2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 643,
+                  "done": false,
+                  "reward": -2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 658,
+                  "done": false,
+                  "reward": -2.0,
+                  "children": [
+                    {
+                      "depth": 5,
+                      "previousActionId": 1,
+                      "done": false,
+                      "reward": 3.0,
+                      "children": [
+                        {
+                          "depth": 6,
+                          "previousActionId": 349,
+                          "done": false,
+                          "reward": 6.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 748,
+                          "done": false,
+                          "reward": 1.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 775,
+                          "done": false,
+                          "reward": 1.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 894,
+                          "done": false,
+                          "reward": 3.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 899,
+                          "done": false,
+                          "reward": 3.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 900,
+                          "done": false,
+                          "reward": 3.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 901,
+                          "done": false,
+                          "reward": 3.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 904,
+                          "done": false,
+                          "reward": 3.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 905,
+                          "done": false,
+                          "reward": 2.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 909,
+                          "done": false,
+                          "reward": 2.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 910,
+                          "done": false,
+                          "reward": 2.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 922,
+                          "done": false,
+                          "reward": 3.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 924,
+                          "done": false,
+                          "reward": 3.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 926,
+                          "done": false,
+                          "reward": 2.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 927,
+                          "done": false,
+                          "reward": 2.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 929,
+                          "done": false,
+                          "reward": 2.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 941,
+                          "done": false,
+                          "reward": 2.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1051,
+                          "done": false,
+                          "reward": 0.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1069,
+                          "done": false,
+                          "reward": 1.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1071,
+                          "done": false,
+                          "reward": 1.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1073,
+                          "done": false,
+                          "reward": 2.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1074,
+                          "done": false,
+                          "reward": 2.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1087,
+                          "done": false,
+                          "reward": 2.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1139,
+                          "done": false,
+                          "reward": 7.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1140,
+                          "done": false,
+                          "reward": 6.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1144,
+                          "done": false,
+                          "reward": 6.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1172,
+                          "done": false,
+                          "reward": 7.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1184,
+                          "done": false,
+                          "reward": 4.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1191,
+                          "done": false,
+                          "reward": 3.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1192,
+                          "done": false,
+                          "reward": 2.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1193,
+                          "done": false,
+                          "reward": 2.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1216,
+                          "done": false,
+                          "reward": 6.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1220,
+                          "done": false,
+                          "reward": 4.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1221,
+                          "done": false,
+                          "reward": 5.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1222,
+                          "done": false,
+                          "reward": 6.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1226,
+                          "done": false,
+                          "reward": 5.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1227,
+                          "done": false,
+                          "reward": 6.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1228,
+                          "done": false,
+                          "reward": 6.0
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1229,
+                          "done": false,
+                          "reward": 0.0,
+                          "children": [
+                            {
+                              "depth": 7,
+                              "previousActionId": 748,
+                              "done": false,
+                              "reward": 4.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 775,
+                              "done": false,
+                              "reward": 4.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 894,
+                              "done": false,
+                              "reward": 6.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 899,
+                              "done": false,
+                              "reward": 6.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 900,
+                              "done": false,
+                              "reward": 6.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 901,
+                              "done": false,
+                              "reward": 6.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 904,
+                              "done": false,
+                              "reward": 6.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 905,
+                              "done": false,
+                              "reward": 5.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 909,
+                              "done": false,
+                              "reward": 5.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 910,
+                              "done": false,
+                              "reward": 5.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 922,
+                              "done": false,
+                              "reward": 6.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 924,
+                              "done": false,
+                              "reward": 6.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 926,
+                              "done": false,
+                              "reward": 5.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 927,
+                              "done": false,
+                              "reward": 5.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 929,
+                              "done": false,
+                              "reward": 5.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 941,
+                              "done": false,
+                              "reward": 5.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 1051,
+                              "done": false,
+                              "reward": 3.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 1069,
+                              "done": false,
+                              "reward": 4.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 1071,
+                              "done": false,
+                              "reward": 4.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 1073,
+                              "done": false,
+                              "reward": 5.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 1074,
+                              "done": false,
+                              "reward": 5.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 1087,
+                              "done": false,
+                              "reward": 5.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 1184,
+                              "done": false,
+                              "reward": 7.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 1191,
+                              "done": false,
+                              "reward": 6.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 1192,
+                              "done": false,
+                              "reward": 5.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 1193,
+                              "done": false,
+                              "reward": 5.0
+                            },
+                            {
+                              "depth": 7,
+                              "previousActionId": 1229,
+                              "done": false,
+                              "reward": 3.0
+                            }
+                          ]
+                        },
+                        {
+                          "depth": 6,
+                          "previousActionId": 1234,
+                          "done": false,
+                          "reward": 8.0
+                        }
+                      ]
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 4,
+                      "done": false,
+                      "reward": 3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 6,
+                      "done": false,
+                      "reward": 3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 7,
+                      "done": false,
+                      "reward": 3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 10,
+                      "done": false,
+                      "reward": 3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 13,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 23,
+                      "done": false,
+                      "reward": 3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 26,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 36,
+                      "done": false,
+                      "reward": 3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 44,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 157,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 162,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 165,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 166,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 178,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 183,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 196,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 201,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 306,
+                      "done": false,
+                      "reward": 1.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 308,
+                      "done": false,
+                      "reward": 3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 312,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 326,
+                      "done": false,
+                      "reward": 3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 349,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 455,
+                      "done": false,
+                      "reward": 0.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 604,
+                      "done": false,
+                      "reward": -1.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 608,
+                      "done": false,
+                      "reward": -1.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 760,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 771,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 774,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 775,
+                      "done": false,
+                      "reward": -3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 779,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 903,
+                      "done": false,
+                      "reward": 0.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 922,
+                      "done": false,
+                      "reward": -1.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 924,
+                      "done": false,
+                      "reward": -1.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 926,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 927,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 929,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 941,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1051,
+                      "done": false,
+                      "reward": -4.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1069,
+                      "done": false,
+                      "reward": -3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1071,
+                      "done": false,
+                      "reward": -3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1073,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1074,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1087,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1139,
+                      "done": false,
+                      "reward": 3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1140,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1144,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1172,
+                      "done": false,
+                      "reward": 3.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1184,
+                      "done": false,
+                      "reward": 0.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1191,
+                      "done": false,
+                      "reward": -1.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1192,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1193,
+                      "done": false,
+                      "reward": -2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1216,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1220,
+                      "done": false,
+                      "reward": 0.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1221,
+                      "done": false,
+                      "reward": 1.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1222,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1226,
+                      "done": false,
+                      "reward": 1.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1227,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1228,
+                      "done": false,
+                      "reward": 2.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1229,
+                      "done": false,
+                      "reward": -4.0
+                    },
+                    {
+                      "depth": 5,
+                      "previousActionId": 1234,
+                      "done": false,
+                      "reward": 4.0
+                    }
+                  ]
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 754,
+                  "done": false,
+                  "reward": -5.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 764,
+                  "done": false,
+                  "reward": -4.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 767,
+                  "done": false,
+                  "reward": -4.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 769,
+                  "done": false,
+                  "reward": -4.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 770,
+                  "done": false,
+                  "reward": -4.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 773,
+                  "done": false,
+                  "reward": -4.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 776,
+                  "done": false,
+                  "reward": -3.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 786,
+                  "done": false,
+                  "reward": -4.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 799,
+                  "done": false,
+                  "reward": -4.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 802,
+                  "done": false,
+                  "reward": -2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 807,
+                  "done": false,
+                  "reward": -3.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 950,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 968,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 978,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 987,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 996,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1085,
+                  "done": false,
+                  "reward": -3.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1095,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1098,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1100,
+                  "done": false,
+                  "reward": -2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1101,
+                  "done": false,
+                  "reward": -2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1103,
+                  "done": false,
+                  "reward": -2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1106,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1112,
+                  "done": false,
+                  "reward": 2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1116,
+                  "done": false,
+                  "reward": -2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1123,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1128,
+                  "done": false,
+                  "reward": 2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1138,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1140,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1144,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1145,
+                  "done": false,
+                  "reward": 2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1155,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1172,
+                  "done": false,
+                  "reward": 2.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1214,
+                  "done": false,
+                  "reward": -1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1220,
+                  "done": false,
+                  "reward": -1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1221,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1222,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1226,
+                  "done": false,
+                  "reward": 0.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1227,
+                  "done": false,
+                  "reward": 1.0
+                },
+                {
+                  "depth": 4,
+                  "previousActionId": 1228,
+                  "done": false,
+                  "reward": 1.0
+                }
+              ]
+            },
+            {
+              "depth": 3,
+              "previousActionId": 649,
+              "done": false,
+              "reward": -4.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 676,
+              "done": false,
+              "reward": -4.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 680,
+              "done": false,
+              "reward": -2.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 698,
+              "done": false,
+              "reward": -2.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 790,
+              "done": false,
+              "reward": -5.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 809,
+              "done": false,
+              "reward": -4.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 812,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 813,
+              "done": false,
+              "reward": -3.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 816,
+              "done": false,
+              "reward": -3.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 830,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 832,
+              "done": false,
+              "reward": -3.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 834,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 843,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 846,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 847,
+              "done": false,
+              "reward": 0.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 851,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 861,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 864,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 975,
+              "done": false,
+              "reward": -3.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 994,
+              "done": false,
+              "reward": -2.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 998,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 999,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1013,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1018,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1119,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1137,
+              "done": false,
+              "reward": 0.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1140,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1141,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1144,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1172,
+              "done": false,
+              "reward": 0.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1214,
+              "done": false,
+              "reward": -3.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1220,
+              "done": false,
+              "reward": -3.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1221,
+              "done": false,
+              "reward": -2.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1222,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1226,
+              "done": false,
+              "reward": -2.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1227,
+              "done": false,
+              "reward": -1.0
+            },
+            {
+              "depth": 3,
+              "previousActionId": 1228,
+              "done": false,
+              "reward": -1.0
+            }
+          ]
+        },
+        {
+          "depth": 2,
+          "previousActionId": 841,
+          "done": false,
+          "reward": 0.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 842,
+          "done": false,
+          "reward": 0.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 845,
+          "done": false,
+          "reward": 0.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 848,
+          "done": false,
+          "reward": -1.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 854,
+          "done": false,
+          "reward": 0.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 858,
+          "done": false,
+          "reward": 0.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 866,
+          "done": false,
+          "reward": -1.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 871,
+          "done": false,
+          "reward": 0.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 875,
+          "done": false,
+          "reward": 0.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 879,
+          "done": false,
+          "reward": -1.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 881,
+          "done": false,
+          "reward": -1.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 888,
+          "done": false,
+          "reward": 0.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 889,
+          "done": false,
+          "reward": 0.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 890,
+          "done": false,
+          "reward": -1.0
+        },
+        {
+          "depth": 2,
+          "previousActionId": 891,
+          "done": false,
+          "reward": -1.0
+        }
+      ]
     },
     {
       "depth": 1,

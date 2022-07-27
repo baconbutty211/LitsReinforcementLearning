@@ -57,11 +57,8 @@ namespace LitsReinforcementLearning
         }
         #endregion
 
-        public void Explore() 
-        {
-            throw new NotImplementedException();
-        }
-        public Action Exploit(Environment env) 
+        // Trains the neural network model on the current state and best future state.
+        public void Explore(Environment env) 
         {
             switch (type)
             {
@@ -70,17 +67,26 @@ namespace LitsReinforcementLearning
 
                 case AgentType.MonteCarlo:
                     throw new NotImplementedException();
-                
+
                 case AgentType.DynamicProgramming:
-                    return ExploitDynamicProgramming(env);
-                
+                    ExploreDynamicProgramming(env);
+                    break;
+
                 case AgentType.ExhaustiveSearch:
                     break;
-                
+
                 default:
                     break;
             }
-            return null;
+        }
+        public Action Exploit(Environment env, bool isTrain=false) 
+        {
+            if (isTrain)
+                Explore(env);
+
+            NDarray values = model.Predict(env.features);
+            int actionId = MaxValidActionId(env, values.GetData<float>());
+            return Action.GetAction(actionId);
         }
     }
 
@@ -91,7 +97,7 @@ namespace LitsReinforcementLearning
     /// </summary>
     public partial class Agent
     {
-        private Action ExploitDynamicProgramming(Environment env)
+        private Action ExploreDynamicProgramming(Environment env)
         {
             Tree favChild = null;
             NDarray currentValues = model.Predict(env.features);
@@ -151,6 +157,23 @@ namespace LitsReinforcementLearning
                 if (values[action.Id] > maxVal)
                     maxVal = values[action.Id];
             return maxVal;
+        }
+        private int MaxValidActionId(Environment env, float[] values) 
+        {
+            if (env.isDone)
+            {
+                Log.RotateError();
+                throw new ArgumentNullException("No valid actions to return.");
+            }
+            int maxId = -1;
+            float maxVal = float.MinValue;
+            foreach (Action action in env.validActions)
+                if (values[action.Id] > maxVal)
+                {
+                    maxVal = values[action.Id];
+                    maxId = action.Id;
+                }
+            return maxId;
         }
     }
 }
