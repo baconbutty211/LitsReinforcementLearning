@@ -1,6 +1,5 @@
 ﻿using System;
-using MathNet.Numerics.Distributions;
-using MathNet.Numerics.LinearAlgebra;
+using Numpy;
 
 namespace LitsReinforcementLearning
 {
@@ -11,7 +10,7 @@ namespace LitsReinforcementLearning
         public const float discount = 0.95f;
 
         private AgentType type;
-        NeuralNet model;
+        KerasNet model;
 
         protected Tree litsTree; //Tree trunk
         protected Tree cwt; //Current working tree
@@ -19,13 +18,13 @@ namespace LitsReinforcementLearning
         protected bool isStartPlayer;
 
 
-        public Agent(AgentType type, Observation initial, Vector<float> initialFeatures, bool isStartPlayer = true) 
+        public Agent(AgentType type, Observation initial, NDarray initialFeatures, bool isStartPlayer = true) 
         {
             this.type = type;
             this.isStartPlayer = isStartPlayer;
 
-            model = new NeuralNet(initialFeatures.Count);
-            litsTree = new Tree(initial);                               // Initializes new tree
+            model = new KerasNet(initialFeatures.len, Action.actionSpaceSize);  // Initializes new neural network
+            litsTree = new Tree(initial);                                       // Initializes new tree
 
             Reset();
         } // Creates a new agent.
@@ -48,11 +47,13 @@ namespace LitsReinforcementLearning
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
             litsTree = Tree.LoadJson(path);
+            model = KerasNet.Load(path);
         }
         public void Save(string agentName) 
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
             Tree.SaveJson(litsTree, path);
+            model.Save(path);
         }
         #endregion
 
@@ -93,10 +94,10 @@ namespace LitsReinforcementLearning
         private Action ExploitDynamicProgramming(Environment env)
         {
             Tree favChild = null;
-            Vector<float> currentValues = model.Evaluate(env.features);
+            NDarray currentValues = model.Predict(env.features);
 
             float bestChildVal = isStartPlayer ? float.MinValue : float.MaxValue;
-            Vector<float> bestChildsVals = null;
+            NDarray bestChildVals = null;
             float bestChildReward = 0;
             foreach (Action action in env.validActions)
             {
@@ -104,8 +105,8 @@ namespace LitsReinforcementLearning
                 Observation obs = future.Step(action);
                 Tree child = cwt.Branch(obs);
 
-                Vector<float> futureValues = model.Evaluate(future.features);
-                float futureValue = MaxValidActionValue(env, futureValues);
+                NDarray futureValues = model.Predict(future.features);
+                float futureValue = MaxValidActionValue(env, futureValues.GetData<float>());
 
                 if (isStartPlayer)
                 {
@@ -113,7 +114,7 @@ namespace LitsReinforcementLearning
                     {
                         favChild = child;
                         bestChildVal = futureValue;
-                        bestChildsVals = futureValues;
+                        bestChildVals = futureValues;
                         bestChildReward = obs.reward;
                     }
                 }
@@ -123,25 +124,28 @@ namespace LitsReinforcementLearning
                     {
                         favChild = child;
                         bestChildVal = futureValue;
-                        bestChildsVals = futureValues;
+                        bestChildVals = futureValues;
                         bestChildReward = obs.reward;
                     }
                 }
             }
 
-            model.Update(bestChildReward, bestChildsVals, currentValues, env.features);
+            float[] rewards = new float[bestChildVals.size];
+            for(int i = 0; i < bestChildVals.size; i++)
+                rewards[i] = bestChildReward;
+            NDarray bestChildRewards = np.array(rewards);
+            model.Train(env.features, bestChildRewards + (discount * bestChildVals));
 
             cwt = favChild;
             return favChild.PreviousAction;
         }
-        private float MaxValidActionValue(Environment env, Vector<float> values) 
+        private float MaxValidActionValue(Environment env, float[] values) 
         {
             if (env.isDone)
             {
                 Log.RotateError();
                 throw new ArgumentNullException("No valid actions to return.");
             }
-
             float maxVal = float.MinValue;
             foreach(Action action in env.validActions)
                 if (values[action.Id] > maxVal)

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MathNet.Numerics.LinearAlgebra;
+using Python.Runtime;
+using Python;
+using Keras;
+using Numpy;
 
 namespace LitsReinforcementLearning
 {
@@ -58,7 +61,7 @@ namespace LitsReinforcementLearning
         public int oFilled = 0;
         private int _Filled = 0;
 
-        public Vector<float> features
+        public NDarray features
         {
             get
             {
@@ -82,7 +85,7 @@ namespace LitsReinforcementLearning
                 //featsLst.Add((float)( (int)tile ) / 7);
 
                 featsLst.Add(1);
-                return Vector<float>.Build.Dense(featsLst.ToArray());
+                return new NDarray(featsLst.ToArray());
             }
         }
 

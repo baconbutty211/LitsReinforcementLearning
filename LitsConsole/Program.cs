@@ -9,13 +9,9 @@ namespace LitsReinforcementLearning
     {
         static void Main(string[] args)
         {
-            Agent fresh1 = Trainer.CreateNewAgent("Fresh");
-            Agent fresh2 = Trainer.CreateNewAgent("Fresh");
-            Trainer.TrainAI(fresh1, fresh2, 5);
-            Trainer.PlayAI(fresh1, fresh2);
-            return;
-
             string agentName = args[2];
+
+            //Trainer.CreateNewAgent("Fresh");            
 
             Agent agent1 = new Agent(AgentType.DynamicProgramming, agentName, true);
             Agent agent2 = new Agent(AgentType.DynamicProgramming, agentName, false);

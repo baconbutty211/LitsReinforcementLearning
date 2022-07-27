@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <PackageReference Include="Keras.NET" Version="3.8.5" />
-    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
