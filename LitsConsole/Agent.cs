@@ -59,7 +59,7 @@ namespace LitsReinforcementLearning
 
         public void Explore() 
         {
-            
+            throw new NotImplementedException();
         }
         public Action Exploit(Environment env) 
         {

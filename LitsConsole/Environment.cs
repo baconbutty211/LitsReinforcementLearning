@@ -82,9 +82,6 @@ namespace LitsReinforcementLearning
                             break;
                     }
                 }
-                //featsLst.Add((float)( (int)tile ) / 7);
-
-                featsLst.Add(1);
                 return new NDarray(featsLst.ToArray());
             }
         }
