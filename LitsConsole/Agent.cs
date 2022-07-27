@@ -12,9 +12,6 @@ namespace LitsReinforcementLearning
         private AgentType type;
         KerasNet model;
 
-        protected Tree litsTree; //Tree trunk
-        protected Tree cwt; //Current working tree
-
         protected bool isStartPlayer;
 
 
@@ -24,9 +21,6 @@ namespace LitsReinforcementLearning
             this.isStartPlayer = isStartPlayer;
 
             model = new KerasNet(initialFeatures.len, Action.actionSpaceSize);  // Initializes new neural network
-            litsTree = new Tree(initial);                                       // Initializes new tree
-
-            Reset();
         } // Creates a new agent.
         public Agent(AgentType type, string agentName, bool isStartPlayer = true) 
         {
@@ -34,25 +28,17 @@ namespace LitsReinforcementLearning
             this.isStartPlayer = isStartPlayer;
 
             Load(agentName);
-            Reset();
         } // Loads an agent from a save file.
         
-        public virtual void Reset()
-        {
-            cwt = litsTree;
-        }
-
         #region Save/Load
         private void Load(string agentName)
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
-            litsTree = Tree.LoadJson(path);
             model = KerasNet.Load(path);
         }
         public void Save(string agentName) 
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
-            Tree.SaveJson(litsTree, path);
             model.Save(path);
         }
         #endregion
@@ -97,9 +83,8 @@ namespace LitsReinforcementLearning
     /// </summary>
     public partial class Agent
     {
-        private Action ExploreDynamicProgramming(Environment env)
+        private void ExploreDynamicProgramming(Environment env)
         {
-            Tree favChild = null;
             NDarray currentValues = model.Predict(env.features);
 
             float bestChildVal = isStartPlayer ? float.MinValue : float.MaxValue;
@@ -109,7 +94,6 @@ namespace LitsReinforcementLearning
             {
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
-                Tree child = cwt.Branch(obs);
 
                 NDarray futureValues = model.Predict(future.features);
                 float futureValue = MaxValidActionValue(env, futureValues.GetData<float>());
@@ -118,7 +102,6 @@ namespace LitsReinforcementLearning
                 {
                     if (futureValue >= bestChildVal)
                     {
-                        favChild = child;
                         bestChildVal = futureValue;
                         bestChildVals = futureValues;
                         bestChildReward = obs.reward;
@@ -128,7 +111,6 @@ namespace LitsReinforcementLearning
                 {
                     if (futureValue <= bestChildVal)
                     {
-                        favChild = child;
                         bestChildVal = futureValue;
                         bestChildVals = futureValues;
                         bestChildReward = obs.reward;
@@ -141,9 +123,6 @@ namespace LitsReinforcementLearning
                 rewards[i] = bestChildReward;
             NDarray bestChildRewards = np.array(rewards);
             model.Train(env.features, bestChildRewards + (discount * bestChildVals));
-
-            cwt = favChild;
-            return favChild.PreviousAction;
         }
         private float MaxValidActionValue(Environment env, float[] values) 
         {

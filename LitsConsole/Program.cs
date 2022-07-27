@@ -11,7 +11,7 @@ namespace LitsReinforcementLearning
         {
             string agentName = args[2];
 
-            Trainer.CreateNewAgent("Fresh");            
+            //Trainer.CreateNewAgent("Fresh");
 
             Agent agent1 = new Agent(AgentType.DynamicProgramming, agentName, true);
             Agent agent2 = new Agent(AgentType.DynamicProgramming, agentName, false);

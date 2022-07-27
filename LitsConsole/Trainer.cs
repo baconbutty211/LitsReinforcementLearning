@@ -35,7 +35,6 @@ namespace LitsReinforcementLearning
             if(verbosity >= Verbosity.Mid)
                 Console.WriteLine(GetResult(environment.GetResult()));
             environment.Reset();
-            subject1.Reset();
         }
         public static void PlayAI(Agent subject1, Agent subject2, bool isTrain = false, Verbosity verbosity = Verbosity.High) 
         {
@@ -62,8 +61,6 @@ namespace LitsReinforcementLearning
             if(verbosity >= Verbosity.Mid)
                 Console.WriteLine(GetResult(environment.GetResult()));
             environment.Reset();
-            subject1.Reset();
-            subject2.Reset();
         }
         public static void TrainSolo(Agent subject1, int episodes, Verbosity verbosity = Verbosity.Low) 
         {
