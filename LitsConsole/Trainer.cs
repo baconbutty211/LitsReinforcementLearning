@@ -9,80 +9,59 @@ namespace LitsReinforcementLearning
 {
     public static class Trainer
     {
+        public enum Player { None, Solo, AI, User }
         public enum Verbosity { None, Low, Mid, High }
         static Environment environment = new Environment();
 
         public static Agent CreateNewAgent(string name) 
         {
-            Observation initial = environment.Reset();
-            Agent newAgent = new Agent(AgentType.DynamicProgramming, initial, environment.features);
+            Agent newAgent = new Agent(AgentType.DynamicProgramming, environment.features);
             newAgent.Save(name);
             return newAgent;
         }
 
-        public static void PlaySolo(Agent subject1, bool isTrain = false, Verbosity verbosity = Verbosity.High) 
+        public static void PlayGame(Agent agent, Player player, bool isTrain = false, Verbosity verbosity = Verbosity.High)
         {
             if (verbosity >= Verbosity.High)
                 DisplayBoard(environment);
 
             while (!environment.isDone)
             {
-                Action action = subject1.Exploit(environment, isTrain);
-                environment.Step(action);
-                if (verbosity >= Verbosity.High)
-                    DisplayBoard(environment, action);
-            } // Play Game
-            if(verbosity >= Verbosity.Mid)
-                Console.WriteLine(GetResult(environment.GetResult()));
-            environment.Reset();
-        }
-        public static void PlayAI(Agent subject1, Agent subject2, bool isTrain = false, Verbosity verbosity = Verbosity.High) 
-        {
-            if (verbosity >= Verbosity.High)
-                DisplayBoard(environment);
+                bool isFirstPlayer;
+                switch (player)
+                {
+                    case Player.Solo:
+                        isFirstPlayer = true;
+                        break;
+                    case Player.AI:
+                        isFirstPlayer = environment.stepCount % 2 == 0;
+                        break;
+                    default:
+                        throw new NotImplementedException($"No case statement for Player type {player}");
+                }
 
-            while (!environment.isDone)
-            {
-                Action action = subject1.Exploit(environment, isTrain);
+                Action action = agent.Exploit(environment, isTrain, isFirstPlayer);
                 Log.Write($"Applying action {action}...");
                 environment.Step(action);
-                if(verbosity >= Verbosity.High)
-                    DisplayBoard(environment, action);
 
-                if (environment.isDone)
-                    break;
-
-                Action counterAction = subject2.Exploit(environment, isTrain);
-                Log.Write($"Applying action {counterAction}");
-                environment.Step(counterAction);
                 if (verbosity >= Verbosity.High)
-                    DisplayBoard(environment, counterAction);
+                    DisplayBoard(environment, action);
             } // Play Game
-            if(verbosity >= Verbosity.Mid)
+
+            if (verbosity >= Verbosity.Mid)
                 Console.WriteLine(GetResult(environment.GetResult()));
+
             environment.Reset();
         }
-        public static void TrainSolo(Agent subject1, int episodes, Verbosity verbosity = Verbosity.Low) 
+        public static void Train(Agent agent, Player player, int episodes, Verbosity verbosity = Verbosity.Low) 
         {
             for (int i = 0; i < episodes; i++)
             {
-                PlaySolo(subject1, isTrain: true, verbosity);
+                PlayGame(agent, player, isTrain: true, verbosity);
 
                 if (verbosity == Verbosity.Low)
                     Console.Write($"\rGames of training completed: {i}");
                 else if(verbosity > Verbosity.Low)
-                    Console.WriteLine($"Games of training completed: {i}");
-            }
-        }
-        public static void TrainAI(Agent subject1, Agent subject2, int episodes, Verbosity verbosity = Verbosity.Low)
-        {
-            for (int i = 0; i < episodes; i++)
-            {
-                PlayAI(subject1, subject2, isTrain: true, verbosity);
-
-                if (verbosity == Verbosity.Low)
-                    Console.Write($"\rGames of training completed: {i}");
-                else if (verbosity > Verbosity.Low)
                     Console.WriteLine($"Games of training completed: {i}");
             }
         }

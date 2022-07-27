@@ -9,62 +9,39 @@ namespace LitsReinforcementLearning
     {
         static void Main(string[] args)
         {
-            string agentName = args[2];
-
-            //Trainer.CreateNewAgent("Fresh");
-
-            Agent agent1 = new Agent(AgentType.DynamicProgramming, agentName, true);
-            Agent agent2 = new Agent(AgentType.DynamicProgramming, agentName, false);
-
-
             string trainORplay = args[0].ToLower();
             string aiOrsoloORuser = args[1].ToLower();
+            string agentName = args[2];
+            
+            Trainer.Player player = Trainer.Player.None;
+            if (aiOrsoloORuser == "ai")
+                player = Trainer.Player.AI;
+            else if (aiOrsoloORuser == "solo")
+                player = Trainer.Player.Solo;
+            else if (aiOrsoloORuser == "user")
+                player = Trainer.Player.User;
+            else
+                Console.WriteLine("Not acceptable, try again.");
+
+            //Trainer.CreateNewAgent("Fresh");
+            Agent agent = new Agent(AgentType.DynamicProgramming, agentName);
+
             if (trainORplay == "train")
             {
-                if (!int.TryParse(args[3], out int episodes))
+                if (int.TryParse(args[3], out int episodes))
                 {
                     Console.WriteLine("No integer value for episodes given.");
                     return;
                 }
 
-                if (aiOrsoloORuser == "ai")
-                {
-                    Console.Title = "Training AI...";
-                    Trainer.TrainAI(agent1, agent2, episodes);
-                    agent1.Save("Powers");
-                }
-                else if(aiOrsoloORuser == "solo") 
-                {
-                    Console.Title = "Training solo...";
-                    Trainer.TrainSolo(agent1, episodes);
-                    agent1.Save("Powers");
-                }
-                else 
-                {
-                    Console.WriteLine("Not acceptable, try again.");
-                }
+                Console.Title = $"Training {player}...";
+                Trainer.Train(agent, player, episodes);
+                agent.Save("Powers");
             }
             else if(trainORplay == "play")
             {
-                if (aiOrsoloORuser == "ai")
-                {
-                    Console.Title = "Playing AI...";
-                    Trainer.PlayAI(agent1, agent2);
-                }
-                else if (aiOrsoloORuser == "solo")
-                {
-                    Console.Title = "Playing solo...";
-                    Trainer.PlaySolo(agent1);
-                }
-                else if (aiOrsoloORuser == "user")
-                {
-                    Console.Title = "Playing user...";
-                    Trainer.PlayUser(agent1);
-                }
-                else
-                {
-                    Console.WriteLine("Not acceptable, try again.");
-                }
+                Console.Title = $"Playing {player}...";
+                Trainer.PlayGame(agent, player);
             }
             else
             {
