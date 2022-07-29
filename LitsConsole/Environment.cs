@@ -10,7 +10,7 @@ namespace LitsReinforcementLearning
 {
     public class Environment
     {
-        public enum End { Win, Draw, Lose }
+        public enum End { XWin, Draw, OWin}
         public enum Tile { _, O, X, L, I, T, S }
         public const int size = 100;
         private Random rnd = new Random();
@@ -127,7 +127,7 @@ namespace LitsReinforcementLearning
             boardChanged?.Invoke(board);
             return new Observation(-1, 0, false);
         }
-        public Observation Step(Action action)
+        public Observation Step(Action action, bool isFirstPlayer = true)
         {
             //if (isDone)
             //    throw new IndexOutOfRangeException($"Already reached the end state ({board}). Don't ask for a new action.");
@@ -166,19 +166,19 @@ namespace LitsReinforcementLearning
             this.validActions = validActions.ToArray();
 
             boardChanged?.Invoke(board);
-            return new Observation(action.Id, Reward(), isDone);
+            return new Observation(action.Id, Reward(isFirstPlayer), isDone);
         }
-        private float Reward()
+        private float Reward(bool isFirstPlayer)
         {
             float reward = xFilled - oFilled;
             if (isDone) // Adds a reward for the end state of the game
             {
                 switch (GetResult())
                 {
-                    case End.Win:
+                    case End.XWin:
                         reward += 100;
                         break;
-                    case End.Lose:
+                    case End.OWin:
                         reward += -100;
                         break;
                     case End.Draw:
@@ -186,14 +186,14 @@ namespace LitsReinforcementLearning
                         break;
                 }
             }
-            return reward;
+            return isFirstPlayer ? reward : -reward;
         }
         public End GetResult() 
         {
             if (xFilled > oFilled)
-                return End.Win;
+                return End.XWin;
             if (xFilled < oFilled)
-                return End.Lose;
+                return End.OWin;
             else
                 return End.Draw;
         }
