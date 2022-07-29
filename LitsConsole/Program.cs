@@ -5,26 +5,35 @@ using System.Threading;
 
 namespace LitsReinforcementLearning
 {
+    public enum Verbosity { None, Low, Mid, High }
     class Program
     {
         static void Main(string[] args)
         {
-            string trainORplayORcreate = args[0].ToLower();
-            string aiOrsoloORuser = args[1].ToLower();
-            string agentName = args[2];
+            string createORtestORtrain = args[0].ToLower();
             
-            Trainer.Player player = Trainer.Player.None;
-            if (aiOrsoloORuser == "ai")
-                player = Trainer.Player.AI;
-            else if (aiOrsoloORuser == "solo")
-                player = Trainer.Player.Solo;
-            else if (aiOrsoloORuser == "user")
-                player = Trainer.Player.User;
-            else
-                Console.WriteLine("Not acceptable, try again.");
-
-            if (trainORplayORcreate == "train")
+            if (createORtestORtrain == "create")
             {
+                string agentName = args[1];
+
+                Console.Title = $"Creating {agentName}...";
+                Trainer.CreateNewAgent(agentName);
+            }
+            else if (createORtestORtrain == "test")
+            {
+                string agentName1 = args[1];
+                string agentName2 = args[2];
+
+                Agent agent1 = new Agent(AgentType.DynamicProgramming, agentName1);
+                Agent agent2 = new Agent(AgentType.DynamicProgramming, agentName2);
+
+                Console.Title = $"Testing {agentName1} vs {agentName2}...";
+                Tester.PlayGame(agent1, agent2);
+            }
+            else if(createORtestORtrain == "train")
+            {
+                string agentName = args[1];
+                bool isFirstPlayer = bool.Parse(args[2]);
                 Agent agent = new Agent(AgentType.DynamicProgramming, agentName);
 
                 if (!int.TryParse(args[3], out int episodes))
@@ -33,21 +42,9 @@ namespace LitsReinforcementLearning
                     return;
                 }
 
-                Console.Title = $"Training {player}...";
-                Trainer.Train(agent, player, episodes);
-                agent.Save("Powers");
-            }
-            else if(trainORplayORcreate == "play")
-            {
-                Agent agent = new Agent(AgentType.DynamicProgramming, agentName);
-
-                Console.Title = $"Playing {player}...";
-                Trainer.PlayGame(agent, player);
-            }
-            else if(trainORplayORcreate == "create")
-            {
-                Console.Title = $"Creating {player}...";
-                Trainer.CreateNewAgent(agentName);
+                Console.Title = $"Training {agentName}...";
+                Trainer.Train(agent, isFirstPlayer, episodes);
+                agent.Save(agentName);
             }
             else
             {

@@ -10,7 +10,7 @@ namespace LitsReinforcementLearning
 {
     public class Environment
     {
-        public enum End { XWin, Draw, OWin}
+        public enum End { None, XWin, Draw, OWin }
         public enum Tile { _, O, X, L, I, T, S }
         public const int size = 100;
         private Random rnd = new Random();
@@ -18,7 +18,22 @@ namespace LitsReinforcementLearning
         public Action[] validActions; // This is updated after every step.
         public int stepCount { get; private set; }
         public bool isDone { get { return validActions.Length == 0; } }
-        
+        private End Result
+        {
+            get
+            {
+                if (!isDone)
+                    return End.None;
+
+                if (xFilled > oFilled)
+                    return End.XWin;
+                else if (xFilled < oFilled)
+                    return End.OWin;
+                else
+                    return End.Draw;
+            }
+        }
+
         private Dictionary<Tile, int> availableActions;
 
         static bool[] initialState
@@ -99,13 +114,13 @@ namespace LitsReinforcementLearning
         private Environment(Environment original)
         {
             stepCount = original.stepCount;
-            
+
             board = original.board.Clone() as Tile[];
             state = original.state.Clone() as bool[];
 
             validActions = original.validActions.Clone() as Action[];
             availableActions = original.availableActions.ToDictionary(entry => entry.Key, entry => entry.Value);
-            
+
             xFilled = original.xFilled;
             oFilled = original.oFilled;
             _Filled = original._Filled;
@@ -115,13 +130,13 @@ namespace LitsReinforcementLearning
         {
             stepCount = 0;
             availableActions = new Dictionary<Tile, int>() { { Tile.L, 5 }, { Tile.I, 5 }, { Tile.T, 5 }, { Tile.S, 5 } };
-            
+
             board = initialBoard.Clone() as Tile[];
 
             xFilled = 0;
             oFilled = 0;
             _Filled = 0;
-            
+
             state = initialState;
             validActions = Action.GetActions().ToArray();
             boardChanged?.Invoke(board);
@@ -131,7 +146,7 @@ namespace LitsReinforcementLearning
         {
             //if (isDone)
             //    throw new IndexOutOfRangeException($"Already reached the end state ({board}). Don't ask for a new action.");
-            
+
             foreach (int pos in action.action)
             {
                 switch (board[pos])
@@ -173,7 +188,7 @@ namespace LitsReinforcementLearning
             float reward = xFilled - oFilled;
             if (isDone) // Adds a reward for the end state of the game
             {
-                switch (GetResult())
+                switch (Result)
                 {
                     case End.XWin:
                         reward += 100;
@@ -184,20 +199,28 @@ namespace LitsReinforcementLearning
                     case End.Draw:
                         reward += 0;
                         break;
+                    default:
+                        break;
                 }
             }
             return isFirstPlayer ? reward : -reward;
         }
-        public End GetResult() 
+
+        public string GetResult()
         {
-            if (xFilled > oFilled)
-                return End.XWin;
-            if (xFilled < oFilled)
-                return End.OWin;
-            else
-                return End.Draw;
+            switch (Result)
+            {
+                case End.XWin:
+                    return $"X wins. \nScore is User:{xFilled} > Comp:{oFilled}";
+                case End.OWin:
+                    return $"O wins. \nScore is User:{xFilled} < Comp:{oFilled}";
+                case End.Draw:
+                    return $"Draw. \nScore is User:{xFilled} = Comp:{oFilled}";
+                default:
+                    throw new NotImplementedException($"No case statement for {Result}");
+            }
         }
-        
+
         #region Validation
         private bool IsValid(Action action)
         {

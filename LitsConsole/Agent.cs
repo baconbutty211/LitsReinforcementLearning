@@ -12,10 +12,10 @@ namespace LitsReinforcementLearning
         private AgentType type;
         KerasNet model;
 
-        public Agent(AgentType type, NDarray initialFeatures) 
+        public Agent(AgentType type, int inputSize) 
         {
             this.type = type;
-            model = new KerasNet(initialFeatures.len, Action.actionSpaceSize);  // Initializes new neural network
+            model = new KerasNet(inputSize, Action.actionSpaceSize);  // Initializes new neural network
         } // Creates a new agent.
         public Agent(AgentType type, string agentName) 
         {
@@ -50,7 +50,7 @@ namespace LitsReinforcementLearning
                     throw new NotImplementedException();
 
                 case AgentType.DynamicProgramming:
-                    ExploreDynamicProgramming(env);
+                    ExploreDynamicProgramming(env, isFirstPlayer);
                     break;
 
                 case AgentType.ExhaustiveSearch:
@@ -64,13 +64,10 @@ namespace LitsReinforcementLearning
         /// Evaluates the current state of the environment/board.
         /// </summary>
         /// <returns>The best valid action according to the neural network</returns>
-        public Action Exploit(Environment env, bool isTrain=false, bool isFirstPlayer=true) 
+        public Action Exploit(Environment env) 
         {
-            if (isTrain)
-                Explore(env, isFirstPlayer);
-
             NDarray values = model.Predict(env.features);
-            int actionId = isFirstPlayer ? MaxValidActionId(env, values.GetData<float>()) : MinValidActionId(env, values.GetData<float>());
+            int actionId = MaxValidActionId(env, values.GetData<float>());
             return Action.GetAction(actionId);
         }
 
@@ -145,26 +142,23 @@ namespace LitsReinforcementLearning
     /// </summary>
     public partial class Agent
     {
-        private void ExploreDynamicProgramming(Environment env)
+        private void ExploreDynamicProgramming(Environment env, bool isFirstPlayer)
         {
             int bestChildId = -1;
-            float bestChildReward = float.MinValue;
             float bestChildVal = float.MinValue;
-            NDarray bestChildVals = null;
             foreach (Action action in env.validActions)
             {
                 Environment future = env.Clone();
-                Observation obs = future.Step(action);
+                Observation obs = future.Step(action, isFirstPlayer);
 
                 NDarray futureValues = model.Predict(future.features);
                 float futureValue = MaxValidActionValue(env, futureValues.GetData<float>());
                 futureValue = obs.reward + (discount * futureValue);
+
                 if (futureValue >= bestChildVal)
                 {
                     bestChildId = action.Id;
-                    //bestChildReward = obs.reward;
                     bestChildVal = futureValue;
-                    //bestChildVals = futureValues;
                 }
             }
 
