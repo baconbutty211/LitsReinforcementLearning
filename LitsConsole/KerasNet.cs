@@ -29,7 +29,7 @@ namespace LitsReinforcementLearning
         }
         public void Train(NDarray input, NDarray truth) 
         {
-            model.Fit(input.reshape(-1, input.len), truth);
+            model.Fit(input.reshape(-1, input.len), truth.reshape(-1, truth.len));
         }
         public NDarray Predict(NDarray input)
         {

@@ -147,6 +147,7 @@ namespace LitsReinforcementLearning
     {
         private void ExploreDynamicProgramming(Environment env)
         {
+            int bestChildId = -1;
             float bestChildReward = float.MinValue;
             float bestChildVal = float.MinValue;
             NDarray bestChildVals = null;
@@ -157,19 +158,21 @@ namespace LitsReinforcementLearning
 
                 NDarray futureValues = model.Predict(future.features);
                 float futureValue = MaxValidActionValue(env, futureValues.GetData<float>());
+                futureValue = obs.reward + (discount * futureValue);
                 if (futureValue >= bestChildVal)
                 {
-                    bestChildReward = obs.reward;
+                    bestChildId = action.Id;
+                    //bestChildReward = obs.reward;
                     bestChildVal = futureValue;
-                    bestChildVals = futureValues;
+                    //bestChildVals = futureValues;
                 }
             }
 
-            float[] rewards = new float[bestChildVals.size];
-            for(int i = 0; i < bestChildVals.size; i++)
-                rewards[i] = bestChildReward;
-            NDarray bestChildRewards = np.array(rewards);
-            model.Train(env.features, bestChildRewards + (discount * bestChildVals));
+            float[] bestActionArr = new float[Action.actionSpaceSize];
+            for (int i = 0; i < Action.actionSpaceSize; i++)
+                bestActionArr[i] = i == bestChildId ? 1 : 0;
+            NDarray truth = np.array(bestActionArr);
+            model.Train(env.features, truth);
         }
     }
 }

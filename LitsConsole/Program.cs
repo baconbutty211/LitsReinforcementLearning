@@ -28,7 +28,7 @@ namespace LitsReinforcementLearning
 
             if (trainORplay == "train")
             {
-                if (int.TryParse(args[3], out int episodes))
+                if (!int.TryParse(args[3], out int episodes))
                 {
                     Console.WriteLine("No integer value for episodes given.");
                     return;
