@@ -131,10 +131,10 @@ namespace LitsReinforcementLearning
         {
             switch (result)
             {
-                case Environment.End.Win:
-                    return $"User wins. \nScore is User:{environment.xFilled} > Comp:{environment.oFilled}";
-                case Environment.End.Lose:
-                    return $"Computer wins. \nScore is User:{environment.xFilled} < Comp:{environment.oFilled}";
+                case Environment.End.XWin:
+                    return $"X wins. \nScore is User:{environment.xFilled} > Comp:{environment.oFilled}";
+                case Environment.End.OWin:
+                    return $"O wins. \nScore is User:{environment.xFilled} < Comp:{environment.oFilled}";
                 case Environment.End.Draw:
                     return $"Draw. \nScore is User:{environment.xFilled} = Comp:{environment.oFilled}";
                 default:

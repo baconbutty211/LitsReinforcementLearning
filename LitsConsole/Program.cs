@@ -9,7 +9,7 @@ namespace LitsReinforcementLearning
     {
         static void Main(string[] args)
         {
-            string trainORplay = args[0].ToLower();
+            string trainORplayORcreate = args[0].ToLower();
             string aiOrsoloORuser = args[1].ToLower();
             string agentName = args[2];
             
@@ -23,11 +23,10 @@ namespace LitsReinforcementLearning
             else
                 Console.WriteLine("Not acceptable, try again.");
 
-            //Trainer.CreateNewAgent("Fresh");
-            Agent agent = new Agent(AgentType.DynamicProgramming, agentName);
-
-            if (trainORplay == "train")
+            if (trainORplayORcreate == "train")
             {
+                Agent agent = new Agent(AgentType.DynamicProgramming, agentName);
+
                 if (!int.TryParse(args[3], out int episodes))
                 {
                     Console.WriteLine("No integer value for episodes given.");
@@ -38,10 +37,17 @@ namespace LitsReinforcementLearning
                 Trainer.Train(agent, player, episodes);
                 agent.Save("Powers");
             }
-            else if(trainORplay == "play")
+            else if(trainORplayORcreate == "play")
             {
+                Agent agent = new Agent(AgentType.DynamicProgramming, agentName);
+
                 Console.Title = $"Playing {player}...";
                 Trainer.PlayGame(agent, player);
+            }
+            else if(trainORplayORcreate == "create")
+            {
+                Console.Title = $"Creating {player}...";
+                Trainer.CreateNewAgent(agentName);
             }
             else
             {
