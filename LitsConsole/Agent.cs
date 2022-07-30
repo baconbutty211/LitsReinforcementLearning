@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Numpy;
 
 namespace LitsReinforcementLearning
@@ -10,11 +11,13 @@ namespace LitsReinforcementLearning
         public const float discount = 0.95f;
 
         private AgentType type;
+        public bool isFirstPlayer;
         KerasNet model;
 
-        public Agent(AgentType type, int inputSize) 
+        public Agent(AgentType type, int inputSize, bool isFirstPlayer) 
         {
             this.type = type;
+            this.isFirstPlayer = isFirstPlayer;
             model = new KerasNet(inputSize, Action.actionSpaceSize);  // Initializes new neural network
         } // Creates a new agent.
         public Agent(AgentType type, string agentName) 
@@ -28,11 +31,15 @@ namespace LitsReinforcementLearning
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
             model = KerasNet.Load(path);
+
+            this.isFirstPlayer = bool.Parse(File.ReadAllText($"{path}{Path.Slash}IsFirstPlayer.txt"));
         }
         public void Save(string agentName) 
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
             model.Save(path);
+
+            File.WriteAllText($"{path}{Path.Slash}IsFirstPlayer.txt", isFirstPlayer.ToString());
         }
         #endregion
 

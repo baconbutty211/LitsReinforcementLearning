@@ -12,9 +12,9 @@ namespace LitsReinforcementLearning
     {
         static Environment environment = new Environment();
 
-        public static Agent CreateNewAgent(string name) 
+        public static Agent CreateNewAgent(string name, bool isFirstPlayer) 
         {
-            Agent newAgent = new Agent(AgentType.DynamicProgramming, environment.features.len);
+            Agent newAgent = new Agent(AgentType.DynamicProgramming, environment.features.len, isFirstPlayer);
             newAgent.Save(name);
             return newAgent;
         }

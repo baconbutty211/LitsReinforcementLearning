@@ -15,9 +15,10 @@ namespace LitsReinforcementLearning
             if (command == "create")
             {
                 string agentName = args[1];
+                bool isFirstPlayer = bool.Parse(args[2]);
 
                 Console.Title = $"Creating {agentName}...";
-                Trainer.CreateNewAgent(agentName);
+                Trainer.CreateNewAgent(agentName, isFirstPlayer);
             }
             else if (command == "test")
             {
