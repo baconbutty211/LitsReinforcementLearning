@@ -91,19 +91,19 @@ namespace LitsReinforcementLearning
             switch (pieceChar)
             {
                 case '#':
-                    colour = ConsoleColor.Red;
-                    break;
-                case 'L':
-                    colour = ConsoleColor.Blue;
-                    break;
-                case 'I':
-                    colour = ConsoleColor.Green;
-                    break;
-                case 'T':
                     colour = ConsoleColor.DarkMagenta;
                     break;
+                case 'L':
+                    colour = ConsoleColor.Red;
+                    break;
+                case 'I':
+                    colour = ConsoleColor.Yellow;
+                    break;
+                case 'T':
+                    colour = ConsoleColor.Green;
+                    break;
                 case 'S':
-                    colour = ConsoleColor.DarkYellow;
+                    colour = ConsoleColor.Blue;
                     break;
                 default:
                     break;

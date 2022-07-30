@@ -69,19 +69,19 @@ namespace LitsForms
                         break;
                     case LitsReinforcementLearning.Environment.Tile.L:
                         text = board[i].ToString();
-                        backColour = Color.Blue;
+                        backColour = Color.Red;
                         break;
                     case LitsReinforcementLearning.Environment.Tile.I:
                         text = board[i].ToString();
-                        backColour = Color.Green;
+                        backColour = Color.Yellow;
                         break;
                     case LitsReinforcementLearning.Environment.Tile.T:
                         text = board[i].ToString();
-                        backColour = Color.Magenta;
+                        backColour = Color.Green;
                         break;
                     case LitsReinforcementLearning.Environment.Tile.S:
                         text = board[i].ToString();
-                        backColour = Color.Yellow;
+                        backColour = Color.Blue;
                         break;
                     default:
                         throw new NotImplementedException();
