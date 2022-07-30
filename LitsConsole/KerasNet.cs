@@ -27,9 +27,9 @@ namespace LitsReinforcementLearning
         {
             model = Sequential.LoadModel($"{path}{Path.Slash}Model");
         }
-        public void Train(NDarray input, NDarray truth) 
+        public void Train(NDarray input, NDarray truth, Verbosity verbosity = Verbosity.High) 
         {
-            model.Fit(input.reshape(-1, input.len), truth.reshape(-1, truth.len));
+            model.Fit(input.reshape(-1, input.len), truth.reshape(-1, truth.len), verbosity == Verbosity.High ? 1 : 0);
         }
         public NDarray Predict(NDarray input)
         {

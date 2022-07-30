@@ -7,34 +7,65 @@ using System.Threading.Tasks;
 
 namespace LitsReinforcementLearning
 {
-    public static class Tester
+    public static class Playground
     {
         static Environment environment = new Environment();
 
-        public static void PlayGame(Agent agent1, Agent agent2, Verbosity verbosity = Verbosity.High)
+        public static void PlayGame(Agent agent)
         {
-            if (verbosity >= Verbosity.High)
-                DisplayBoard(environment);
-
             while (!environment.isDone)
             {
-                Agent agent = environment.stepCount % 2 == 0 ? agent1 : agent2;
-             
-                Action action = agent.Exploit(environment);
-                Log.Write($"Applying action {action}...");
+                bool isFirstPlayer = environment.stepCount % 2 == 0;
+                Action action = null;
+                while (action == null)
+                    action = isFirstPlayer ? agent.Exploit(environment) : GetUserInputAction(environment.validActions);
+                
                 environment.Step(action);
-
-                if (verbosity >= Verbosity.High)
-                    DisplayBoard(environment, action);
-            } // Play Game
-
-            if (verbosity >= Verbosity.Mid)
-                Console.WriteLine(environment.GetResult());
+                DisplayBoard(environment, action);
+            }
+            Console.WriteLine(environment.GetResult());
 
             environment.Reset();
         }
+        static Action GetUserInputAction(Action[] validActions)
+        {
+            int count = 0;
+            foreach (ActionType act in Enum.GetValues(typeof(ActionType)))
+            {
+                Console.WriteLine($"{count++}) {act}");
+                Console.WriteLine($"{Action.GetString(act)}");
+            }
+            Console.Write("Enter the piece type:");
+            ActionType type = (ActionType)4 + int.Parse(Console.ReadLine());
 
-        static string prevStr = "";
+            count = 0;
+            foreach (RotationType rot in Enum.GetValues(typeof(RotationType)))
+            {
+                Console.WriteLine($"{count++}) {rot}");
+                Console.WriteLine($"{Action.GetString(type, rot)}");
+            }
+            Console.Write("Enter the piece rotation:");
+            RotationType rotation = (RotationType)int.Parse(Console.ReadLine());
+
+            count = 0;
+            foreach (FlipType reflct in Enum.GetValues(typeof(FlipType)))
+            {
+                Console.WriteLine($"{count++}) {reflct}");
+                Console.WriteLine($"{Action.GetString(type, rotation, reflct)}");
+            }
+            Console.Write("Enter the piece reflection:");
+            FlipType flip = (FlipType)int.Parse(Console.ReadLine());
+
+            Console.Write("Enter the topLeft position (0 - 88):");
+            int topLeft = int.Parse(Console.ReadLine());
+
+            foreach (Action action in validActions)
+                if (action.Equals(topLeft, type, rotation, flip)) //User action matches
+                    return action;
+            return null;
+        }
+
+        static string prevStr = environment.ToString();
         static string route = "Route: ";
         static void DisplayBoard(Environment environment, Action action = null, int sleep = 2000)
         {

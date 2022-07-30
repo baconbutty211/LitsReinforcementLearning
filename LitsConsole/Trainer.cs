@@ -23,8 +23,8 @@ namespace LitsReinforcementLearning
         {
             while (!environment.isDone)
             {
-                agent.Explore(environment, isFirstPlayer);                 // Trains on best next move
-                Action action = agent.Exploit(environment); // Evaluates the next best move
+                agent.Explore(environment, isFirstPlayer, verbosity);   // Trains on best next move
+                Action action = agent.Exploit(environment);             // Evaluates the next best move
 
                 Log.Write($"Applying action {action}...");
                 environment.Step(action);   

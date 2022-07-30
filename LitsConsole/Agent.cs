@@ -39,7 +39,7 @@ namespace LitsReinforcementLearning
         /// <summary>
         /// Trains the neural network model on the current state and best future state.
         /// </summary>
-        public void Explore(Environment env, bool isFirstPlayer) 
+        public void Explore(Environment env, bool isFirstPlayer, Verbosity verbosity = Verbosity.High) 
         {
             switch (type)
             {
@@ -50,7 +50,7 @@ namespace LitsReinforcementLearning
                     throw new NotImplementedException();
 
                 case AgentType.DynamicProgramming:
-                    ExploreDynamicProgramming(env, isFirstPlayer);
+                    ExploreDynamicProgramming(env, isFirstPlayer, verbosity);
                     break;
 
                 case AgentType.ExhaustiveSearch:
@@ -142,18 +142,19 @@ namespace LitsReinforcementLearning
     /// </summary>
     public partial class Agent
     {
-        private void ExploreDynamicProgramming(Environment env, bool isFirstPlayer)
+        private void ExploreDynamicProgramming(Environment env, bool isFirstPlayer, Verbosity verbosity = Verbosity.High)
         {
             int bestChildId = -1;
             float bestChildVal = float.MinValue;
             foreach (Action action in env.validActions)
             {
                 Environment future = env.Clone();
-                Observation obs = future.Step(action, isFirstPlayer);
+                Observation obs = future.Step(action);
 
                 NDarray futureValues = model.Predict(future.features);
                 float futureValue = MaxValidActionValue(env, futureValues.GetData<float>());
-                futureValue = obs.reward + (discount * futureValue);
+                futureValue *= discount;
+                futureValue += isFirstPlayer ? obs.reward : -obs.reward;
 
                 if (futureValue >= bestChildVal)
                 {
@@ -166,7 +167,7 @@ namespace LitsReinforcementLearning
             for (int i = 0; i < Action.actionSpaceSize; i++)
                 bestActionArr[i] = i == bestChildId ? 1 : 0;
             NDarray truth = np.array(bestActionArr);
-            model.Train(env.features, truth);
+            model.Train(env.features, truth, verbosity);
         }
     }
 }

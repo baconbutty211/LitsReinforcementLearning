@@ -142,7 +142,7 @@ namespace LitsReinforcementLearning
             boardChanged?.Invoke(board);
             return new Observation(-1, 0, false);
         }
-        public Observation Step(Action action, bool isFirstPlayer = true)
+        public Observation Step(Action action)
         {
             //if (isDone)
             //    throw new IndexOutOfRangeException($"Already reached the end state ({board}). Don't ask for a new action.");
@@ -181,9 +181,9 @@ namespace LitsReinforcementLearning
             this.validActions = validActions.ToArray();
 
             boardChanged?.Invoke(board);
-            return new Observation(action.Id, Reward(isFirstPlayer), isDone);
+            return new Observation(action.Id, Reward(), isDone);
         }
-        private float Reward(bool isFirstPlayer)
+        private float Reward()
         {
             float reward = xFilled - oFilled;
             if (isDone) // Adds a reward for the end state of the game
@@ -203,7 +203,7 @@ namespace LitsReinforcementLearning
                         break;
                 }
             }
-            return isFirstPlayer ? reward : -reward;
+            return reward;
         }
 
         public string GetResult()
