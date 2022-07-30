@@ -19,11 +19,12 @@ namespace LitsReinforcementLearning
             return newAgent;
         }
 
-        private static void PlayGame(Agent agent, bool isFirstPlayer, Verbosity verbosity = Verbosity.High)
+        private static void PlayGame(Agent agent1, Agent agent2, Verbosity verbosity = Verbosity.High)
         {
             while (!environment.isDone)
             {
-                agent.Explore(environment, isFirstPlayer, verbosity);   // Trains on best next move
+                Agent agent = environment.stepCount % 2 == 0 ? agent1 : agent2;
+                agent.Explore(environment, verbosity);   // Trains on best next move
                 Action action = agent.Exploit(environment);             // Evaluates the next best move
 
                 Log.Write($"Applying action {action}...");
@@ -35,11 +36,11 @@ namespace LitsReinforcementLearning
 
             environment.Reset();
         }
-        public static void Train(Agent agent, bool isFirstPlayer, int episodes, Verbosity verbosity = Verbosity.Low) 
+        public static void Train(Agent agent1, Agent agent2, int episodes, Verbosity verbosity = Verbosity.Low) 
         {
             for (int i = 0; i < episodes; i++)
             {
-                PlayGame(agent, isFirstPlayer, verbosity);
+                PlayGame(agent1, agent2, verbosity);
 
                 if (verbosity == Verbosity.Low)
                     Console.Write($"\rGames of training completed: {i+1}");
@@ -47,7 +48,5 @@ namespace LitsReinforcementLearning
                     Console.WriteLine($"Games of training completed: {i+1}");
             }
         }
-        
-        
     }
 }

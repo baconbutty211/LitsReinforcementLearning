@@ -46,7 +46,7 @@ namespace LitsReinforcementLearning
         /// <summary>
         /// Trains the neural network model on the current state and best future state.
         /// </summary>
-        public void Explore(Environment env, bool isFirstPlayer, Verbosity verbosity = Verbosity.High) 
+        public void Explore(Environment env, Verbosity verbosity = Verbosity.High) 
         {
             switch (type)
             {
@@ -57,7 +57,7 @@ namespace LitsReinforcementLearning
                     throw new NotImplementedException();
 
                 case AgentType.DynamicProgramming:
-                    ExploreDynamicProgramming(env, isFirstPlayer, verbosity);
+                    ExploreDynamicProgramming(env, verbosity);
                     break;
 
                 case AgentType.ExhaustiveSearch:
@@ -149,7 +149,7 @@ namespace LitsReinforcementLearning
     /// </summary>
     public partial class Agent
     {
-        private void ExploreDynamicProgramming(Environment env, bool isFirstPlayer, Verbosity verbosity = Verbosity.High)
+        private void ExploreDynamicProgramming(Environment env, Verbosity verbosity = Verbosity.High)
         {
             int bestChildId = -1;
             float bestChildVal = float.MinValue;

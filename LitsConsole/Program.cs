@@ -41,9 +41,10 @@ namespace LitsReinforcementLearning
             }
             else if (command == "train")
             {
-                string agentName = args[1];
-                bool isFirstPlayer = bool.Parse(args[2]);
-                Agent agent = new Agent(AgentType.DynamicProgramming, agentName);
+                string agentName1 = args[1];
+                string agentName2 = args[2];
+                Agent agent1 = new Agent(AgentType.DynamicProgramming, agentName1);
+                Agent agent2 = new Agent(AgentType.DynamicProgramming, agentName2);
 
                 if (!int.TryParse(args[3], out int episodes))
                 {
@@ -51,9 +52,10 @@ namespace LitsReinforcementLearning
                     return;
                 }
 
-                Console.Title = $"Training {agentName}...";
-                Trainer.Train(agent, isFirstPlayer, episodes, Verbosity.Mid);
-                agent.Save(agentName);
+                Console.Title = $"Training {agentName1} against {agentName2}...";
+                Trainer.Train(agent1, agent2, episodes, Verbosity.Mid);
+                agent1.Save(agentName1);
+                agent2.Save(agentName2);
             }
             else
             {
