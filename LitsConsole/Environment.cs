@@ -654,6 +654,10 @@ namespace LitsReinforcementLearning
         {
             return (topLeft == this.topLeft) && (type == this.type) && (rotation == this.rotation) && (flip == this.flip);
         }
+        public bool Equals(int[] action)
+        {
+            return (action[0] == this.action[0]) && (action[1] == this.action[1]) && (action[2] == this.action[2]) && (action[3] == this.action[3]);
+        }
         public static string GetString(ActionType type, RotationType rotation = RotationType.None, FlipType flip = FlipType.None, int topLeft = 0)
         {
             int[] action;

@@ -27,40 +27,66 @@ namespace LitsReinforcementLearning
 
             environment.Reset();
         }
+        //static Action GetUserInputAction(Action[] validActions)
+        //{
+        //    int count = 0;
+        //    foreach (ActionType act in Enum.GetValues(typeof(ActionType)))
+        //    {
+        //        Console.WriteLine($"{count++}) {act}");
+        //        Console.WriteLine($"{Action.GetString(act)}");
+        //    }
+        //    Console.Write("Enter the piece type:");
+        //    ActionType type = (ActionType)4 + int.Parse(Console.ReadLine());
+
+        //    count = 0;
+        //    foreach (RotationType rot in Enum.GetValues(typeof(RotationType)))
+        //    {
+        //        Console.WriteLine($"{count++}) {rot}");
+        //        Console.WriteLine($"{Action.GetString(type, rot)}");
+        //    }
+        //    Console.Write("Enter the piece rotation:");
+        //    RotationType rotation = (RotationType)int.Parse(Console.ReadLine());
+
+        //    count = 0;
+        //    foreach (FlipType reflct in Enum.GetValues(typeof(FlipType)))
+        //    {
+        //        Console.WriteLine($"{count++}) {reflct}");
+        //        Console.WriteLine($"{Action.GetString(type, rotation, reflct)}");
+        //    }
+        //    Console.Write("Enter the piece reflection:");
+        //    FlipType flip = (FlipType)int.Parse(Console.ReadLine());
+
+        //    Console.Write("Enter the topLeft position (0 - 88):");
+        //    int topLeft = int.Parse(Console.ReadLine());
+
+        //    foreach (Action action in validActions)
+        //        if (action.Equals(topLeft, type, rotation, flip)) //User action matches
+        //            return action;
+        //    return null;
+        //}
         static Action GetUserInputAction(Action[] validActions)
         {
-            int count = 0;
-            foreach (ActionType act in Enum.GetValues(typeof(ActionType)))
+            int[] userAction = new int[4];
+            while (true)
             {
-                Console.WriteLine($"{count++}) {act}");
-                Console.WriteLine($"{Action.GetString(act)}");
-            }
-            Console.Write("Enter the piece type:");
-            ActionType type = (ActionType)4 + int.Parse(Console.ReadLine());
+                Console.WriteLine($"Enter the 4 positions of the tiles you want to place you're piece on (w,x,y,z):");
+                string input = Console.ReadLine();
+                string[] strPositions = input.Split(',');
 
-            count = 0;
-            foreach (RotationType rot in Enum.GetValues(typeof(RotationType)))
-            {
-                Console.WriteLine($"{count++}) {rot}");
-                Console.WriteLine($"{Action.GetString(type, rot)}");
-            }
-            Console.Write("Enter the piece rotation:");
-            RotationType rotation = (RotationType)int.Parse(Console.ReadLine());
+                if (strPositions.Length != 4)
+                    continue;
 
-            count = 0;
-            foreach (FlipType reflct in Enum.GetValues(typeof(FlipType)))
-            {
-                Console.WriteLine($"{count++}) {reflct}");
-                Console.WriteLine($"{Action.GetString(type, rotation, reflct)}");
+                for (int i = 0; i < strPositions.Length; i++)
+                {
+                    if (int.TryParse(strPositions[i], out int act))
+                        if (act < 100 && act > 0)
+                            userAction[i] = act;
+                    continue;
+                }
             }
-            Console.Write("Enter the piece reflection:");
-            FlipType flip = (FlipType)int.Parse(Console.ReadLine());
-
-            Console.Write("Enter the topLeft position (0 - 88):");
-            int topLeft = int.Parse(Console.ReadLine());
 
             foreach (Action action in validActions)
-                if (action.Equals(topLeft, type, rotation, flip)) //User action matches
+                if (action.Equals(userAction))
                     return action;
             return null;
         }
