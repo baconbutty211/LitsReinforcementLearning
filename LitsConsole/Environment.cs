@@ -12,6 +12,7 @@ namespace LitsReinforcementLearning
     {
         public enum End { None, XWin, Draw, OWin }
         public enum Tile { _, O, X, L, I, T, S }
+        public enum Board { Diagonals, Stripes, Boxes, Monogram, Random, Custom }
         public const int size = 100;
         private Random rnd = new Random();
 
@@ -65,9 +66,39 @@ namespace LitsReinforcementLearning
                         board[i] = Tile.X;
                 else
                     board[i] = Tile._;
-            } //Define initial board
+            }
             return board;
         }
+        private static Tile[] SetBoard(Board boardType)
+        {
+            Tile[] board = new Tile[size];
+            string strBoard = "";
+            switch (boardType)
+            {
+                case Board.Diagonals:
+                    strBoard = "0222001010102220010111022100101110211001011101110000222022202002210222020021102220200111020202001112";
+                    break;
+                case Board.Stripes:
+                    strBoard = "2222211111000000000022222111110000000000222221111111111222220000000000111112222200000000001111122222";
+                    break;
+                case Board.Boxes:
+                    strBoard = "2221112221100000000110212121011010000202202012010220102102022020000101101212120110000000011222111222";
+                    break;
+                case Board.Monogram:
+                    strBoard = "1111011110100021222210002120021011212002100121110210222120021001212202100121000211112100020222202222";
+                    break;
+                case Board.Random:
+                    Random rnd = new Random();
+                    for (int i = 0; i < size; i++)
+                        strBoard += rnd.Next(0, 3).ToString();
+                    break;
+                default:
+                    throw new NotImplementedException($"Case block for board type {boardType} has not been implemented.");
+            }
+            for (int i = 0; i < size; i++)
+                board[i] = (Tile)int.Parse(strBoard[i].ToString());
+            return board;
+        } //Define initial board
         static Tile[] initialBoard = SetBoard();
         private Tile[] board;
         public event System.Action<Tile[]> boardChanged;
@@ -380,9 +411,9 @@ namespace LitsReinforcementLearning
         {
             return new Environment(this);
         }
-    }
+}
 
-    public struct Observation
+public struct Observation
     {
         public int previousActionId { get; private set; }
         public float reward { get; private set; }
