@@ -99,7 +99,7 @@ namespace LitsReinforcementLearning
                 board[i] = (Tile)int.Parse(strBoard[i].ToString());
             return board;
         } //Define initial board
-        static Tile[] initialBoard = SetBoard();
+        static Tile[] initialBoard = SetBoard(Board.Stripes);
         private Tile[] board;
         public event System.Action<Tile[]> boardChanged;
 
@@ -242,11 +242,11 @@ namespace LitsReinforcementLearning
             switch (Result)
             {
                 case End.XWin:
-                    return $"X wins. \nScore is User:{xFilled} > Comp:{oFilled}";
+                    return $"X wins. \nScore is X:{xFilled} > O:{oFilled}";
                 case End.OWin:
-                    return $"O wins. \nScore is User:{xFilled} < Comp:{oFilled}";
+                    return $"O wins. \nScore is X:{xFilled} < O:{oFilled}";
                 case End.Draw:
-                    return $"Draw. \nScore is User:{xFilled} = Comp:{oFilled}";
+                    return $"Draw. \nScore is X:{xFilled} = O:{oFilled}";
                 default:
                     throw new NotImplementedException($"No case statement for {Result}");
             }
@@ -687,7 +687,15 @@ public struct Observation
         }
         public bool Equals(int[] action)
         {
-            return (action[0] == this.action[0]) && (action[1] == this.action[1]) && (action[2] == this.action[2]) && (action[3] == this.action[3]);
+            int[] sortArr1 = Sort(action);
+            int[] sortArr2 = Sort(this.action);
+            return (sortArr1[0] == sortArr2[0]) && (sortArr1[1] == sortArr2[1]) && (sortArr1[2] == sortArr2[2]) && (sortArr1[3] == sortArr2[3]);
+        }
+        private int[] Sort(int[] array)
+        {
+            int[] sorted = array.Clone() as int[];
+            Array.Sort(sorted);
+            return sorted;
         }
         public static string GetString(ActionType type, RotationType rotation = RotationType.None, FlipType flip = FlipType.None, int topLeft = 0)
         {

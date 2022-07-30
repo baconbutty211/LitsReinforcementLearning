@@ -77,12 +77,12 @@ namespace LitsReinforcementLearning
                     continue;
 
                 for (int i = 0; i < strPositions.Length; i++)
-                {
                     if (int.TryParse(strPositions[i], out int act))
                         if (act < 100 && act > 0)
                             userAction[i] = act;
-                    continue;
-                }
+                    else
+                        continue;
+                break;
             }
 
             foreach (Action action in validActions)
@@ -123,7 +123,7 @@ namespace LitsReinforcementLearning
                     colour = ConsoleColor.Red;
                     break;
                 case 'I':
-                    colour = ConsoleColor.Yellow;
+                    colour = ConsoleColor.DarkYellow;
                     break;
                 case 'T':
                     colour = ConsoleColor.Green;

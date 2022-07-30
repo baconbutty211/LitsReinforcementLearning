@@ -19,8 +19,9 @@ namespace LitsReinforcementLearning
         {
             model = new Sequential();
             ((Sequential)model).Add(new Input(shape: new Shape(inputSize)));
-            ((Sequential)model).Add(new Dense(units: 10, input_dim: inputSize, activation: "sigmoid"));
-            ((Sequential)model).Add(new Dense(units: outputSize, input_dim: 10, activation: "sigmoid"));
+            ((Sequential)model).Add(new Dense(units: 64, input_dim: inputSize, activation: "relu"));
+            ((Sequential)model).Add(new Dense(units: 36, input_dim: 64, activation: "relu"));
+            ((Sequential)model).Add(new Dense(units: outputSize, input_dim: 36, activation: "softmax"));
             model.Compile(optimizer: new Adam(), loss: "mean_squared_error");
         }
         private KerasNet(string path)
