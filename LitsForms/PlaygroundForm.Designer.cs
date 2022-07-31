@@ -34,7 +34,7 @@ namespace LitsForms
             // 
             // AiActionBtn
             // 
-            this.AiActionBtn.Location = new System.Drawing.Point(811, 713);
+            this.AiActionBtn.Location = new System.Drawing.Point(989, 768);
             this.AiActionBtn.Name = "AiActionBtn";
             this.AiActionBtn.Size = new System.Drawing.Size(146, 49);
             this.AiActionBtn.TabIndex = 8;

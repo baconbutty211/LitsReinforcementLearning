@@ -38,6 +38,7 @@ namespace LitsForms
             this.previousActionsList = new System.Windows.Forms.ListBox();
             this.PreviousActionsLab = new System.Windows.Forms.Label();
             this.resultLab = new System.Windows.Forms.Label();
+            this.PlayBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // boardPanel
@@ -122,12 +123,23 @@ namespace LitsForms
             this.resultLab.TabIndex = 8;
             this.resultLab.Text = "*End game result text*";
             // 
+            // PlayBtn
+            // 
+            this.PlayBtn.Location = new System.Drawing.Point(806, 713);
+            this.PlayBtn.Name = "PlayBtn";
+            this.PlayBtn.Size = new System.Drawing.Size(146, 49);
+            this.PlayBtn.TabIndex = 9;
+            this.PlayBtn.Text = "Play";
+            this.PlayBtn.UseVisualStyleBackColor = true;
+            this.PlayBtn.Click += new System.EventHandler(this.PlayBtn_Click);
+            // 
             // EnvironmentForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1796, 976);
+            this.Controls.Add(this.PlayBtn);
             this.Controls.Add(this.resultLab);
             this.Controls.Add(this.PreviousActionsLab);
             this.Controls.Add(this.previousActionsList);
@@ -156,5 +168,6 @@ namespace LitsForms
         private System.Windows.Forms.ListBox previousActionsList;
         private System.Windows.Forms.Label PreviousActionsLab;
         private System.Windows.Forms.Label resultLab;
+        private System.Windows.Forms.Button PlayBtn;
     }
 }

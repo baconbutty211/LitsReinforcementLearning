@@ -18,7 +18,7 @@ namespace LitsReinforcementLearning
         {
             this.type = type;
             this.isFirstPlayer = isFirstPlayer;
-            model = new KerasNet(inputSize, Action.actionSpaceSize);  // Initializes new neural network
+            model = new KerasNet(inputSize, Action.actionSpaceSize, 10);  // Initializes new neural network
         } // Creates a new agent.
         public Agent(AgentType type, string agentName) 
         {

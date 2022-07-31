@@ -15,13 +15,21 @@ namespace LitsReinforcementLearning
     class KerasNet
     {
         BaseModel model;
-        public KerasNet(int inputSize, int outputSize) 
+        public KerasNet(int inputSize, int outputSize, params int[] hiddenSizes) 
         {
             model = new Sequential();
-            ((Sequential)model).Add(new Input(shape: new Shape(inputSize)));
-            ((Sequential)model).Add(new Dense(units: 64, input_dim: inputSize, activation: "relu"));
-            ((Sequential)model).Add(new Dense(units: 36, input_dim: 64, activation: "relu"));
-            ((Sequential)model).Add(new Dense(units: outputSize, input_dim: 36, activation: "softmax"));
+
+            ((Sequential)model).Add(new Input(shape: new Shape(inputSize))); // Input layer
+
+            int prevSize = inputSize;
+            foreach (int hiddenSize in hiddenSizes)
+            {
+                ((Sequential)model).Add(new Dense(units: hiddenSize, input_dim: prevSize, activation: "sigmoid"));
+                prevSize = hiddenSize;
+            } // Hidden layers
+
+            ((Sequential)model).Add(new Dense(units: outputSize, input_dim: prevSize, activation: "softmax")); // Output layer
+
             model.Compile(optimizer: new Adam(), loss: "mean_squared_error");
         }
         private KerasNet(string path)
