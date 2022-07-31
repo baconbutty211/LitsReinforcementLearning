@@ -2,7 +2,7 @@
   "profiles": {
     "LitsConsole": {
       "commandName": "Project",
-      "commandLineArgs": "Play Powers"
+      "commandLineArgs": "Test Powers DrEvil"
     }
   }
 }

@@ -33,6 +33,7 @@ namespace LitsReinforcementLearning
             model = KerasNet.Load(path);
 
             this.isFirstPlayer = bool.Parse(File.ReadAllText($"{path}{Path.Slash}IsFirstPlayer.txt"));
+            this.type = (AgentType)int.Parse(File.ReadAllText($"{path}{Path.Slash}AgentType.txt"));
         }
         public void Save(string agentName) 
         {
@@ -40,13 +41,14 @@ namespace LitsReinforcementLearning
             model.Save(path);
 
             File.WriteAllText($"{path}{Path.Slash}IsFirstPlayer.txt", isFirstPlayer.ToString());
+            File.WriteAllText($"{path}{Path.Slash}AgentType.txt", ((int)type).ToString());
         }
         #endregion
 
         /// <summary>
         /// Trains the neural network model on the current state and best future state.
         /// </summary>
-        public void Explore(Environment env, Verbosity verbosity = Verbosity.High) 
+        public void Explore(Environment env, Agent enemy, Verbosity verbosity = Verbosity.High) 
         {
             switch (type)
             {
@@ -57,7 +59,7 @@ namespace LitsReinforcementLearning
                     throw new NotImplementedException();
 
                 case AgentType.DynamicProgramming:
-                    ExploreDynamicProgramming(env, verbosity);
+                    ExploreDynamicProgramming(env, enemy, verbosity);
                     break;
 
                 case AgentType.ExhaustiveSearch:
@@ -149,7 +151,7 @@ namespace LitsReinforcementLearning
     /// </summary>
     public partial class Agent
     {
-        private void ExploreDynamicProgramming(Environment env, Verbosity verbosity = Verbosity.High)
+        private void ExploreDynamicProgramming(Environment env, Agent enemy, Verbosity verbosity = Verbosity.High)
         {
             int bestChildId = -1;
             float bestChildVal = float.MinValue;
@@ -158,10 +160,16 @@ namespace LitsReinforcementLearning
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
 
-                NDarray futureValues = model.Predict(future.features);
-                float futureValue = MaxValidActionValue(env, futureValues.GetData<float>());
-                futureValue *= discount;
-                futureValue += isFirstPlayer ? obs.reward : -obs.reward;
+                //NDarray futureValues = model.Predict(future.features);
+                //float futureValue = MaxValidActionValue(env, futureValues.GetData<float>());
+                float futureValue = isFirstPlayer ? obs.reward : -obs.reward;
+                if (!future.isDone)
+                {
+                    Action counterAction = enemy.Exploit(future);
+                    Observation counterObs = future.Step(counterAction);
+                    float counterReward = enemy.isFirstPlayer ? counterObs.reward : -counterObs.reward;
+                    futureValue -= discount * counterReward;
+                }
 
                 if (futureValue >= bestChildVal)
                 {

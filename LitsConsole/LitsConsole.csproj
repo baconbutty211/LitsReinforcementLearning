@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Agents\" />
     <Folder Include="Logs\Errors\" />
   </ItemGroup>
 

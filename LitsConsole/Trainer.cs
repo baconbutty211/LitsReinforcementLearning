@@ -24,8 +24,10 @@ namespace LitsReinforcementLearning
             while (!environment.isDone)
             {
                 Agent agent = environment.stepCount % 2 == 0 ? agent1 : agent2;
-                agent.Explore(environment, verbosity);   // Trains on best next move
-                Action action = agent.Exploit(environment);             // Evaluates the next best move
+                Agent enemy = environment.stepCount % 2 == 0 ? agent2 : agent1;
+
+                agent.Explore(environment, enemy, verbosity);   // Trains on best next move
+                Action action = agent.Exploit(environment);     // Evaluates the next best move
 
                 Log.Write($"Applying action {action}...");
                 environment.Step(action);   
