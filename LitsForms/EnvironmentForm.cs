@@ -55,7 +55,7 @@ namespace LitsForms
             environment.Reset();
         }
 
-        private void Environment_BoardChanged(LitsReinforcementLearning.Environment.Tile[] board)
+        protected virtual void Environment_BoardChanged(LitsReinforcementLearning.Environment.Tile[] board)
         {
             // Selected tiles are reset
             foreach (KeyValuePair<int, Button> tile in selectedTiles)
@@ -119,6 +119,7 @@ namespace LitsForms
 
             
             RandomActionBtn.Enabled = !environment.isDone;
+            PlayBtn.Enabled = !environment.isDone;
         }
 
         private void Tile_Click(object sender, EventArgs e)
@@ -187,7 +188,7 @@ namespace LitsForms
                 previousActionsList.SelectedItem = null;
         }
 
-        protected void ApplyAction(LitsReinforcementLearning.Action action) 
+        protected virtual void ApplyAction(LitsReinforcementLearning.Action action) 
         {
             KeyValuePair<int, LitsReinforcementLearning.Environment> state = new KeyValuePair<int, LitsReinforcementLearning.Environment>(action.Id, environment.Clone());
             previousActionsStack.Push(state); // Stores the environment before the action is applied, so that when it is recalled the action is applied and the board will update.
@@ -200,12 +201,12 @@ namespace LitsForms
 
             environment.Step(action);
         }
-        private void SelectTile(int index, Button tile) 
+        protected virtual void SelectTile(int index, Button tile) 
         {
             selectedTiles.Add(index, tile);
             tile.BackColor = Color.Purple;
         }
-        private void DeselectTile(int index, Button tile) 
+        protected virtual void DeselectTile(int index, Button tile) 
         {
             selectedTiles.Remove(index);
             tile.BackColor = SystemColors.Control;

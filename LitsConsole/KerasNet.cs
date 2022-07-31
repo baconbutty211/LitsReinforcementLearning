@@ -28,7 +28,7 @@ namespace LitsReinforcementLearning
                 prevSize = hiddenSize;
             } // Hidden layers
 
-            ((Sequential)model).Add(new Dense(units: outputSize, input_dim: prevSize, activation: "softmax")); // Output layer
+            ((Sequential)model).Add(new Dense(units: outputSize, input_dim: prevSize, activation: "sigmoid")); // Output layer
 
             model.Compile(optimizer: new Adam(), loss: "mean_squared_error");
         }

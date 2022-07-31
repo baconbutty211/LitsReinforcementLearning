@@ -20,6 +20,11 @@ namespace LitsForms
             this.agent = agent;
         }
 
+        protected override void Environment_BoardChanged(LitsReinforcementLearning.Environment.Tile[] board)
+        {
+            base.Environment_BoardChanged(board);
+            AiActionBtn.Enabled = !environment.isDone;
+        }
         private void AiActionBtn_Click(object sender, EventArgs e)
         {
             ApplyAction(agent.Exploit(environment));
