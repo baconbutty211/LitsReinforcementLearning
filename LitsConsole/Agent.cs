@@ -160,16 +160,10 @@ namespace LitsReinforcementLearning
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
 
-                //NDarray futureValues = model.Predict(future.features);
-                //float futureValue = MaxValidActionValue(env, futureValues.GetData<float>());
-                float futureValue = isFirstPlayer ? obs.reward : -obs.reward;
-                if (!future.isDone)
-                {
-                    Action counterAction = enemy.Exploit(future);
-                    Observation counterObs = future.Step(counterAction);
-                    float counterReward = enemy.isFirstPlayer ? counterObs.reward : -counterObs.reward;
-                    futureValue -= discount * counterReward;
-                }
+                NDarray futureValues = model.Predict(future.features);
+                float futureValue = MaxValidActionValue(env, futureValues.GetData<float>());
+                futureValue *= discount;
+                futureValue += isFirstPlayer ? obs.reward : -obs.reward;
 
                 if (futureValue >= bestChildVal)
                 {
