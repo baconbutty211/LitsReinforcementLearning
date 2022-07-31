@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 
 namespace LitsReinforcementLearning
 {
-
     public class Vector
     {
         float[] values;

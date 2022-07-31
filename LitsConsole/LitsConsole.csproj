@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Logs\Archives\" />
     <Folder Include="Logs\Errors\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Keras.NET" Version="3.8.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 

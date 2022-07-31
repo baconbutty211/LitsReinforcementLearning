@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
+using Numpy;
 
 namespace LitsReinforcementLearning
 {
@@ -8,60 +8,47 @@ namespace LitsReinforcementLearning
     public partial class Agent
     {
         protected static string savesPath = $"{Path.directory}{Path.Slash}Agents";
+        public const float discount = 0.95f;
 
         private AgentType type;
+        public bool isFirstPlayer;
+        KerasNet model;
 
-        protected Tree litsTree; //Tree trunk
-        protected Tree cwt; //Current working tree
-
-        protected bool isStartPlayer;
-
-        private Vector weights; // This vector must be the same size as the Environment's features vector.
-
-        public Agent(AgentType type, Observation initial, Vector initialFeatures, bool isStartPlayer = true) 
+        public Agent(AgentType type, int inputSize, bool isFirstPlayer) 
         {
             this.type = type;
-            this.isStartPlayer = isStartPlayer;
-
-            weights = Vector.InitializeRandom(initialFeatures.Count);   // Initializes random weights
-            litsTree = new Tree(initial);                               // Initializes new tree
-
-            Reset();
+            this.isFirstPlayer = isFirstPlayer;
+            model = new KerasNet(inputSize, Action.actionSpaceSize, 10);  // Initializes new neural network
         } // Creates a new agent.
-        public Agent(AgentType type, string agentName, bool isStartPlayer = true) 
+        public Agent(AgentType type, string agentName) 
         {
             this.type = type;
-            this.isStartPlayer = isStartPlayer;
-
             Load(agentName);
-            Reset();
         } // Loads an agent from a save file.
         
-        public virtual void Reset()
-        {
-            cwt = litsTree;
-        }
-
         #region Save/Load
         private void Load(string agentName)
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
-            litsTree = Tree.LoadJson(path);
-            weights = Vector.LoadJson(path);
+            model = KerasNet.Load(path);
+
+            this.isFirstPlayer = bool.Parse(File.ReadAllText($"{path}{Path.Slash}IsFirstPlayer.txt"));
+            this.type = (AgentType)int.Parse(File.ReadAllText($"{path}{Path.Slash}AgentType.txt"));
         }
         public void Save(string agentName) 
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
-            Tree.SaveJson(litsTree, path);
-            Vector.SaveJson(weights, path);
+            model.Save(path);
+
+            File.WriteAllText($"{path}{Path.Slash}IsFirstPlayer.txt", isFirstPlayer.ToString());
+            File.WriteAllText($"{path}{Path.Slash}AgentType.txt", ((int)type).ToString());
         }
         #endregion
 
-        public void Explore() 
-        {
-            
-        }
-        public Action Exploit(Environment env) 
+        /// <summary>
+        /// Trains the neural network model on the current state and best future state.
+        /// </summary>
+        public void Explore(Environment env, Agent enemy, Verbosity verbosity = Verbosity.High) 
         {
             switch (type)
             {
@@ -70,75 +57,132 @@ namespace LitsReinforcementLearning
 
                 case AgentType.MonteCarlo:
                     throw new NotImplementedException();
-                
+
                 case AgentType.DynamicProgramming:
-                    return ExploitDynamicProgramming(env);
-                
+                    ExploreDynamicProgramming(env, enemy, verbosity);
+                    break;
+
                 case AgentType.ExhaustiveSearch:
                     break;
-                
+
                 default:
                     break;
             }
-            return null;
         }
-        private float Evaluate(Vector features)
+        /// <summary>
+        /// Evaluates the current state of the environment/board.
+        /// </summary>
+        /// <returns>The best valid action according to the neural network</returns>
+        public Action Exploit(Environment env) 
         {
-            return Vector.Dot(features, weights);
+            NDarray values = model.Predict(env.features);
+            int actionId = MaxValidActionId(env, values.GetData<float>());
+            return Action.GetAction(actionId);
         }
+
+        #region Helpers
+        private float MaxValidActionValue(Environment env, float[] values)
+        {
+            if (env.isDone)
+            {
+                Log.RotateError();
+                throw new ArgumentNullException("No valid actions to return.");
+            }
+            float maxVal = float.MinValue;
+            foreach (Action action in env.validActions)
+                if (values[action.Id] > maxVal)
+                    maxVal = values[action.Id];
+            return maxVal;
+        }
+        private int MaxValidActionId(Environment env, float[] values)
+        {
+            if (env.isDone)
+            {
+                Log.RotateError();
+                throw new ArgumentNullException("No valid actions to return.");
+            }
+            int maxId = -1;
+            float maxVal = float.MinValue;
+            foreach (Action action in env.validActions)
+                if (values[action.Id] > maxVal)
+                {
+                    maxVal = values[action.Id];
+                    maxId = action.Id;
+                }
+            return maxId;
+        }
+        private float MinValidActionValue(Environment env, float[] values)
+        {
+            if (env.isDone)
+            {
+                Log.RotateError();
+                throw new ArgumentNullException("No valid actions to return.");
+            }
+            float minVal = float.MaxValue;
+            foreach (Action action in env.validActions)
+                if (values[action.Id] < minVal)
+                    minVal = values[action.Id];
+            return minVal;
+        }
+        private int MinValidActionId(Environment env, float[] values)
+        {
+            if (env.isDone)
+            {
+                Log.RotateError();
+                throw new ArgumentNullException("No valid actions to return.");
+            }
+            int minId = -1;
+            float minVal = float.MaxValue;
+            foreach (Action action in env.validActions)
+                if (values[action.Id] < minVal)
+                {
+                    minVal = values[action.Id];
+                    minId = action.Id;
+                }
+            return minId;
+        }
+        #endregion
     }
+
+
 
     /// <summary>
     /// All the dynamic programming stuff.
     /// </summary>
     public partial class Agent
     {
-        public static float discount = 0.95f;
-        private static float learningRate = 0.1f;
-
-        private Action ExploitDynamicProgramming(Environment env)
+        private void ExploreDynamicProgramming(Environment env, Agent enemy, Verbosity verbosity = Verbosity.High)
         {
-            Tree favChild = null;
-            float bestChildVal = isStartPlayer ? float.MinValue : float.MaxValue;
-            float currentValue = Evaluate(env.features);
-            float bestChildReward = 0;
-
+            int bestChildId = -1;
+            float bestChildVal = float.MinValue;
             foreach (Action action in env.validActions)
             {
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
-                Tree child = cwt.Branch(obs);
 
-                float futureValue = Evaluate(future.features);
-                
-                if (isStartPlayer)
+                //NDarray futureValues = model.Predict(future.features);
+                //float futureValue = MaxValidActionValue(env, futureValues.GetData<float>());
+                float futureValue = isFirstPlayer ? obs.reward : -obs.reward;
+                if (!future.isDone)
                 {
-                    if (futureValue > bestChildVal)
-                    {
-                        favChild = child;
-                        bestChildVal = futureValue;
-                        bestChildReward = obs.reward;
-                    }
+                    Action counterAction = enemy.Exploit(future);
+                    Observation counterObs = future.Step(counterAction);
+                    float counterReward = enemy.isFirstPlayer ? counterObs.reward : -counterObs.reward;
+                    futureValue -= discount * counterReward;
                 }
-                else
+
+                if (futureValue >= bestChildVal)
                 {
-                    if (futureValue < bestChildVal)
-                    {
-                        favChild = child;
-                        bestChildVal = futureValue;
-                        bestChildReward = obs.reward;
-                    }
+                    bestChildId = action.Id;
+                    bestChildVal = futureValue;
                 }
             }
 
-            Vector deltaWeights = learningRate * ((bestChildReward + (discount * bestChildVal)) - currentValue) * env.features;
-            if(isStartPlayer)
-                weights += deltaWeights; //Shift weights in the optimal direction
-            else
-                weights += deltaWeights; //Shift weights in the optimal direction
-
-            cwt = favChild;
-            return favChild.PreviousAction;
+            float[] bestActionArr = new float[Action.actionSpaceSize];
+            for (int i = 0; i < Action.actionSpaceSize; i++)
+                bestActionArr[i] = i == bestChildId ? 1 : 0;
+            NDarray truth = np.array(bestActionArr);
+            model.Train(env.features, truth, verbosity);
         }
     }
 }

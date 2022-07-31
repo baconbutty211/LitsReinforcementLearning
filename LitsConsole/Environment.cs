@@ -1,20 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Python.Runtime;
+using Python;
+using Keras;
+using Numpy;
 
 namespace LitsReinforcementLearning
 {
     public class Environment
     {
-        public enum End { Win, Draw, Lose }
+        public enum End { None, XWin, Draw, OWin }
         public enum Tile { _, O, X, L, I, T, S }
+        public enum Board { Diagonals, Stripes, Boxes, Monogram, Random, Custom }
         public const int size = 100;
         private Random rnd = new Random();
 
-        public Action[] validActions = Action.GetActions().ToArray(); // This is updated after every step.
+        public Action[] validActions; // This is updated after every step.
         public int stepCount { get; private set; }
         public bool isDone { get { return validActions.Length == 0; } }
-        
+        private End Result
+        {
+            get
+            {
+                if (!isDone)
+                    return End.None;
+
+                if (xFilled > oFilled)
+                    return End.XWin;
+                else if (xFilled < oFilled)
+                    return End.OWin;
+                else
+                    return End.Draw;
+            }
+        }
+
         private Dictionary<Tile, int> availableActions;
 
         static bool[] initialState
@@ -46,10 +66,40 @@ namespace LitsReinforcementLearning
                         board[i] = Tile.X;
                 else
                     board[i] = Tile._;
-            } //Define initial board
+            }
             return board;
         }
-        static Tile[] initialBoard = SetBoard();
+        private static Tile[] SetBoard(Board boardType)
+        {
+            Tile[] board = new Tile[size];
+            string strBoard = "";
+            switch (boardType)
+            {
+                case Board.Diagonals:
+                    strBoard = "0222001010102220010111022100101110211001011101110000222022202002210222020021102220200111020202001112";
+                    break;
+                case Board.Stripes:
+                    strBoard = "2222211111000000000022222111110000000000222221111111111222220000000000111112222200000000001111122222";
+                    break;
+                case Board.Boxes:
+                    strBoard = "2221112221100000000110212121011010000202202012010220102102022020000101101212120110000000011222111222";
+                    break;
+                case Board.Monogram:
+                    strBoard = "1111011110100021222210002120021011212002100121110210222120021001212202100121000211112100020222202222";
+                    break;
+                case Board.Random:
+                    Random rnd = new Random();
+                    for (int i = 0; i < size; i++)
+                        strBoard += rnd.Next(0, 3).ToString();
+                    break;
+                default:
+                    throw new NotImplementedException($"Case block for board type {boardType} has not been implemented.");
+            }
+            for (int i = 0; i < size; i++)
+                board[i] = (Tile)int.Parse(strBoard[i].ToString());
+            return board;
+        } //Define initial board
+        static Tile[] initialBoard = SetBoard(Board.Stripes);
         private Tile[] board;
         public event System.Action<Tile[]> boardChanged;
 
@@ -57,25 +107,28 @@ namespace LitsReinforcementLearning
         public int oFilled = 0;
         private int _Filled = 0;
 
-        public Vector features
+        public NDarray features
         {
             get
             {
                 List<float> featsLst = new List<float>();
 
                 foreach (Tile tile in board)
-                    featsLst.Add((float)( (int)tile ) / 7);
-
-                featsLst.Add(1);
-
-                //featsLst.Add((float)xFilled/30); // Adds a X Tile filled count feature
-                //featsLst.Add((float)oFilled/30); // Adds a O Tile filled count feature
-
-                //int result = isDone ? (int)GetResult() : -1;
-                //for(int i = 0; i < 3; i++)
-                //    featsLst.Add( i == result ? 1 : 0 ); // Adds a feature for each type of end game state. All are 0 if the game is not Done.
-                
-                return new Vector(featsLst.ToArray());
+                {
+                    switch (tile)
+                    {
+                        case Tile.X:
+                            featsLst.Add(1);
+                            break;
+                        case Tile.O:
+                            featsLst.Add(-1);
+                            break;
+                        default:
+                            featsLst.Add(0);
+                            break;
+                    }
+                }
+                return new NDarray(featsLst.ToArray());
             }
         }
 
@@ -92,13 +145,13 @@ namespace LitsReinforcementLearning
         private Environment(Environment original)
         {
             stepCount = original.stepCount;
-            
+
             board = original.board.Clone() as Tile[];
             state = original.state.Clone() as bool[];
 
             validActions = original.validActions.Clone() as Action[];
             availableActions = original.availableActions.ToDictionary(entry => entry.Key, entry => entry.Value);
-            
+
             xFilled = original.xFilled;
             oFilled = original.oFilled;
             _Filled = original._Filled;
@@ -108,25 +161,22 @@ namespace LitsReinforcementLearning
         {
             stepCount = 0;
             availableActions = new Dictionary<Tile, int>() { { Tile.L, 5 }, { Tile.I, 5 }, { Tile.T, 5 }, { Tile.S, 5 } };
-            
+
             board = initialBoard.Clone() as Tile[];
-            
+
             xFilled = 0;
             oFilled = 0;
             _Filled = 0;
-            
-            state = initialState;
-            boardChanged?.Invoke(board);
 
+            state = initialState;
+            validActions = Action.GetActions().ToArray();
+            boardChanged?.Invoke(board);
             return new Observation(-1, 0, false);
         }
         public Observation Step(Action action)
         {
             //if (isDone)
             //    throw new IndexOutOfRangeException($"Already reached the end state ({board}). Don't ask for a new action.");
-            
-            if(!Debug.IsDebug)
-                Log.Write($"Applying action {action.Id}");
 
             foreach (int pos in action.action)
             {
@@ -149,7 +199,7 @@ namespace LitsReinforcementLearning
                     state[pos] = true;
                 }
                 else
-                    throw new IndexOutOfRangeException($"Action has already been taken.");
+                    throw new IndexOutOfRangeException($"Action {action} has already been taken.");
             }
             availableActions[ActionTypeToTile(action.type)]--;
             stepCount++;
@@ -166,34 +216,42 @@ namespace LitsReinforcementLearning
         }
         private float Reward()
         {
-            float reward = -stepCount;
+            float reward = xFilled - oFilled;
             if (isDone) // Adds a reward for the end state of the game
             {
-                switch (GetResult())
+                switch (Result)
                 {
-                    case End.Win:
+                    case End.XWin:
                         reward += 100;
                         break;
-                    case End.Lose:
+                    case End.OWin:
                         reward += -100;
                         break;
                     case End.Draw:
-                        reward += -1;
+                        reward += 0;
+                        break;
+                    default:
                         break;
                 }
             }
             return reward;
         }
-        public End GetResult() 
+
+        public string GetResult()
         {
-            if (xFilled > oFilled)
-                return End.Win;
-            if (xFilled < oFilled)
-                return End.Lose;
-            else
-                return End.Draw;
+            switch (Result)
+            {
+                case End.XWin:
+                    return $"X wins. \nScore is X:{xFilled} > O:{oFilled}";
+                case End.OWin:
+                    return $"O wins. \nScore is X:{xFilled} < O:{oFilled}";
+                case End.Draw:
+                    return $"Draw. \nScore is X:{xFilled} = O:{oFilled}";
+                default:
+                    throw new NotImplementedException($"No case statement for {Result}");
+            }
         }
-        
+
         #region Validation
         private bool IsValid(Action action)
         {
@@ -291,6 +349,13 @@ namespace LitsReinforcementLearning
         {
             return validActions[rnd.Next(validActions.Length)];
         }
+        public bool ContainsValidAction(int actionId) 
+        {
+            foreach (Action action in validActions)
+                if (action.Id == actionId)
+                    return true;
+            return false;
+        }
 
         private Tile ActionTypeToTile(ActionType type) 
         {
@@ -346,9 +411,9 @@ namespace LitsReinforcementLearning
         {
             return new Environment(this);
         }
-    }
+}
 
-    public struct Observation
+public struct Observation
     {
         public int previousActionId { get; private set; }
         public float reward { get; private set; }
@@ -619,6 +684,18 @@ namespace LitsReinforcementLearning
         public bool Equals(int topLeft, ActionType type, RotationType rotation, FlipType flip)
         {
             return (topLeft == this.topLeft) && (type == this.type) && (rotation == this.rotation) && (flip == this.flip);
+        }
+        public bool Equals(int[] action)
+        {
+            int[] sortArr1 = Sort(action);
+            int[] sortArr2 = Sort(this.action);
+            return (sortArr1[0] == sortArr2[0]) && (sortArr1[1] == sortArr2[1]) && (sortArr1[2] == sortArr2[2]) && (sortArr1[3] == sortArr2[3]);
+        }
+        private int[] Sort(int[] array)
+        {
+            int[] sorted = array.Clone() as int[];
+            Array.Sort(sorted);
+            return sorted;
         }
         public static string GetString(ActionType type, RotationType rotation = RotationType.None, FlipType flip = FlipType.None, int topLeft = 0)
         {

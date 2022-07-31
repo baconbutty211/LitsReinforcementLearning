@@ -5,64 +5,57 @@ using System.Threading;
 
 namespace LitsReinforcementLearning
 {
+    public enum Verbosity { None, Low, Mid, High }
     class Program
     {
         static void Main(string[] args)
         {
-            //Trainer.CreateNewAgent("Fresh");
-            string agentName = args[2];
+            string command = args[0].ToLower();
 
-            Agent powers = new Agent(AgentType.DynamicProgramming, agentName, true);
-            Agent drEvil = new Agent(AgentType.DynamicProgramming, agentName, false);
-
-            string trainORplay = args[0].ToLower();
-            string aiOrsoloORuser = args[1].ToLower();
-            if (trainORplay == "train")
+            if (command == "create")
             {
+                string agentName = args[1];
+                bool isFirstPlayer = bool.Parse(args[2]);
+
+                Console.Title = $"Creating {agentName}...";
+                Trainer.CreateNewAgent(agentName, isFirstPlayer);
+            }
+            else if (command == "test")
+            {
+                string agentName1 = args[1];
+                string agentName2 = args[2];
+
+                Agent agent1 = new Agent(AgentType.DynamicProgramming, agentName1);
+                Agent agent2 = new Agent(AgentType.DynamicProgramming, agentName2);
+
+                Console.Title = $"Testing {agentName1} vs {agentName2}...";
+                Tester.PlayGame(agent1, agent2);
+            }
+            else if (command == "play")
+            {
+                string agentName = args[1];
+                Agent agent = new Agent(AgentType.DynamicProgramming, agentName);
+
+                Console.Title = $"Playing {agentName}";
+                Playground.PlayGame(agent);
+            }
+            else if (command == "train")
+            {
+                string agentName1 = args[1];
+                string agentName2 = args[2];
+                Agent agent1 = new Agent(AgentType.DynamicProgramming, agentName1);
+                Agent agent2 = new Agent(AgentType.DynamicProgramming, agentName2);
+
                 if (!int.TryParse(args[3], out int episodes))
                 {
                     Console.WriteLine("No integer value for episodes given.");
                     return;
                 }
 
-                if (aiOrsoloORuser == "ai")
-                {
-                    Console.Title = "Training AI...";
-                    Trainer.TrainAI(powers, drEvil, episodes);
-                    powers.Save("Powers");
-                }
-                else if(aiOrsoloORuser == "solo") 
-                {
-                    Console.Title = "Training solo...";
-                    Trainer.TrainSolo(powers, episodes);
-                    powers.Save("Powers");
-                }
-                else 
-                {
-                    Console.WriteLine("Not acceptable, try again.");
-                }
-            }
-            else if(trainORplay == "play")
-            {
-                if (aiOrsoloORuser == "ai")
-                {
-                    Console.Title = "Playing AI...";
-                    Trainer.PlayAI(powers, drEvil);
-                }
-                else if (aiOrsoloORuser == "solo")
-                {
-                    Console.Title = "Playing solo...";
-                    Trainer.PlaySolo(powers);
-                }
-                else if (aiOrsoloORuser == "user")
-                {
-                    Console.Title = "Playing user...";
-                    Trainer.PlaySolo(powers);
-                }
-                else
-                {
-                    Console.WriteLine("Not acceptable, try again.");
-                }
+                Console.Title = $"Training {agentName1} against {agentName2}...";
+                Trainer.Train(agent1, agent2, episodes, Verbosity.Mid);
+                agent1.Save(agentName1);
+                agent2.Save(agentName2);
             }
             else
             {
