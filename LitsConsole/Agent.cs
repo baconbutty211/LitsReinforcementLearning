@@ -18,7 +18,7 @@ namespace LitsReinforcementLearning
         {
             this.type = type;
             this.isFirstPlayer = isFirstPlayer;
-            model = new KerasNet(inputSize, Action.actionSpaceSize, 10);  // Initializes new neural network
+            model = new KerasNet(inputSize, Action.actionSpaceSize);  // Initializes new neural network
         } // Creates a new agent.
         public Agent(AgentType type, string agentName) 
         {
@@ -48,7 +48,7 @@ namespace LitsReinforcementLearning
         /// <summary>
         /// Trains the neural network model on the current state and best future state.
         /// </summary>
-        public void Explore(Environment env, Agent enemy, Verbosity verbosity = Verbosity.High) 
+        public void Explore(Environment env, Verbosity verbosity = Verbosity.High) 
         {
             switch (type)
             {
@@ -59,7 +59,7 @@ namespace LitsReinforcementLearning
                     throw new NotImplementedException();
 
                 case AgentType.DynamicProgramming:
-                    ExploreDynamicProgramming(env, enemy, verbosity);
+                    ExploreDynamicProgramming(env, verbosity);
                     break;
 
                 case AgentType.ExhaustiveSearch:
@@ -75,8 +75,10 @@ namespace LitsReinforcementLearning
         /// <returns>The best valid action according to the neural network</returns>
         public Action Exploit(Environment env) 
         {
+            bool isFirstPlayer = env.stepCount % 2 == 0;
+
             NDarray values = model.Predict(env.features);
-            int actionId = MaxValidActionId(env, values.GetData<float>());
+            int actionId = isFirstPlayer ? MaxValidActionId(env, values.GetData<float>()) : MinValidActionId(env, values.GetData<float>());
             return Action.GetAction(actionId);
         }
 
@@ -151,37 +153,28 @@ namespace LitsReinforcementLearning
     /// </summary>
     public partial class Agent
     {
-        private void ExploreDynamicProgramming(Environment env, Agent enemy, Verbosity verbosity = Verbosity.High)
+        private void ExploreDynamicProgramming(Environment env, Verbosity verbosity = Verbosity.High)
         {
-            int bestChildId = -1;
-            float bestChildVal = float.MinValue;
+            bool isFirstPlayer = env.stepCount % 2 == 0;
+
+            //float bestFutureVal = float.MinValue;
+            float[] actionValueArr = new float[Action.actionSpaceSize];
             foreach (Action action in env.validActions)
             {
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
 
-                //NDarray futureValues = model.Predict(future.features);
-                //float futureValue = MaxValidActionValue(env, futureValues.GetData<float>());
-                float futureValue = isFirstPlayer ? obs.reward : -obs.reward;
-                if (!future.isDone)
-                {
-                    Action counterAction = enemy.Exploit(future);
-                    Observation counterObs = future.Step(counterAction);
-                    float counterReward = enemy.isFirstPlayer ? counterObs.reward : -counterObs.reward;
-                    futureValue -= discount * counterReward;
-                }
+                NDarray futureValues = model.Predict(future.features);
+                float futureValue = isFirstPlayer ? MaxValidActionValue(env, futureValues.GetData<float>()) : MinValidActionValue(env, futureValues.GetData<float>());
+                futureValue *= discount;
+                futureValue += isFirstPlayer ? obs.reward : -obs.reward;
+                actionValueArr[action.Id] = futureValue;
 
-                if (futureValue >= bestChildVal)
-                {
-                    bestChildId = action.Id;
-                    bestChildVal = futureValue;
-                }
+                //if (isFirstPlayer ? futureValue >= bestFutureVal : futureValue <= bestFutureVal)
+                //    bestFutureVal = futureValue;
             }
 
-            float[] bestActionArr = new float[Action.actionSpaceSize];
-            for (int i = 0; i < Action.actionSpaceSize; i++)
-                bestActionArr[i] = i == bestChildId ? 1 : 0;
-            NDarray truth = np.array(bestActionArr);
+            NDarray truth = np.array(actionValueArr);
             model.Train(env.features, truth, verbosity);
         }
     }

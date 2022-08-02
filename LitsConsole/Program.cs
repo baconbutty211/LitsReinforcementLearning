@@ -42,20 +42,17 @@ namespace LitsReinforcementLearning
             else if (command == "train")
             {
                 string agentName1 = args[1];
-                string agentName2 = args[2];
                 Agent agent1 = new Agent(AgentType.DynamicProgramming, agentName1);
-                Agent agent2 = new Agent(AgentType.DynamicProgramming, agentName2);
 
-                if (!int.TryParse(args[3], out int episodes))
+                if (!int.TryParse(args[2], out int episodes))
                 {
                     Console.WriteLine("No integer value for episodes given.");
                     return;
                 }
 
-                Console.Title = $"Training {agentName1} against {agentName2}...";
-                Trainer.Train(agent1, agent2, episodes, Verbosity.Mid);
+                Console.Title = $"Training {agentName1}...";
+                Trainer.Train(agent1, episodes, Verbosity.Mid);
                 agent1.Save(agentName1);
-                agent2.Save(agentName2);
             }
             else
             {
