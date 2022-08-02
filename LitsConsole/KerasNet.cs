@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace LitsReinforcementLearning
 {
-    class KerasNet
+    public class KerasNet
     {
         BaseModel model;
         public KerasNet(int inputSize, int outputSize, params int[] hiddenSizes) 

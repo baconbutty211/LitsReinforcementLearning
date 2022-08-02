@@ -4,86 +4,54 @@ using Numpy;
 
 namespace LitsReinforcementLearning
 {
-    public enum AgentType { Abstract, MonteCarlo, DynamicProgramming, ExhaustiveSearch }
-    public partial class Agent
+    //public enum AgentType { Abstract, MonteCarlo, DynamicProgramming, ExhaustiveSearch }
+    public abstract class Agent
     {
         protected static string savesPath = $"{Path.directory}{Path.Slash}Agents";
         public const float discount = 0.95f;
 
-        private AgentType type;
         public bool isFirstPlayer;
-        KerasNet model;
+        protected KerasNet model;
 
-        public Agent(AgentType type, int inputSize, bool isFirstPlayer) 
+        public Agent(bool isFirstPlayer, int inputSize, int outputSize, params int[] hiddenSizes) 
         {
-            this.type = type;
             this.isFirstPlayer = isFirstPlayer;
-            model = new KerasNet(inputSize, Action.actionSpaceSize);  // Initializes new neural network
+            model = new KerasNet(inputSize, outputSize, hiddenSizes);  // Initializes new neural network
         } // Creates a new agent.
-        public Agent(AgentType type, string agentName) 
+        public Agent(string agentName) 
         {
-            this.type = type;
             Load(agentName);
         } // Loads an agent from a save file.
         
         #region Save/Load
-        private void Load(string agentName)
+        protected virtual void Load(string agentName)
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
             model = KerasNet.Load(path);
 
-            this.isFirstPlayer = bool.Parse(File.ReadAllText($"{path}{Path.Slash}IsFirstPlayer.txt"));
-            this.type = (AgentType)int.Parse(File.ReadAllText($"{path}{Path.Slash}AgentType.txt"));
+            isFirstPlayer = bool.Parse(File.ReadAllText($"{path}{Path.Slash}IsFirstPlayer.txt"));
         }
-        public void Save(string agentName) 
+        public virtual void Save(string agentName) 
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
             model.Save(path);
 
             File.WriteAllText($"{path}{Path.Slash}IsFirstPlayer.txt", isFirstPlayer.ToString());
-            File.WriteAllText($"{path}{Path.Slash}AgentType.txt", ((int)type).ToString());
         }
         #endregion
 
         /// <summary>
         /// Trains the neural network model on the current state and best future state.
         /// </summary>
-        public void Explore(Environment env, Verbosity verbosity = Verbosity.High) 
-        {
-            switch (type)
-            {
-                case AgentType.Abstract:
-                    break;
-
-                case AgentType.MonteCarlo:
-                    throw new NotImplementedException();
-
-                case AgentType.DynamicProgramming:
-                    ExploreDynamicProgramming(env, verbosity);
-                    break;
-
-                case AgentType.ExhaustiveSearch:
-                    break;
-
-                default:
-                    break;
-            }
-        }
+        public abstract void Explore(Environment env, Verbosity verbosity = Verbosity.High);
         /// <summary>
         /// Evaluates the current state of the environment/board.
         /// </summary>
         /// <returns>The best valid action according to the neural network</returns>
-        public Action Exploit(Environment env) 
-        {
-            bool isFirstPlayer = env.stepCount % 2 == 0;
-
-            NDarray values = model.Predict(env.features);
-            int actionId = isFirstPlayer ? MaxValidActionId(env, values.GetData<float>()) : MinValidActionId(env, values.GetData<float>());
-            return Action.GetAction(actionId);
-        }
+        public abstract Action Exploit(Environment env);
 
         #region Helpers
-        private float MaxValidActionValue(Environment env, float[] values)
+        protected float MaxValidActionValue(Environment env, float[] values)
         {
             if (env.isDone)
             {
@@ -96,7 +64,7 @@ namespace LitsReinforcementLearning
                     maxVal = values[action.Id];
             return maxVal;
         }
-        private int MaxValidActionId(Environment env, float[] values)
+        protected int MaxValidActionId(Environment env, float[] values)
         {
             if (env.isDone)
             {
@@ -113,7 +81,7 @@ namespace LitsReinforcementLearning
                 }
             return maxId;
         }
-        private float MinValidActionValue(Environment env, float[] values)
+        protected float MinValidActionValue(Environment env, float[] values)
         {
             if (env.isDone)
             {
@@ -126,7 +94,7 @@ namespace LitsReinforcementLearning
                     minVal = values[action.Id];
             return minVal;
         }
-        private int MinValidActionId(Environment env, float[] values)
+        protected int MinValidActionId(Environment env, float[] values)
         {
             if (env.isDone)
             {
@@ -151,9 +119,18 @@ namespace LitsReinforcementLearning
     /// <summary>
     /// All the dynamic programming stuff.
     /// </summary>
-    public partial class Agent
+    public class DynamicProgrammingAgent : Agent
     {
-        private void ExploreDynamicProgramming(Environment env, Verbosity verbosity = Verbosity.High)
+        public DynamicProgrammingAgent(int inputSize, bool isFirstPlayer) : base(isFirstPlayer, inputSize, Action.actionSpaceSize)
+        {
+
+        }
+        public DynamicProgrammingAgent(string agentName) : base(agentName)
+        {
+
+        }
+
+        public override void Explore(Environment env, Verbosity verbosity = Verbosity.High)
         {
             bool isFirstPlayer = env.stepCount % 2 == 0;
 
@@ -176,6 +153,14 @@ namespace LitsReinforcementLearning
 
             NDarray truth = np.array(actionValueArr);
             model.Train(env.features, truth, verbosity);
+        }
+        public override Action Exploit(Environment env)
+        {
+            bool isFirstPlayer = env.stepCount % 2 == 0;
+
+            NDarray values = model.Predict(env.features);
+            int actionId = isFirstPlayer ? MaxValidActionId(env, values.GetData<float>()) : MinValidActionId(env, values.GetData<float>());
+            return Action.GetAction(actionId);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace LitsReinforcementLearning
 
         public static Agent CreateNewAgent(string name, bool isFirstPlayer) 
         {
-            Agent newAgent = new Agent(AgentType.DynamicProgramming, environment.features.len, isFirstPlayer);
+            Agent newAgent = new DynamicProgrammingAgent(environment.features.len, isFirstPlayer);
             newAgent.Save(name);
             return newAgent;
         }
