@@ -173,7 +173,7 @@ namespace LitsReinforcementLearning
             boardChanged?.Invoke(board);
             return new Observation(-1, 0, false);
         }
-        public Observation Step(Action action)
+        public Observation Step(Action action, bool calculateValidActions = true)
         {
             //if (isDone)
             //    throw new IndexOutOfRangeException($"Already reached the end state ({board}). Don't ask for a new action.");
@@ -207,8 +207,14 @@ namespace LitsReinforcementLearning
             // Calculates the valid actions that can be applied.
             List<Action> validActions = new List<Action>();
             foreach (Action a in Action.GetActions())
+            {
                 if (IsValid(a))
+                {
                     validActions.Add(a);
+                    if (!calculateValidActions)
+                        break;
+                }
+            }
             this.validActions = validActions.ToArray();
 
             boardChanged?.Invoke(board);
