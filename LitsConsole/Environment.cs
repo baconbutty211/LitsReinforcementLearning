@@ -16,6 +16,7 @@ namespace LitsReinforcementLearning
         public const int size = 100;
         private Random rnd = new Random();
 
+        private bool calculatedValidActions = true;
         public Action[] validActions; // This is updated after every step.
         public int stepCount { get; private set; }
         public bool isDone { get { return validActions.Length == 0; } }
@@ -149,6 +150,7 @@ namespace LitsReinforcementLearning
             board = original.board.Clone() as Tile[];
             state = original.state.Clone() as bool[];
 
+            calculatedValidActions = original.calculatedValidActions;
             validActions = original.validActions.Clone() as Action[];
             availableActions = original.availableActions.ToDictionary(entry => entry.Key, entry => entry.Value);
 
@@ -169,14 +171,15 @@ namespace LitsReinforcementLearning
             _Filled = 0;
 
             state = initialState;
+            calculatedValidActions = true;
             validActions = Action.GetActions().ToArray();
             boardChanged?.Invoke(board);
             return new Observation(-1, 0, false);
         }
         public Observation Step(Action action, bool calculateValidActions = true)
         {
-            //if (isDone)
-            //    throw new IndexOutOfRangeException($"Already reached the end state ({board}). Don't ask for a new action.");
+            if (!calculatedValidActions)
+                throw new AccessViolationException($"On the previous step calculateValidActions was set to {calculatedValidActions}. You should not stepping through the environment because not all valid actions have been calculated. (Consider calculating valid actions here.)");
 
             foreach (int pos in action.action)
             {
@@ -216,6 +219,7 @@ namespace LitsReinforcementLearning
                 }
             }
             this.validActions = validActions.ToArray();
+            this.calculatedValidActions = calculatedValidActions;
 
             boardChanged?.Invoke(board);
             return new Observation(action.Id, Reward(), isDone);
