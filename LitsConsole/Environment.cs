@@ -219,7 +219,7 @@ namespace LitsReinforcementLearning
                 }
             }
             this.validActions = validActions.ToArray();
-            this.calculatedValidActions = calculatedValidActions;
+            this.calculatedValidActions = calculateValidActions;
 
             boardChanged?.Invoke(board);
             return new Observation(action.Id, Reward(), isDone);

@@ -26,8 +26,7 @@ namespace LitsReinforcementLearning
                 agent.Explore(environment, verbosity);   // Trains on best next move
                 Action action = agent.Exploit(environment);     // Evaluates the next best move
 
-                Log.Write($"Applying action {action}...");
-                environment.Step(action);   
+                environment.Step(action);
             } // Play Game
 
             if (verbosity >= Verbosity.Mid)

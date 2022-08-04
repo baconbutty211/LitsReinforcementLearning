@@ -59,28 +59,35 @@ namespace LitsReinforcementLearning
                 throw new ArgumentNullException("No valid actions to return.");
             }
             float maxVal = float.MinValue;
-            foreach (Action action in env.validActions)
-                if (values[action.Id] > maxVal)
-                    maxVal = values[action.Id];
+            for (int i = 0; i < env.validActions.Length; i++)
+                if (values[i] > maxVal)
+                    maxVal = values[i];
             return maxVal;
         }
         protected int MaxValidActionId(Environment env, float[] values)
+        {
+            return MaxValidAction(env, values).Id;
+        }
+        protected Action MaxValidAction(Environment env, float[] values)
         {
             if (env.isDone)
             {
                 Log.RotateError();
                 throw new ArgumentNullException("No valid actions to return.");
             }
-            int maxId = -1;
+            Action maxAction = null;
             float maxVal = float.MinValue;
-            foreach (Action action in env.validActions)
-                if (values[action.Id] > maxVal)
+            for (int i = 0; i < env.validActions.Length; i++)
+            {
+                if (values[i] > maxVal)
                 {
-                    maxVal = values[action.Id];
-                    maxId = action.Id;
+                    maxVal = values[i];
+                    maxAction = env.validActions[i];
                 }
-            return maxId;
+            }
+            return maxAction;
         }
+
         protected float MinValidActionValue(Environment env, float[] values)
         {
             if (env.isDone)
@@ -89,27 +96,33 @@ namespace LitsReinforcementLearning
                 throw new ArgumentNullException("No valid actions to return.");
             }
             float minVal = float.MaxValue;
-            foreach (Action action in env.validActions)
-                if (values[action.Id] < minVal)
-                    minVal = values[action.Id];
+            for (int i = 0; i < env.validActions.Length; i++)
+                if (values[i] < minVal)
+                    minVal = values[i];
             return minVal;
         }
         protected int MinValidActionId(Environment env, float[] values)
+        {
+            return MinValidAction(env, values).Id;
+        }
+        protected Action MinValidAction(Environment env, float[] values)
         {
             if (env.isDone)
             {
                 Log.RotateError();
                 throw new ArgumentNullException("No valid actions to return.");
             }
-            int minId = -1;
+            Action minAction = null;
             float minVal = float.MaxValue;
-            foreach (Action action in env.validActions)
-                if (values[action.Id] < minVal)
+            for (int i = 0; i < env.validActions.Length; i++)
+            {
+                if (values[i] < minVal)
                 {
-                    minVal = values[action.Id];
-                    minId = action.Id;
+                    minVal = values[i];
+                    minAction = env.validActions[i];
                 }
-            return minId;
+            }
+            return minAction;
         }
         #endregion
     }
@@ -121,46 +134,36 @@ namespace LitsReinforcementLearning
     /// </summary>
     public class DynamicProgrammingAgent : Agent
     {
-        public DynamicProgrammingAgent(int inputSize, bool isFirstPlayer) : base(isFirstPlayer, inputSize, Action.actionSpaceSize)
-        {
-
-        }
-        public DynamicProgrammingAgent(string agentName) : base(agentName)
-        {
-
-        }
+        public DynamicProgrammingAgent(int inputSize, bool isFirstPlayer) : base(isFirstPlayer, inputSize, outputSize: 1, hiddenSizes: 10) { }
+        public DynamicProgrammingAgent(string agentName) : base(agentName) { }
 
         public override void Explore(Environment env, Verbosity verbosity = Verbosity.High)
         {
+            Action bestAction = Exploit(env);
+            Environment future = env.Clone();
+            Observation obs = future.Step(bestAction, calculateValidActions: false);
+
             bool isFirstPlayer = env.stepCount % 2 == 0;
-
-            //float bestFutureVal = float.MinValue;
-            float[] actionValueArr = new float[Action.actionSpaceSize];
-            foreach (Action action in env.validActions)
-            {
-                Environment future = env.Clone();
-                Observation obs = future.Step(action);
-
-                NDarray futureValues = model.Predict(future.features);
-                float futureValue = isFirstPlayer ? MaxValidActionValue(env, futureValues.GetData<float>()) : MinValidActionValue(env, futureValues.GetData<float>());
-                futureValue *= discount;
-                futureValue += isFirstPlayer ? obs.reward : -obs.reward;
-                actionValueArr[action.Id] = futureValue;
-
-                //if (isFirstPlayer ? futureValue >= bestFutureVal : futureValue <= bestFutureVal)
-                //    bestFutureVal = futureValue;
-            }
-
-            NDarray truth = np.array(actionValueArr);
+            NDarray truth = model.Predict(future.features);
+            truth *= discount;
+            truth += isFirstPlayer ? obs.reward : -obs.reward;
             model.Train(env.features, truth, verbosity);
         }
         public override Action Exploit(Environment env)
         {
             bool isFirstPlayer = env.stepCount % 2 == 0;
 
-            NDarray values = model.Predict(env.features);
-            int actionId = isFirstPlayer ? MaxValidActionId(env, values.GetData<float>()) : MinValidActionId(env, values.GetData<float>());
-            return Action.GetAction(actionId);
+            NDarray[] futureFeatures = new NDarray[env.validActions.Length];
+            int count = 0;
+            foreach (Action action in env.validActions)
+            {
+                Environment future = env.Clone();
+                Observation obs = future.Step(action, calculateValidActions: false);
+
+                futureFeatures[count++] = future.features;
+            }
+            NDarray values = model.Predict(futureFeatures);
+            return isFirstPlayer ? MaxValidAction(env, values.GetData<float>()) : MinValidAction(env, values.GetData<float>());
         }
     }
 }
