@@ -143,10 +143,9 @@ namespace LitsReinforcementLearning
             Environment future = env.Clone();
             Observation obs = future.Step(bestAction, calculateValidActions: false);
 
-            bool isFirstPlayer = env.stepCount % 2 == 0;
             NDarray truth = model.Predict(future.features);
             truth *= discount;
-            truth += isFirstPlayer ? obs.reward : -obs.reward;
+            truth += obs.reward;
             model.Train(env.features, truth, verbosity);
         }
         public override Action Exploit(Environment env)

@@ -256,7 +256,7 @@ namespace LitsReinforcementLearning
                 case End.OWin:
                     return $"O wins. \nScore is X:{xFilled} < O:{oFilled}";
                 case End.Draw:
-                    return $"Draw. \nScore is X:{xFilled} = O:{oFilled}";
+                    return $"{(stepCount % 2 == 0 ? "X loses" : "O loses")}. \nScore is X:{xFilled} = O:{oFilled}";
                 default:
                     throw new NotImplementedException($"No case statement for {Result}");
             }

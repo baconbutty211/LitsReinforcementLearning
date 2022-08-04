@@ -36,14 +36,15 @@ namespace LitsReinforcementLearning
         }
         public static void Train(Agent agent1, int episodes, Verbosity verbosity = Verbosity.Low) 
         {
+            Console.Clear();
             for (int i = 0; i < episodes; i++)
             {
                 PlayGame(agent1, verbosity);
 
                 if (verbosity == Verbosity.Low)
-                    Console.Write($"\rGames of training completed: {i+1}");
-                else if(verbosity > Verbosity.Low)
-                    Console.WriteLine($"Games of training completed: {i+1}");
+                    Console.Write($"\rGames of training completed: {i + 1}");
+                else if (verbosity > Verbosity.Low)
+                    Console.WriteLine($"Games of training completed: {i + 1}");
             }
         }
     }

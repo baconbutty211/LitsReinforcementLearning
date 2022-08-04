@@ -51,7 +51,7 @@ namespace LitsReinforcementLearning
                 }
 
                 Console.Title = $"Training {agentName1}...";
-                Trainer.Train(agent1, episodes, Verbosity.Mid);
+                Trainer.Train(agent1, episodes, Verbosity.Low);
                 agent1.Save(agentName1);
             }
             else
