@@ -40,6 +40,11 @@ namespace LitsReinforcementLearning
         {
             model.Fit(input.reshape(-1, input.len), truth.reshape(-1, truth.len), verbose: verbosity == Verbosity.High ? 1 : 0);
         }
+        
+        public NDarray Predict(List<NDarray> input)
+        {
+            return model.Predict(np.array(input), verbose: 0);
+        }
         public NDarray Predict(NDarray[] input)
         {
             return model.Predict(np.array(input), verbose: 0);

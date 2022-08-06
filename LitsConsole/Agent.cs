@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Numpy;
 
@@ -77,7 +78,7 @@ namespace LitsReinforcementLearning
             }
             Action maxAction = null;
             float maxVal = float.MinValue;
-            for (int i = 0; i < env.validActions.Length; i++)
+            for (int i = 0; i < values.Length; i++)
             {
                 if (values[i] > maxVal)
                 {
@@ -124,6 +125,30 @@ namespace LitsReinforcementLearning
             }
             return minAction;
         }
+
+
+        protected int Argmax(float[] values) 
+        {
+            if (values.Length == 0)
+                return -1;
+
+            int maxArg = 0;
+            for (int i = 0; i < values.Length; i++)
+                if (values[i] >= values[maxArg])
+                    maxArg = i;
+            return maxArg;
+        }
+        protected int Argmin(float[] values) 
+        {
+            if (values.Length == 0)
+                return -1;
+
+            int minArg = 0;
+            for (int i = 0; i < values.Length; i++)
+                if (values[i] <= values[minArg])
+                    minArg = i;
+            return minArg;
+        }
         #endregion
     }
 
@@ -137,61 +162,101 @@ namespace LitsReinforcementLearning
         public DynamicProgrammingAgent(int inputSize, bool isFirstPlayer) : base(isFirstPlayer, inputSize, outputSize: 1, hiddenSizes: 10) { }
         public DynamicProgrammingAgent(string agentName) : base(agentName) { }
 
+        public void ExploreTreestrap(Environment env, Verbosity verbosity = Verbosity.High)
+        {
+            Environment future;
+            Observation obs;
+            foreach (Action action in env.validActions)
+            {
+                future = env.Clone();
+                obs = future.Step(action);
+                if (obs.isDone)
+                    continue;
+                Action counterAction = Exploit(future);
+
+                TrainValueFunction(future, counterAction, verbosity); // Train t+1 <- t+2
+            }
+
+            // 2 Step look ahead
+            Action bestAction = Exploit(env);
+            future = env.Clone();
+            obs = future.Step(bestAction);
+            if (obs.isDone) 
+                return;
+            Action worstAction = Exploit(future);
+
+            TrainValueFunction(env, bestAction, worstAction, verbosity); // Train t <- t+2
+        }
+
         public override void Explore(Environment env, Verbosity verbosity = Verbosity.High)
         {
-            //bool isFirstPlayer = env.stepCount % 2 == 0;
-            //bool isFirstPlayer = true;                      //AI plays more like X on even turns and more like O on odd turns, than the line above
-
-            // Maximize value
             Action bestAction = Exploit(env);
-            Environment future = env.Clone();
-            Observation obs = future.Step(bestAction, calculateValidActions: true);
-
-            if (!obs.isDone)
-            {
-                // Minimize value
-                Action worstAction = Exploit(future);
-                Environment future2 = future.Clone();
-                Observation obs2 = future2.Step(worstAction, calculateValidActions: false);
-
-                //// Train value function (V(t+1) <- V(t+2))
-                //NDarray truth = model.Predict(future.features);
-                //truth *= discount;
-                //truth += obs2.reward;
-                //model.Train(future.features, truth, verbosity);
-
-                Train(future.features, future.features, obs2.reward, verbosity);
-
-                //// Train value function (V(t) <- V(t+2))
-                //NDarray truth2 = model.Predict(future.features);
-                //truth2 *= discount;
-                //truth2 += obs2.reward;
-                //model.Train(env.features, truth2, verbosity);
-
-                Train(future.features, env.features, obs2.reward, verbosity);
-            } // Search/Train another step ahead.
-            else
-            {
-                //// Train value function (V(t) <- V(t+1))
-                //NDarray truth = model.Predict(env.features);
-                //truth *= discount;
-                //truth += obs.reward;
-                //model.Train(env.features, truth, verbosity);
-
-                Train(env.features, env.features, obs.reward, verbosity);
-            } // Train on this one step only
+            TrainValueFunction(env, bestAction, verbosity); // Train t <- t+1
         }
         /// <summary>
-        /// Trains value function at step t+1 towards, (value function at step t) * discount + reward 
+        /// Trains value function at step t towards better value function at step t+1 (improvement comes from experience).
         /// </summary>
-        private void Train(NDarray features, NDarray futureFeatures, float reward, Verbosity verbosity) 
+        private void TrainValueFunction(Environment env, Action bestAction, Verbosity verbosity) 
         {
-            NDarray truth = model.Predict(features);
+            Environment future = env.Clone();
+            Observation obs = future.Step(bestAction);
+
+            NDarray truth = model.Predict(future.features);
             truth *= discount;
-            truth += reward;
-            model.Train(futureFeatures, truth, verbosity);
+            truth += obs.reward;
+
+            model.Train(env.features, truth, verbosity);
+        }
+        /// <summary>
+        /// Trains value function at step t towards better value function at step t+2 (improvement comes from experience).
+        /// </summary>
+        private void TrainValueFunction(Environment env, Action bestAction, Action worstAction, Verbosity verbosity) 
+        {
+            Environment future = env.Clone();
+            Observation obs = future.Step(bestAction);
+            Observation obs2 = future.Step(worstAction);
+
+            NDarray truth = model.Predict(future.features);
+            truth *= discount;
+            truth += obs2.reward;
+            truth *= discount;
+            truth += obs.reward;
+
+            model.Train(env.features, truth, verbosity);
         }
         public override Action Exploit(Environment env)
+        {
+            if (env.stepCount == 0)
+                return Action.GetAction(548);
+
+            List<int> indexToActionId = new List<int>();
+            List<NDarray> futureFeatures = new List<NDarray>();
+            foreach (Action action in env.validActions)
+            {
+                Environment future = env.Clone();
+                Observation obs = future.Step(action);
+                if (obs.isDone)
+                {
+                    futureFeatures.Add(future.features);
+                    indexToActionId.Add(action.Id);
+                }
+                else
+                {
+                    foreach (Action futureAction in future.validActions)
+                    {
+                        Environment future2 = future.Clone();
+                        Observation obs2 = future2.Step(futureAction, calculateValidActions: false);
+                        futureFeatures.Add(future2.features);
+                        indexToActionId.Add(action.Id);
+                    } // 2 Step look ahead
+                }
+            } // 1 Step look ahead
+            bool isFirstPlayer = env.stepCount % 2 == 0;
+            NDarray values = model.Predict(futureFeatures);
+            int index = isFirstPlayer ? Argmax(values.GetData<float>()) : Argmin(values.GetData<float>());
+            return Action.GetAction(indexToActionId[index]);
+        }
+        public Action ExploitNOTminimax(Environment env)
         {
             bool isFirstPlayer = env.stepCount % 2 == 0;
 
