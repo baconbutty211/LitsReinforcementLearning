@@ -139,14 +139,57 @@ namespace LitsReinforcementLearning
 
         public override void Explore(Environment env, Verbosity verbosity = Verbosity.High)
         {
+            //bool isFirstPlayer = env.stepCount % 2 == 0;
+            //bool isFirstPlayer = true;                      //AI plays more like X on even turns and more like O on odd turns, than the line above
+
+            // Maximize value
             Action bestAction = Exploit(env);
             Environment future = env.Clone();
-            Observation obs = future.Step(bestAction, calculateValidActions: false);
+            Observation obs = future.Step(bestAction, calculateValidActions: true);
 
-            NDarray truth = model.Predict(future.features);
+            if (!obs.isDone)
+            {
+                // Minimize value
+                Action worstAction = Exploit(future);
+                Environment future2 = future.Clone();
+                Observation obs2 = future2.Step(worstAction, calculateValidActions: false);
+
+                //// Train value function (V(t+1) <- V(t+2))
+                //NDarray truth = model.Predict(future.features);
+                //truth *= discount;
+                //truth += obs2.reward;
+                //model.Train(future.features, truth, verbosity);
+
+                Train(future.features, future.features, obs2.reward, verbosity);
+
+                //// Train value function (V(t) <- V(t+2))
+                //NDarray truth2 = model.Predict(future.features);
+                //truth2 *= discount;
+                //truth2 += obs2.reward;
+                //model.Train(env.features, truth2, verbosity);
+
+                Train(future.features, env.features, obs2.reward, verbosity);
+            } // Search/Train another step ahead.
+            else
+            {
+                //// Train value function (V(t) <- V(t+1))
+                //NDarray truth = model.Predict(env.features);
+                //truth *= discount;
+                //truth += obs.reward;
+                //model.Train(env.features, truth, verbosity);
+
+                Train(env.features, env.features, obs.reward, verbosity);
+            } // Train on this one step only
+        }
+        /// <summary>
+        /// Trains value function at step t+1 towards, (value function at step t) * discount + reward 
+        /// </summary>
+        private void Train(NDarray features, NDarray futureFeatures, float reward, Verbosity verbosity) 
+        {
+            NDarray truth = model.Predict(features);
             truth *= discount;
-            truth += obs.reward;
-            model.Train(env.features, truth, verbosity);
+            truth += reward;
+            model.Train(futureFeatures, truth, verbosity);
         }
         public override Action Exploit(Environment env)
         {
