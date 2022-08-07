@@ -12,6 +12,11 @@ namespace LitsReinforcementLearning
     {
         public static bool IsDebug { get { return System.Reflection.Assembly.GetEntryAssembly().GetName().Name == "LitsConsoleDebug"; } }
     }
+    public class DebugAttribute : Attribute
+    {
+
+    }
+
     public static class Path 
     {
         public static string directory
@@ -46,6 +51,8 @@ namespace LitsReinforcementLearning
             }
         }
     }
+
+    
 
     public static class Log
     {
@@ -129,5 +136,12 @@ namespace LitsReinforcementLearning
             else
                 File.AppendAllLines(path, contents);
         }
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class LogAttribute : Attribute
+    {
+        public static void StartTimer() { }
+        public static void StopTimer() { }
     }
 }

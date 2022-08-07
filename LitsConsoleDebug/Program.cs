@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Diagnostics;
 using LitsReinforcementLearning;
 using Action = LitsReinforcementLearning.Action;
 using Environment = LitsReinforcementLearning.Environment;
@@ -7,27 +9,69 @@ namespace LitsConsoleDebug
 {
     class Program
     {
+        static Stopwatch timer = new Stopwatch();
+
         static void Main(string[] args)
         {
-            Environment environment = new Environment();
-            foreach (string action in args) 
-                environment.Step(Action.GetAction(int.Parse(action)));
-
-            Console.WriteLine("Welcome to the manual game of LiTS");
-            Console.WriteLine(environment);
-
-            while (!environment.isDone) 
+            string command = args[0].ToLower();
+            if (command == "speedtest")
             {
-                Console.WriteLine($"({environment.validActions.Length - 1} valid actions available). Enter an action you to apply (-1 for a random action):");
-                if (!int.TryParse(Console.ReadLine(), out int action))
-                    continue;
-                if(action == -1)
-                    environment.Step(environment.GetRandomAction());
-                else
-                    environment.Step(Action.GetAction(action));
+                string agentName = args[1];
+                Agent agent = new DynamicProgrammingAgent(agentName);
                 Console.Clear();
-                Console.WriteLine(environment.ToString());
+
+                int games = int.Parse(args[2]);
+                Console.WriteLine("Initiating speedtest with random actions...");
+                long randomtime = SpeedTest(null, games);
+                Console.WriteLine($"Speed test took {randomtime}ms to play {games} games (with random actions).");
+
+                Console.WriteLine("\nInitiating speedtest with agent actions...");
+                long agenttime = SpeedTest(agent, games);
+                Console.WriteLine($"Speed test took {agenttime}ms to play {games} games (with agent actions).");
             }
+            else
+            {
+                Stopwatch timer = new Stopwatch();
+                timer.Start();
+                Console.WriteLine(timer.ElapsedMilliseconds);
+                Thread.Sleep(100);
+                Console.WriteLine(timer.ElapsedMilliseconds);
+                Console.WriteLine(timer.ElapsedMilliseconds);
+            }
+        }
+
+        static long SpeedTest(Agent agent = null, int iterations = 100)
+        {
+            Environment environment = new Environment();
+
+            long totalTime = 0;
+            timer.Start();
+            for (int i = 0; i < iterations; i++)
+            {
+                while (!environment.isDone)
+                {
+                    if(agent == null)
+                        environment.Step(environment.GetRandomAction());
+                    else
+                    {
+                        Action action = agent.Exploit(environment);
+                        environment.Step(action);
+                    }
+                    WriteElapsedTime(ref totalTime, $"Step {environment.stepCount}");
+                }
+                //WriteElapsedTime(ref totalTime, $"Game {i + 1}");
+                environment.Reset();
+            }
+            timer.Stop();
+            return totalTime;
+        }
+
+        static void WriteElapsedTime(ref long totalTime, string header)
+        {
+            long time = timer.ElapsedMilliseconds;
+            totalTime += time;
+            Console.WriteLine($"{header} took {time}ms.");
+            timer.Restart();
         }
     }
 }
