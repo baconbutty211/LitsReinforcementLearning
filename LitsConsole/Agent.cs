@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Numpy;
 
 namespace LitsReinforcementLearning
@@ -149,6 +150,37 @@ namespace LitsReinforcementLearning
                     minArg = i;
             return minArg;
         }
+
+        /// <summary>
+        /// The action values -> actionId mapping unwrapped looks like { Id1 : val1, val2, val3, ..., valN }, { Id2 : valN+1, valN+2, valN+3, ..., valN+M }, ...
+        /// The action values -> actionId mapping wrapped (the way it is input in this function) looks like { Id1 : 0 }, { Id2: N }, { Id3 : M }, ...
+        /// This function takes an index (example: N+2) and maps N+2 -> valN+2 as follows:
+        ///     is (index == N+2) >= 0:  YES
+        ///         actionId = Id1; 
+        ///         index -= N;
+        ///     is (index == 2) >= 0:  YES
+        ///         actionId = Id2;
+        ///         index -= M
+        ///     is 2-M >= 0:  NO
+        ///         return (actionId == Id2)
+        ///     
+        ///     So returns the Id where the value N+2 belongs (can be seen in the unwrapped data)
+        /// </summary>
+        /// <returns>
+        /// ActionId at the given index
+        /// </returns>
+        protected int IndexToActionId(int index, List<int> indices, List<int> actionIds)
+        {
+            int actionId = -1;
+            int i = 0;
+            while(index >= 0)
+            {
+                actionId = actionIds[i];
+                index -= indices[i];
+                i++;
+            }
+            return actionId;
+        }
         #endregion
     }
 
@@ -162,31 +194,31 @@ namespace LitsReinforcementLearning
         public DynamicProgrammingAgent(int inputSize, bool isFirstPlayer) : base(isFirstPlayer, inputSize, outputSize: 1, hiddenSizes: 10) { }
         public DynamicProgrammingAgent(string agentName) : base(agentName) { }
 
-        public void ExploreTreestrap(Environment env, Verbosity verbosity = Verbosity.High)
-        {
-            Environment future;
-            Observation obs;
-            foreach (Action action in env.validActions)
-            {
-                future = env.Clone();
-                obs = future.Step(action);
-                if (obs.isDone)
-                    continue;
-                Action counterAction = Exploit(future);
+        //public void ExploreTreestrap(Environment env, Verbosity verbosity = Verbosity.High)
+        //{
+        //    Environment future;
+        //    Observation obs;
+        //    foreach (Action action in env.validActions)
+        //    {
+        //        future = env.Clone();
+        //        obs = future.Step(action);
+        //        if (obs.isDone)
+        //            continue;
+        //        Action counterAction = Exploit(future);
 
-                TrainValueFunction(future, counterAction, verbosity); // Train t+1 <- t+2
-            }
+        //        TrainValueFunction(future, counterAction, verbosity); // Train t+1 <- t+2
+        //    }
 
-            // 2 Step look ahead
-            Action bestAction = Exploit(env);
-            future = env.Clone();
-            obs = future.Step(bestAction);
-            if (obs.isDone) 
-                return;
-            Action worstAction = Exploit(future);
+        //    // 2 Step look ahead
+        //    Action bestAction = Exploit(env);
+        //    future = env.Clone();
+        //    obs = future.Step(bestAction);
+        //    if (obs.isDone) 
+        //        return;
+        //    Action worstAction = Exploit(future);
 
-            TrainValueFunction(env, bestAction, worstAction, verbosity); // Train t <- t+2
-        }
+        //    TrainValueFunction(env, bestAction, worstAction, verbosity); // Train t <- t+2
+        //}
 
         public override void Explore(Environment env, Verbosity verbosity = Verbosity.High)
         {
@@ -226,6 +258,8 @@ namespace LitsReinforcementLearning
         }
         public override Action Exploit(Environment env)
         {
+            return ExploitStep1Async(env).Result;
+
             if (env.stepCount == 0)
                 return Action.GetAction(548);
 
@@ -248,7 +282,7 @@ namespace LitsReinforcementLearning
                         Observation obs2 = future2.Step(futureAction, calculateValidActions: false);
                         futureFeatures.Add(future2.features);
                         indexToActionId.Add(action.Id);
-                    } // 2 Step look ahead
+                    } // 2nd Step look ahead
                 }
             } // 1 Step look ahead
             bool isFirstPlayer = env.stepCount % 2 == 0;
@@ -256,21 +290,72 @@ namespace LitsReinforcementLearning
             int index = isFirstPlayer ? Argmax(values.GetData<float>()) : Argmin(values.GetData<float>());
             return Action.GetAction(indexToActionId[index]);
         }
-        public Action ExploitNOTminimax(Environment env)
-        {
-            bool isFirstPlayer = env.stepCount % 2 == 0;
 
-            NDarray[] futureFeatures = new NDarray[env.validActions.Length];
-            int count = 0;
+
+        public async Task<Action> ExploitStep1Async(Environment env)
+        {
+            if (env.stepCount == 0)
+                return Action.GetAction(548);
+
+            List<int> indices = new List<int>();
+            List<int> actionIds = new List<int>();
+
+            List<NDarray> futureFeatures = new List<NDarray>();
+            List<Task<KeyValuePair<int, float[][]>>> exploitTasks = new List<Task<KeyValuePair<int, float[][]>>>();
             foreach (Action action in env.validActions)
             {
                 Environment future = env.Clone();
-                Observation obs = future.Step(action, calculateValidActions: false);
+                Observation obs = future.Step(action);
+                if (obs.isDone)
+                {
+                    futureFeatures.Add(future.features);
+                    indices.Add(1);
+                    actionIds.Add(action.Id);
+                }
+                else
+                {
+                    //exploitTasks.Add(Task.Run(() => ExploitStep2Async(action.Id, future.Clone())));
+                    KeyValuePair<int, float[][]> result = await Task.Run(() => ExploitStep2Async(action.Id, future.Clone()));
+                    foreach (float[] arr in result.Value)
+                        futureFeatures.Add(np.array(arr));
+                    indices.Add(result.Value.Length);
+                    actionIds.Add(result.Key);
+                }
+            } // Generates Tasks
 
-                futureFeatures[count++] = future.features;
-            }
+            while (exploitTasks.Count > 0)
+            {
+                Task<KeyValuePair<int, float[][]>> finishedTask = await Task.WhenAny(exploitTasks);
+
+                foreach(float[] arr in finishedTask.Result.Value)
+                    futureFeatures.Add(np.array(arr));
+                indices.Add(finishedTask.Result.Value.Length);
+                actionIds.Add(finishedTask.Result.Key);
+
+                exploitTasks.Remove(finishedTask);
+            } // Tasks run asynchronously
+
+            // Finds best action
+            bool isFirstPlayer = env.stepCount % 2 == 0;
             NDarray values = model.Predict(futureFeatures);
-            return isFirstPlayer ? MaxValidAction(env, values.GetData<float>()) : MinValidAction(env, values.GetData<float>());
+            int index = isFirstPlayer ? Argmax(values.GetData<float>()) : Argmin(values.GetData<float>());
+            return Action.GetAction(IndexToActionId(index, indices, actionIds));
+        }
+        /// <summary>
+        /// </summary>
+        /// <param name="env">Inputted already cloned (hopefully avoids cross-threading error)</param>
+        private KeyValuePair<int, float[][]> ExploitStep2Async(int actionId, Environment env)
+        {
+            float[][] futureFeatures = new float[env.validActions.Length][];
+            int i = 0;
+            foreach (Action action in env.validActions)
+            {
+                Environment future = env.Clone();
+                Observation obs2 = future.Step(action, calculateValidActions: false);
+                futureFeatures[i++] = future.features;
+            } // 2nd Step look ahead
+
+            return new KeyValuePair<int, float[][]>(actionId, futureFeatures);
         }
     }
 }
