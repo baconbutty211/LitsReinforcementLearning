@@ -21,7 +21,6 @@ namespace LitsReinforcementLearning
                 Agent agent = environment.stepCount % 2 == 0 ? agent1 : agent2;
              
                 Action action = agent.Exploit(environment);
-                Log.Write($"Applying action {action}...");
                 environment.Step(action);
 
                 if (verbosity >= Verbosity.High)

@@ -1,87 +1,58 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Numpy;
 
 namespace LitsReinforcementLearning
 {
-    public enum AgentType { Abstract, MonteCarlo, DynamicProgramming, ExhaustiveSearch }
-    public partial class Agent
+    //public enum AgentType { Abstract, MonteCarlo, DynamicProgramming, ExhaustiveSearch }
+    public abstract class Agent
     {
         protected static string savesPath = $"{Path.directory}{Path.Slash}Agents";
         public const float discount = 0.95f;
 
-        private AgentType type;
         public bool isFirstPlayer;
-        KerasNet model;
+        protected KerasNet model;
 
-        public Agent(AgentType type, int inputSize, bool isFirstPlayer) 
+        public Agent(bool isFirstPlayer, int inputSize, int outputSize, params int[] hiddenSizes) 
         {
-            this.type = type;
             this.isFirstPlayer = isFirstPlayer;
-            model = new KerasNet(inputSize, Action.actionSpaceSize, 10);  // Initializes new neural network
+            model = new KerasNet(inputSize, outputSize, hiddenSizes);  // Initializes new neural network
         } // Creates a new agent.
-        public Agent(AgentType type, string agentName) 
+        public Agent(string agentName) 
         {
-            this.type = type;
             Load(agentName);
         } // Loads an agent from a save file.
         
         #region Save/Load
-        private void Load(string agentName)
+        protected virtual void Load(string agentName)
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
             model = KerasNet.Load(path);
 
-            this.isFirstPlayer = bool.Parse(File.ReadAllText($"{path}{Path.Slash}IsFirstPlayer.txt"));
-            this.type = (AgentType)int.Parse(File.ReadAllText($"{path}{Path.Slash}AgentType.txt"));
+            isFirstPlayer = bool.Parse(File.ReadAllText($"{path}{Path.Slash}IsFirstPlayer.txt"));
         }
-        public void Save(string agentName) 
+        public virtual void Save(string agentName) 
         {
             string path = $"{savesPath}{Path.Slash}{agentName}";
             model.Save(path);
 
             File.WriteAllText($"{path}{Path.Slash}IsFirstPlayer.txt", isFirstPlayer.ToString());
-            File.WriteAllText($"{path}{Path.Slash}AgentType.txt", ((int)type).ToString());
         }
         #endregion
 
         /// <summary>
         /// Trains the neural network model on the current state and best future state.
         /// </summary>
-        public void Explore(Environment env, Agent enemy, Verbosity verbosity = Verbosity.High) 
-        {
-            switch (type)
-            {
-                case AgentType.Abstract:
-                    break;
-
-                case AgentType.MonteCarlo:
-                    throw new NotImplementedException();
-
-                case AgentType.DynamicProgramming:
-                    ExploreDynamicProgramming(env, enemy, verbosity);
-                    break;
-
-                case AgentType.ExhaustiveSearch:
-                    break;
-
-                default:
-                    break;
-            }
-        }
+        public abstract void Explore(Environment env, Verbosity verbosity = Verbosity.High);
         /// <summary>
         /// Evaluates the current state of the environment/board.
         /// </summary>
         /// <returns>The best valid action according to the neural network</returns>
-        public Action Exploit(Environment env) 
-        {
-            NDarray values = model.Predict(env.features);
-            int actionId = MaxValidActionId(env, values.GetData<float>());
-            return Action.GetAction(actionId);
-        }
+        public abstract Action Exploit(Environment env);
 
         #region Helpers
-        private float MaxValidActionValue(Environment env, float[] values)
+        protected float MaxValidActionValue(Environment env, float[] values)
         {
             if (env.isDone)
             {
@@ -89,29 +60,36 @@ namespace LitsReinforcementLearning
                 throw new ArgumentNullException("No valid actions to return.");
             }
             float maxVal = float.MinValue;
-            foreach (Action action in env.validActions)
-                if (values[action.Id] > maxVal)
-                    maxVal = values[action.Id];
+            for (int i = 0; i < env.validActions.Length; i++)
+                if (values[i] > maxVal)
+                    maxVal = values[i];
             return maxVal;
         }
-        private int MaxValidActionId(Environment env, float[] values)
+        protected int MaxValidActionId(Environment env, float[] values)
+        {
+            return MaxValidAction(env, values).Id;
+        }
+        protected Action MaxValidAction(Environment env, float[] values)
         {
             if (env.isDone)
             {
                 Log.RotateError();
                 throw new ArgumentNullException("No valid actions to return.");
             }
-            int maxId = -1;
+            Action maxAction = null;
             float maxVal = float.MinValue;
-            foreach (Action action in env.validActions)
-                if (values[action.Id] > maxVal)
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (values[i] > maxVal)
                 {
-                    maxVal = values[action.Id];
-                    maxId = action.Id;
+                    maxVal = values[i];
+                    maxAction = env.validActions[i];
                 }
-            return maxId;
+            }
+            return maxAction;
         }
-        private float MinValidActionValue(Environment env, float[] values)
+
+        protected float MinValidActionValue(Environment env, float[] values)
         {
             if (env.isDone)
             {
@@ -119,27 +97,57 @@ namespace LitsReinforcementLearning
                 throw new ArgumentNullException("No valid actions to return.");
             }
             float minVal = float.MaxValue;
-            foreach (Action action in env.validActions)
-                if (values[action.Id] < minVal)
-                    minVal = values[action.Id];
+            for (int i = 0; i < env.validActions.Length; i++)
+                if (values[i] < minVal)
+                    minVal = values[i];
             return minVal;
         }
-        private int MinValidActionId(Environment env, float[] values)
+        protected int MinValidActionId(Environment env, float[] values)
+        {
+            return MinValidAction(env, values).Id;
+        }
+        protected Action MinValidAction(Environment env, float[] values)
         {
             if (env.isDone)
             {
                 Log.RotateError();
                 throw new ArgumentNullException("No valid actions to return.");
             }
-            int minId = -1;
+            Action minAction = null;
             float minVal = float.MaxValue;
-            foreach (Action action in env.validActions)
-                if (values[action.Id] < minVal)
+            for (int i = 0; i < env.validActions.Length; i++)
+            {
+                if (values[i] < minVal)
                 {
-                    minVal = values[action.Id];
-                    minId = action.Id;
+                    minVal = values[i];
+                    minAction = env.validActions[i];
                 }
-            return minId;
+            }
+            return minAction;
+        }
+
+
+        protected int Argmax(float[] values) 
+        {
+            if (values.Length == 0)
+                return -1;
+
+            int maxArg = 0;
+            for (int i = 0; i < values.Length; i++)
+                if (values[i] >= values[maxArg])
+                    maxArg = i;
+            return maxArg;
+        }
+        protected int Argmin(float[] values) 
+        {
+            if (values.Length == 0)
+                return -1;
+
+            int minArg = 0;
+            for (int i = 0; i < values.Length; i++)
+                if (values[i] <= values[minArg])
+                    minArg = i;
+            return minArg;
         }
         #endregion
     }
@@ -149,40 +157,120 @@ namespace LitsReinforcementLearning
     /// <summary>
     /// All the dynamic programming stuff.
     /// </summary>
-    public partial class Agent
+    public class DynamicProgrammingAgent : Agent
     {
-        private void ExploreDynamicProgramming(Environment env, Agent enemy, Verbosity verbosity = Verbosity.High)
+        public DynamicProgrammingAgent(int inputSize, bool isFirstPlayer) : base(isFirstPlayer, inputSize, outputSize: 1, hiddenSizes: 10) { }
+        public DynamicProgrammingAgent(string agentName) : base(agentName) { }
+
+        public void ExploreTreestrap(Environment env, Verbosity verbosity = Verbosity.High)
         {
-            int bestChildId = -1;
-            float bestChildVal = float.MinValue;
+            Environment future;
+            Observation obs;
+            foreach (Action action in env.validActions)
+            {
+                future = env.Clone();
+                obs = future.Step(action);
+                if (obs.isDone)
+                    continue;
+                Action counterAction = Exploit(future);
+
+                TrainValueFunction(future, counterAction, verbosity); // Train t+1 <- t+2
+            }
+
+            // 2 Step look ahead
+            Action bestAction = Exploit(env);
+            future = env.Clone();
+            obs = future.Step(bestAction);
+            if (obs.isDone) 
+                return;
+            Action worstAction = Exploit(future);
+
+            TrainValueFunction(env, bestAction, worstAction, verbosity); // Train t <- t+2
+        }
+
+        public override void Explore(Environment env, Verbosity verbosity = Verbosity.High)
+        {
+            Action bestAction = Exploit(env);
+            TrainValueFunction(env, bestAction, verbosity); // Train t <- t+1
+        }
+        /// <summary>
+        /// Trains value function at step t towards better value function at step t+1 (improvement comes from experience).
+        /// </summary>
+        private void TrainValueFunction(Environment env, Action bestAction, Verbosity verbosity) 
+        {
+            Environment future = env.Clone();
+            Observation obs = future.Step(bestAction);
+
+            NDarray truth = model.Predict(future.features);
+            truth *= discount;
+            truth += obs.reward;
+
+            model.Train(env.features, truth, verbosity);
+        }
+        /// <summary>
+        /// Trains value function at step t towards better value function at step t+2 (improvement comes from experience).
+        /// </summary>
+        private void TrainValueFunction(Environment env, Action bestAction, Action worstAction, Verbosity verbosity) 
+        {
+            Environment future = env.Clone();
+            Observation obs = future.Step(bestAction);
+            Observation obs2 = future.Step(worstAction);
+
+            NDarray truth = model.Predict(future.features);
+            truth *= discount;
+            truth += obs2.reward;
+            truth *= discount;
+            truth += obs.reward;
+
+            model.Train(env.features, truth, verbosity);
+        }
+        public override Action Exploit(Environment env)
+        {
+            if (env.stepCount == 0)
+                return Action.GetAction(548);
+
+            List<int> indexToActionId = new List<int>();
+            List<NDarray> futureFeatures = new List<NDarray>();
             foreach (Action action in env.validActions)
             {
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
-
-                //NDarray futureValues = model.Predict(future.features);
-                //float futureValue = MaxValidActionValue(env, futureValues.GetData<float>());
-                float futureValue = isFirstPlayer ? obs.reward : -obs.reward;
-                if (!future.isDone)
+                if (obs.isDone)
                 {
-                    Action counterAction = enemy.Exploit(future);
-                    Observation counterObs = future.Step(counterAction);
-                    float counterReward = enemy.isFirstPlayer ? counterObs.reward : -counterObs.reward;
-                    futureValue -= discount * counterReward;
+                    futureFeatures.Add(future.features);
+                    indexToActionId.Add(action.Id);
                 }
-
-                if (futureValue >= bestChildVal)
+                else
                 {
-                    bestChildId = action.Id;
-                    bestChildVal = futureValue;
+                    foreach (Action futureAction in future.validActions)
+                    {
+                        Environment future2 = future.Clone();
+                        Observation obs2 = future2.Step(futureAction, calculateValidActions: false);
+                        futureFeatures.Add(future2.features);
+                        indexToActionId.Add(action.Id);
+                    } // 2 Step look ahead
                 }
+            } // 1 Step look ahead
+            bool isFirstPlayer = env.stepCount % 2 == 0;
+            NDarray values = model.Predict(futureFeatures);
+            int index = isFirstPlayer ? Argmax(values.GetData<float>()) : Argmin(values.GetData<float>());
+            return Action.GetAction(indexToActionId[index]);
+        }
+        public Action ExploitNOTminimax(Environment env)
+        {
+            bool isFirstPlayer = env.stepCount % 2 == 0;
+
+            NDarray[] futureFeatures = new NDarray[env.validActions.Length];
+            int count = 0;
+            foreach (Action action in env.validActions)
+            {
+                Environment future = env.Clone();
+                Observation obs = future.Step(action, calculateValidActions: false);
+
+                futureFeatures[count++] = future.features;
             }
-
-            float[] bestActionArr = new float[Action.actionSpaceSize];
-            for (int i = 0; i < Action.actionSpaceSize; i++)
-                bestActionArr[i] = i == bestChildId ? 1 : 0;
-            NDarray truth = np.array(bestActionArr);
-            model.Train(env.features, truth, verbosity);
+            NDarray values = model.Predict(futureFeatures);
+            return isFirstPlayer ? MaxValidAction(env, values.GetData<float>()) : MinValidAction(env, values.GetData<float>());
         }
     }
 }

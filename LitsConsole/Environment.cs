@@ -16,6 +16,7 @@ namespace LitsReinforcementLearning
         public const int size = 100;
         private Random rnd = new Random();
 
+        private bool calculatedValidActions = true;
         public Action[] validActions; // This is updated after every step.
         public int stepCount { get; private set; }
         public bool isDone { get { return validActions.Length == 0; } }
@@ -76,7 +77,7 @@ namespace LitsReinforcementLearning
             switch (boardType)
             {
                 case Board.Diagonals:
-                    strBoard = "0222001010102220010111022100101110211001011101110000222022202002210222020021102220200111020202001112";
+                    strBoard = "0222001010102220010111022100101110211001011101110000222022202002210222020021102220200111020202001110";
                     break;
                 case Board.Stripes:
                     strBoard = "2222211111000000000022222111110000000000222221111111111222220000000000111112222200000000001111122222";
@@ -149,6 +150,7 @@ namespace LitsReinforcementLearning
             board = original.board.Clone() as Tile[];
             state = original.state.Clone() as bool[];
 
+            calculatedValidActions = original.calculatedValidActions;
             validActions = original.validActions.Clone() as Action[];
             availableActions = original.availableActions.ToDictionary(entry => entry.Key, entry => entry.Value);
 
@@ -169,14 +171,15 @@ namespace LitsReinforcementLearning
             _Filled = 0;
 
             state = initialState;
+            calculatedValidActions = true;
             validActions = Action.GetActions().ToArray();
             boardChanged?.Invoke(board);
             return new Observation(-1, 0, false);
         }
-        public Observation Step(Action action)
+        public Observation Step(Action action, bool calculateValidActions = true)
         {
-            //if (isDone)
-            //    throw new IndexOutOfRangeException($"Already reached the end state ({board}). Don't ask for a new action.");
+            if (!calculatedValidActions)
+                throw new AccessViolationException($"On the previous step calculateValidActions was set to {calculatedValidActions}. You should not stepping through the environment because not all valid actions have been calculated. (Consider calculating valid actions here.)");
 
             foreach (int pos in action.action)
             {
@@ -207,9 +210,16 @@ namespace LitsReinforcementLearning
             // Calculates the valid actions that can be applied.
             List<Action> validActions = new List<Action>();
             foreach (Action a in Action.GetActions())
+            {
                 if (IsValid(a))
+                {
                     validActions.Add(a);
+                    if (!calculateValidActions)
+                        break;
+                }
+            }
             this.validActions = validActions.ToArray();
+            this.calculatedValidActions = calculateValidActions;
 
             boardChanged?.Invoke(board);
             return new Observation(action.Id, Reward(), isDone);
@@ -246,7 +256,7 @@ namespace LitsReinforcementLearning
                 case End.OWin:
                     return $"O wins. \nScore is X:{xFilled} < O:{oFilled}";
                 case End.Draw:
-                    return $"Draw. \nScore is X:{xFilled} = O:{oFilled}";
+                    return $"{(stepCount % 2 == 0 ? "X loses" : "O loses")}. \nScore is X:{xFilled} = O:{oFilled}";
                 default:
                     throw new NotImplementedException($"No case statement for {Result}");
             }

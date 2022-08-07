@@ -14,23 +14,19 @@ namespace LitsReinforcementLearning
 
         public static Agent CreateNewAgent(string name, bool isFirstPlayer) 
         {
-            Agent newAgent = new Agent(AgentType.DynamicProgramming, environment.features.len, isFirstPlayer);
+            Agent newAgent = new DynamicProgrammingAgent(environment.features.len, isFirstPlayer);
             newAgent.Save(name);
             return newAgent;
         }
 
-        private static void PlayGame(Agent agent1, Agent agent2, Verbosity verbosity = Verbosity.High)
+        private static void PlayGame(Agent agent, Verbosity verbosity = Verbosity.High)
         {
             while (!environment.isDone)
             {
-                Agent agent = environment.stepCount % 2 == 0 ? agent1 : agent2;
-                Agent enemy = environment.stepCount % 2 == 0 ? agent2 : agent1;
-
-                agent.Explore(environment, enemy, verbosity);   // Trains on best next move
+                agent.Explore(environment, verbosity);   // Trains on best next move
                 Action action = agent.Exploit(environment);     // Evaluates the next best move
 
-                Log.Write($"Applying action {action}...");
-                environment.Step(action);   
+                environment.Step(action);
             } // Play Game
 
             if (verbosity >= Verbosity.Mid)
@@ -38,16 +34,17 @@ namespace LitsReinforcementLearning
 
             environment.Reset();
         }
-        public static void Train(Agent agent1, Agent agent2, int episodes, Verbosity verbosity = Verbosity.Low) 
+        public static void Train(Agent agent1, int episodes, Verbosity verbosity = Verbosity.Low) 
         {
+            Console.Clear();
             for (int i = 0; i < episodes; i++)
             {
-                PlayGame(agent1, agent2, verbosity);
+                PlayGame(agent1, verbosity);
 
                 if (verbosity == Verbosity.Low)
-                    Console.Write($"\rGames of training completed: {i+1}");
-                else if(verbosity > Verbosity.Low)
-                    Console.WriteLine($"Games of training completed: {i+1}");
+                    Console.Write($"\rGames of training completed: {i + 1}");
+                else if (verbosity > Verbosity.Low)
+                    Console.WriteLine($"Games of training completed: {i + 1}");
             }
         }
     }
