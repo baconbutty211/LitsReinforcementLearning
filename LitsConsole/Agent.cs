@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using Numpy;
@@ -219,10 +220,11 @@ namespace LitsReinforcementLearning
 
         //    TrainValueFunction(env, bestAction, worstAction, verbosity); // Train t <- t+2
         //}
-
         public override void Explore(Environment env, Verbosity verbosity = Verbosity.High)
         {
-            Action bestAction = Exploit(env);
+            if (env.stepCount == 0) // Just play first action randomly ???
+                return;
+            Action bestAction = ExploitBackground(env);
             TrainValueFunction(env, bestAction, verbosity); // Train t <- t+1
         }
         /// <summary>
@@ -256,42 +258,24 @@ namespace LitsReinforcementLearning
 
             model.Train(env.features, truth, verbosity);
         }
+
         public override Action Exploit(Environment env)
         {
-            return ExploitStep1Async(env).Result;
-
-            if (env.stepCount == 0)
-                return Action.GetAction(548);
-
-            List<int> indexToActionId = new List<int>();
-            List<NDarray> futureFeatures = new List<NDarray>();
+            NDarray[] futureFeatures = new NDarray[env.validActions.Length];
+            int i = 0;
             foreach (Action action in env.validActions)
             {
                 Environment future = env.Clone();
                 Observation obs = future.Step(action);
-                if (obs.isDone)
-                {
-                    futureFeatures.Add(future.features);
-                    indexToActionId.Add(action.Id);
-                }
-                else
-                {
-                    foreach (Action futureAction in future.validActions)
-                    {
-                        Environment future2 = future.Clone();
-                        Observation obs2 = future2.Step(futureAction, calculateValidActions: false);
-                        futureFeatures.Add(future2.features);
-                        indexToActionId.Add(action.Id);
-                    } // 2nd Step look ahead
-                }
+                futureFeatures[i++] = np.array(future.features);
             } // 1 Step look ahead
             bool isFirstPlayer = env.stepCount % 2 == 0;
             NDarray values = model.Predict(futureFeatures);
             int index = isFirstPlayer ? Argmax(values.GetData<float>()) : Argmin(values.GetData<float>());
-            return Action.GetAction(indexToActionId[index]);
+            return env.validActions[index];
         }
 
-
+        #region Async Tasks
         public async Task<Action> ExploitStep1Async(Environment env)
         {
             if (env.stepCount == 0)
@@ -314,12 +298,12 @@ namespace LitsReinforcementLearning
                 }
                 else
                 {
-                    //exploitTasks.Add(Task.Run(() => ExploitStep2Async(action.Id, future.Clone())));
-                    KeyValuePair<int, float[][]> result = await Task.Run(() => ExploitStep2Async(action.Id, future.Clone()));
-                    foreach (float[] arr in result.Value)
-                        futureFeatures.Add(np.array(arr));
-                    indices.Add(result.Value.Length);
-                    actionIds.Add(result.Key);
+                    exploitTasks.Add(Task.Run(() => ExploitStep2Async(action.Id, future.Clone())));
+                    //KeyValuePair<int, float[][]> result = await Task.Run(() => ExploitStep2Async(action.Id, future.Clone()));
+                    //foreach (float[] arr in result.Value)
+                    //    futureFeatures.Add(np.array(arr));
+                    //indices.Add(result.Value.Length);
+                    //actionIds.Add(result.Key);
                 }
             } // Generates Tasks
 
@@ -341,9 +325,6 @@ namespace LitsReinforcementLearning
             int index = isFirstPlayer ? Argmax(values.GetData<float>()) : Argmin(values.GetData<float>());
             return Action.GetAction(IndexToActionId(index, indices, actionIds));
         }
-        /// <summary>
-        /// </summary>
-        /// <param name="env">Inputted already cloned (hopefully avoids cross-threading error)</param>
         private KeyValuePair<int, float[][]> ExploitStep2Async(int actionId, Environment env)
         {
             float[][] futureFeatures = new float[env.validActions.Length][];
@@ -357,5 +338,108 @@ namespace LitsReinforcementLearning
 
             return new KeyValuePair<int, float[][]>(actionId, futureFeatures);
         }
+        #endregion
+        #region Async background workers
+        List<int> indices;
+        List<int> actionIds;
+        List<float[]> futureFeatures;
+        public Action ExploitBackground(Environment env)
+        {
+            if (env.stepCount == 0)
+                return Action.GetAction(548);
+
+            indices = new List<int>();
+            actionIds = new List<int>();
+            futureFeatures = new List<float[]>();
+            List<ExploitWorker> workers = new List<ExploitWorker>();
+            foreach (Action action in env.validActions)
+            {
+                Environment future = env.Clone();
+                Observation obs = future.Step(action);
+                if (obs.isDone)
+                {
+                    futureFeatures.Add(future.features);
+                    indices.Add(1);
+                    actionIds.Add(action.Id);
+                }
+                else
+                {
+                    // Generate worker
+                    ExploitWorker exploitWorker = new ExploitWorker();
+                    exploitWorker.WorkerReportsProgress = true;
+                    exploitWorker.DoWork += ExploitWorker_DoWork;
+                    exploitWorker.RunWorkerCompleted += ExploitWorker_RunWorkerCompleted;
+                    workers.Add(exploitWorker);
+                    // Run worker
+                    exploitWorker.RunWorkerAsync(new KeyValuePair<int, Environment>(action.Id, future));
+                }
+            } // Generates and Runs Background Workers
+
+            bool isComplete = false;
+            while(!isComplete)
+            {
+                isComplete = true;
+                foreach (ExploitWorker worker in workers)
+                    if (!worker.IsComplete)
+                        isComplete = false;
+            } // Blocks while workers are busy
+
+            List<NDarray> featuresLst = new List<NDarray>();
+            try
+            {
+                foreach (float[] featuresArr in futureFeatures)
+                    featuresLst.Add(np.array(featuresArr));
+            }
+            catch(InvalidOperationException ex)
+            {
+                int busyWorkers = 0;
+                foreach (BackgroundWorker worker in workers)
+                    if(worker.IsBusy)
+                        busyWorkers++;
+                throw new InvalidOperationException($"{busyWorkers} workers still working.");
+            } // Converts future features into useable format (NDarrays). This was done in the WorkerComplete event, but that had issues with cross threading
+            // Finds best action
+            bool isFirstPlayer = env.stepCount % 2 == 0;
+            NDarray values = model.Predict(featuresLst);
+            int index = isFirstPlayer ? Argmax(values.GetData<float>()) : Argmin(values.GetData<float>());
+            return Action.GetAction(IndexToActionId(index, indices, actionIds));
+        }
+        private void ExploitWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            ExploitWorker worker = sender as ExploitWorker;
+
+            KeyValuePair<int, Environment> kvp = ((KeyValuePair<int, Environment>)e.Argument);
+            int actionId = kvp.Key;
+            Environment env = kvp.Value;
+
+            int actionCount = env.validActions.Length;
+            float[][] futureFeatures = new float[actionCount][];
+            int i = 0;
+            foreach (Action action in env.validActions)
+            {
+                Environment future = env.Clone();
+                Observation obs2 = future.Step(action, calculateValidActions: false);
+                futureFeatures[i++] = future.features;
+
+                worker.ReportProgress( (i*100) / actionCount );
+            } // 2nd Step look ahead
+
+            e.Result = new KeyValuePair<int, float[][]>(actionId, futureFeatures);
+        }
+        private void ExploitWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            ExploitWorker worker = sender as ExploitWorker;
+            KeyValuePair<int, float[][]> kvp = ((KeyValuePair<int, float[][]>)e.Result);
+            int actionId = kvp.Key;
+            float[][] featuresArr = kvp.Value;
+
+            //System.Diagnostics.Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
+            foreach(float[] features in featuresArr)
+                futureFeatures.Add(features);
+
+            indices.Add(featuresArr.Length);
+            actionIds.Add(actionId);
+        }
+        #endregion
     }
 }

@@ -10,6 +10,7 @@ namespace LitsReinforcementLearning
     {
         static void Main(string[] args)
         {
+            System.Diagnostics.Debug.WriteLine(Thread.CurrentThread.ManagedThreadId);
             string command = args[0].ToLower();
 
             if (command == "create")
