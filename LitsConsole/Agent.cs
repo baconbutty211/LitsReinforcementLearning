@@ -47,11 +47,15 @@ namespace LitsReinforcementLearning
         /// Trains the neural network model on the current state and best future state.
         /// </summary>
         public abstract void Explore(Environment env, Verbosity verbosity = Verbosity.High);
+        public abstract void ExploreAsync(Environment env, Verbosity verbosity = Verbosity.High);
+        public abstract void ExploreBackground(Environment env, Verbosity verbosity = Verbosity.High);
         /// <summary>
         /// Evaluates the current state of the environment/board.
         /// </summary>
         /// <returns>The best valid action according to the neural network</returns>
         public abstract Action Exploit(Environment env);
+        public abstract Task<Action> ExploitAsync(Environment env);
+        public abstract Action ExploitBackground(Environment env);
 
         #region Helpers
         protected float MaxValidActionValue(Environment env, float[] values)
@@ -224,6 +228,20 @@ namespace LitsReinforcementLearning
         {
             if (env.stepCount == 0) // Just play first action randomly ???
                 return;
+            Action bestAction = Exploit(env);
+            TrainValueFunction(env, bestAction, verbosity); // Train t <- t+1
+        }
+        public override async void ExploreAsync(Environment env, Verbosity verbosity = Verbosity.High)
+        {
+            if (env.stepCount == 0) // Just play first action randomly ???
+                return;
+            Action bestAction = await ExploitAsync(env);
+            TrainValueFunction(env, bestAction, verbosity); // Train t <- t+1
+        }
+        public override void ExploreBackground(Environment env, Verbosity verbosity = Verbosity.High)
+        {
+            if (env.stepCount == 0) // Just play first action randomly ???
+                return;
             Action bestAction = ExploitBackground(env);
             TrainValueFunction(env, bestAction, verbosity); // Train t <- t+1
         }
@@ -276,7 +294,7 @@ namespace LitsReinforcementLearning
         }
 
         #region Async Tasks
-        public async Task<Action> ExploitStep1Async(Environment env)
+        public override async Task<Action> ExploitAsync(Environment env)
         {
             if (env.stepCount == 0)
                 return Action.GetAction(548);
@@ -343,7 +361,7 @@ namespace LitsReinforcementLearning
         List<int> indices;
         List<int> actionIds;
         List<float[]> futureFeatures;
-        public Action ExploitBackground(Environment env)
+        public override Action ExploitBackground(Environment env)
         {
             if (env.stepCount == 0)
                 return Action.GetAction(548);
