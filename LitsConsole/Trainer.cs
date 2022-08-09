@@ -10,39 +10,21 @@ namespace LitsReinforcementLearning
     
     public static class Trainer
     {
-        public enum Type { Sync, Async, Background }
         static Environment environment = new Environment();
 
         public static Agent CreateNewAgent(string name, bool isFirstPlayer) 
         {
-            Agent newAgent = new DynamicProgrammingAgent(environment.features.Length, isFirstPlayer);
+            Agent newAgent = new DynamicProgrammingAgent(environment.features.len, isFirstPlayer);
             newAgent.Save(name);
             return newAgent;
         }
 
-        private static async void PlayGame(Agent agent, Type trainType, Verbosity verbosity = Verbosity.High)
+        private static void PlayGame(Agent agent, Verbosity verbosity = Verbosity.High)
         {
             while (!environment.isDone)
             {
-                Action action = null;
-                switch (trainType)
-                {
-                    case Type.Sync:
-                        agent.Explore(environment, verbosity);   // Trains on best next move
-                        action = agent.Exploit(environment);     // Evaluates the next best move
-                        break;
-                    case Type.Async:
-                        agent.ExploreAsync(environment, verbosity);   // Trains on best next move
-                        action = await agent.ExploitAsync(environment);     // Evaluates the next best move
-                        break;
-                    case Type.Background:
-                        agent.ExploreBackground(environment, verbosity);   // Trains on best next move
-                        action = agent.ExploitBackground(environment);     // Evaluates the next best move
-                        break;
-                    default:
-                        throw new NotImplementedException($"No case block for training type {trainType}");
-                }
-                
+                agent.Explore(environment, verbosity);   // Trains on best next move
+                Action action = agent.Exploit(environment);     // Evaluates the next best move
 
                 environment.Step(action);
             } // Play Game
@@ -52,12 +34,12 @@ namespace LitsReinforcementLearning
 
             environment.Reset();
         }
-        public static void Train(Agent agent, int episodes, Type trainType, Verbosity verbosity = Verbosity.Low) 
+        public static void Train(Agent agent1, int episodes, Verbosity verbosity = Verbosity.Low) 
         {
             Console.Clear();
             for (int i = 0; i < episodes; i++)
             {
-                PlayGame(agent, trainType, verbosity);
+                PlayGame(agent1, verbosity);
 
                 if (verbosity == Verbosity.Low)
                     Console.Write($"\rGames of training completed: {i + 1}");

@@ -11,7 +11,7 @@ namespace LitsReinforcementLearning
     {
         static Environment environment = new Environment();
 
-        public static async void PlayGame(Agent agent1, Agent agent2, Verbosity verbosity = Verbosity.High)
+        public static void PlayGame(Agent agent1, Agent agent2, Verbosity verbosity = Verbosity.High)
         {
             if (verbosity >= Verbosity.High)
                 DisplayBoard(environment);

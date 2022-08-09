@@ -11,7 +11,7 @@ namespace LitsReinforcementLearning
     {
         static Environment environment = new Environment();
 
-        public static async void PlayGame(Agent agent)
+        public static void PlayGame(Agent agent)
         {
             while (!environment.isDone)
             {

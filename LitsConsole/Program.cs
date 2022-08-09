@@ -10,7 +10,6 @@ namespace LitsReinforcementLearning
     {
         static void Main(string[] args)
         {
-            System.Diagnostics.Debug.WriteLine(Thread.CurrentThread.ManagedThreadId);
             string command = args[0].ToLower();
 
             if (command == "create")
@@ -42,30 +41,18 @@ namespace LitsReinforcementLearning
             }
             else if (command == "train")
             {
-                string agentName = args[1];
-                Agent agent = new DynamicProgrammingAgent(agentName);
+                string agentName1 = args[1];
+                Agent agent1 = new DynamicProgrammingAgent(agentName1);
 
-                if (!int.TryParse(args[3], out int episodes))
+                if (!int.TryParse(args[2], out int episodes))
                 {
                     Console.WriteLine("No integer value for episodes given.");
                     return;
                 }
 
-                string trainTypeStr = args[2].ToLower();
-                Console.Title = $"Training {agentName} {trainTypeStr}...";
-                switch (trainTypeStr)
-                {
-                    case "async":
-                        Trainer.Train(agent, episodes, Trainer.Type.Async, Verbosity.Low);
-                        break;
-                    case "background":
-                        Trainer.Train(agent, episodes, Trainer.Type.Background, Verbosity.Low);
-                        break;
-                    default:
-                        Trainer.Train(agent, episodes, Trainer.Type.Sync, Verbosity.Low);
-                        break;
-                }
-                agent.Save(agentName);
+                Console.Title = $"Training {agentName1}...";
+                Trainer.Train(agent1, episodes, Verbosity.Low);
+                agent1.Save(agentName1);
             }
             else
             {

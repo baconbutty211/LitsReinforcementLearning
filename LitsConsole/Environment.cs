@@ -38,8 +38,6 @@ namespace LitsReinforcementLearning
 
         private Dictionary<Tile, int> availableActions;
 
-        public int Id = -1;
-        private static int IdMaker = 0;
         static bool[] initialState
         {
             get
@@ -110,15 +108,36 @@ namespace LitsReinforcementLearning
         public int oFilled = 0;
         private int _Filled = 0;
 
-        public float[] features;
-        //public NDarray features;
-        
+        public NDarray features
+        {
+            get
+            {
+                List<float> featsLst = new List<float>();
+
+                foreach (Tile tile in board)
+                {
+                    switch (tile)
+                    {
+                        case Tile.X:
+                            featsLst.Add(1);
+                            break;
+                        case Tile.O:
+                            featsLst.Add(-1);
+                            break;
+                        default:
+                            featsLst.Add(0);
+                            break;
+                    }
+                }
+                return new NDarray(featsLst.ToArray());
+            }
+        }
+
         /// <summary>
         /// Initializes the environment
         /// </summary>
         public Environment()
         {
-            Id = IdMaker++;
             Reset();
         }
         /// <summary>
@@ -126,8 +145,6 @@ namespace LitsReinforcementLearning
         /// </summary>
         private Environment(Environment original)
         {
-            Id = IdMaker++;
-
             stepCount = original.stepCount;
 
             board = original.board.Clone() as Tile[];
@@ -136,9 +153,6 @@ namespace LitsReinforcementLearning
             calculatedValidActions = original.calculatedValidActions;
             validActions = original.validActions.Clone() as Action[];
             availableActions = original.availableActions.ToDictionary(entry => entry.Key, entry => entry.Value);
-
-            features = original.features.Clone() as float[];
-            //features = np.array(featuresArr);
 
             xFilled = original.xFilled;
             oFilled = original.oFilled;
@@ -157,21 +171,15 @@ namespace LitsReinforcementLearning
             _Filled = 0;
 
             state = initialState;
-
             calculatedValidActions = true;
             validActions = Action.GetActions().ToArray();
-
-            features = Features();
-            //features = np.array(featuresArr);
-
             boardChanged?.Invoke(board);
-            
             return new Observation(-1, 0, false);
         }
         public Observation Step(Action action, bool calculateValidActions = true)
         {
-            //if (!calculatedValidActions)
-            //    throw new AccessViolationException($"On the previous step calculateValidActions was set to {calculatedValidActions}. You should not stepping through the environment because not all valid actions have been calculated. (Consider calculating valid actions here.)");
+            if (!calculatedValidActions)
+                throw new AccessViolationException($"On the previous step calculateValidActions was set to {calculatedValidActions}. You should not stepping through the environment because not all valid actions have been calculated. (Consider calculating valid actions here.)");
 
             foreach (int pos in action.action)
             {
@@ -194,16 +202,12 @@ namespace LitsReinforcementLearning
                     state[pos] = true;
                 }
                 else
-                {
-                    if (IsValid(action))
-                        throw new Exception("IsValid() logic is wrong.");
-                    else
-                        throw new IndexOutOfRangeException($"Action {action} has already been taken.");
-                }
-            }// Applies action to the environment
+                    throw new IndexOutOfRangeException($"Action {action} has already been taken.");
+            }
             availableActions[ActionTypeToTile(action.type)]--;
             stepCount++;
-            
+
+            // Calculates the valid actions that can be applied.
             List<Action> validActions = new List<Action>();
             foreach (Action a in Action.GetActions())
             {
@@ -213,12 +217,9 @@ namespace LitsReinforcementLearning
                     if (!calculateValidActions)
                         break;
                 }
-            } // Calculates the valid actions that can be applied.
+            }
             this.validActions = validActions.ToArray();
             this.calculatedValidActions = calculateValidActions;
-
-            features = Features(); // Set features
-            //features = np.array(features);
 
             boardChanged?.Invoke(board);
             return new Observation(action.Id, Reward(), isDone);
@@ -244,26 +245,6 @@ namespace LitsReinforcementLearning
                 }
             }
             return reward;
-        }
-        private float[] Features() 
-        {
-            List<float> featsLst = new List<float>();
-            foreach (Tile tile in board)
-            {
-                switch (tile)
-                {
-                    case Tile.X:
-                        featsLst.Add(1);
-                        break;
-                    case Tile.O:
-                        featsLst.Add(-1);
-                        break;
-                    default:
-                        featsLst.Add(0);
-                        break;
-                }
-            } // Sets features
-            return featsLst.ToArray();
         }
 
         public string GetResult()
