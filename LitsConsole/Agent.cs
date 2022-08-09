@@ -7,7 +7,6 @@ using Numpy;
 
 namespace LitsReinforcementLearning
 {
-    //public enum AgentType { Abstract, MonteCarlo, DynamicProgramming, ExhaustiveSearch }
     public abstract class Agent
     {
         protected static string savesPath = $"{Path.directory}{Path.Slash}Agents";
