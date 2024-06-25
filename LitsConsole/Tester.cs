@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace LitsReinforcementLearning
 {
+    /// <summary>
+    /// DEPRECATED
+    /// </summary>
     public static class Tester
     {
         static Environment environment = new Environment();

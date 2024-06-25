@@ -2,7 +2,7 @@
   "profiles": {
     "LitsConsole": {
       "commandName": "Project",
-      "commandLineArgs": "Train Powers 1"
+      "commandLineArgs": "Play Powers 1"
     }
   }
 }

@@ -34,7 +34,7 @@ namespace LitsForms
                 string[] path = agentSelectionDialog.SelectedPath.Split(Path.Slash);
                 string agentName = path[path.Length - 1];
 
-                return new DynamicProgrammingAgent(agentName);
+                return new Agent(agentName);
             }
             else
                 return null;

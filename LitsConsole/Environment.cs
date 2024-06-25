@@ -51,27 +51,6 @@ namespace LitsReinforcementLearning
             }
         }
         private bool[] state;
-
-        private static Tile[] SetBoard()
-        {
-            Tile[] board = new Tile[size];
-            for (int i = 0; i < size; i++)
-            {
-                if (i / 10 == 0 || i / 10 == 2 || i / 10 == 4)
-                    if (i % 10 <= 4)
-                        board[i] = Tile.X;
-                    else
-                        board[i] = Tile.O;
-                else if (i / 10 == 5 || i / 10 == 7 || i / 10 == 9)
-                    if (i % 10 <= 4)
-                        board[i] = Tile.O;
-                    else
-                        board[i] = Tile.X;
-                else
-                    board[i] = Tile._;
-            }
-            return board;
-        }
         private static Tile[] SetBoard(Board boardType)
         {
             Tile[] board = new Tile[size];
@@ -92,8 +71,18 @@ namespace LitsReinforcementLearning
                     break;
                 case Board.Random:
                     Random rnd = new Random();
+                    int Xs = 0;
+                    int Os = 0;
                     for (int i = 0; i < size; i++)
-                        strBoard += rnd.Next(0, 3).ToString();
+                    {
+                        int tile = 0;
+                        do 
+                        {
+                            tile = rnd.Next(0, 3); 
+                        } while ((Xs < 30 && tile == 1) || (Os < 30 && tile == 2));
+
+                        strBoard += tile.ToString();
+                    }
                     break;
                 default:
                     throw new NotImplementedException($"Case block for board type {boardType} has not been implemented.");

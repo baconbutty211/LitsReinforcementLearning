@@ -9,6 +9,9 @@ using Newtonsoft.Json.Linq;
 
 namespace LitsReinforcementLearning
 {
+    /// <summary>
+    /// DEPRECATED
+    /// </summary>
     public class Tree
     {
         protected static int size = Action.actionSpaceSize;
